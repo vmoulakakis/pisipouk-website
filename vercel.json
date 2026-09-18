@@ -1,14 +1,47 @@
 {
   "rewrites": [
-    { "source": "/paroxes", "destination": "/index.html" },
-    { "source": "/gallery", "destination": "/index.html" },
-    { "source": "/epikoinonia", "destination": "/index.html" }
+    {
+      "source": "/gia-emas/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/drastiriotites/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/programma/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/xoroi/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/goneis/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/epikoinonia/",
+      "destination": "/index.html"
+    }
   ],
   "headers": [
-    { "source": "/(.*)", "headers": [
-      { "key": "X-Content-Type-Options", "value": "nosniff" },
-      { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
-      { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" }
-    ] }
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        }
+      ]
+    }
   ]
 }
