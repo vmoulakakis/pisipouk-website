@@ -7,9 +7,13 @@ import Home from './pages/Home'
 import Services from './pages/Services'
 import Gallery from './pages/Gallery'
 import Contact from './pages/Contact'
+import Admin from './pages/Admin'
 
 export default function App() {
   const location = useLocation()
+  if(location.pathname.startsWith('/admin')){
+    return <Routes><Route path="/admin/*" element={<Admin/>}/></Routes>
+  }
   return (
     <div className="min-h-screen bg-cream text-earth">
       <Navbar />
