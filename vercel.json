@@ -1,18 +1,16 @@
 {
-  "rewrites": [
-    { "source": "/paroxes", "destination": "/index.html" },
-    { "source": "/paroxes/", "destination": "/index.html" },
-    { "source": "/gallery", "destination": "/index.html" },
-    { "source": "/gallery/", "destination": "/index.html" },
-    { "source": "/epikoinonia", "destination": "/index.html" },
-    { "source": "/epikoinonia/", "destination": "/index.html" },
-    { "source": "/admin", "destination": "/index.html" },
-    { "source": "/admin/(.*)", "destination": "/index.html" },
-    { "source": "/gia-emas/", "destination": "/index.html" },
-    { "source": "/drastiriotites/", "destination": "/index.html" },
-    { "source": "/programma/", "destination": "/index.html" },
-    { "source": "/xoroi/", "destination": "/index.html" },
-    { "source": "/goneis/", "destination": "/index.html" }
+  "redirects": [
+    { "source": "/paroxes", "destination": "/#benefits", "permanent": true },
+    { "source": "/paroxes/", "destination": "/#benefits", "permanent": true },
+    { "source": "/gallery", "destination": "/#about", "permanent": true },
+    { "source": "/gallery/", "destination": "/#about", "permanent": true },
+    { "source": "/epikoinonia", "destination": "/#contact", "permanent": true },
+    { "source": "/epikoinonia/", "destination": "/#contact", "permanent": true },
+    { "source": "/gia-emas/", "destination": "/#about", "permanent": true },
+    { "source": "/drastiriotites/", "destination": "/#day", "permanent": true },
+    { "source": "/programma/", "destination": "/#day", "permanent": true },
+    { "source": "/xoroi/", "destination": "/#about", "permanent": true },
+    { "source": "/goneis/", "destination": "/#benefits", "permanent": true }
   ],
   "headers": [
     {
@@ -20,7 +18,14 @@
       "headers": [
         { "key": "X-Content-Type-Options", "value": "nosniff" },
         { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
-        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" }
+        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" },
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" }
+      ]
+    },
+    {
+      "source": "/preview/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
       ]
     }
   ]
