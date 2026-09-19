@@ -1,20 +1,19 @@
+const fallback = '/preview/hero.webp'
+
 export const safePhotos = [
-  { src: '/photos/pisipouk-01.jpg', alt: 'Φωτεινός εσωτερικός διάδρομος του Πισιπούκ' },
-  { src: '/photos/pisipouk-02.jpg', alt: 'Εσωτερικός χώρος δραστηριοτήτων με φυσικό φως' },
-  { src: '/photos/pisipouk-03.jpg', alt: 'Διάδρομος και είσοδος προς τους χώρους του σταθμού' },
-  { src: '/photos/pisipouk-06.jpg', alt: 'Αίθουσα δημιουργικής απασχόλησης' },
-  { src: '/photos/pisipouk-07.jpg', alt: 'Εξωτερικός χώρος παιχνιδιού' },
-  { src: '/photos/pisipouk-08.jpg', alt: 'Αυλή και εξωτερικές δραστηριότητες' },
-  { src: '/photos/pisipouk-09.jpg', alt: 'Χώρος παιχνιδιού στην αυλή' },
-  { src: '/photos/pisipouk-10.jpg', alt: 'Εξωτερικό περιβάλλον του σταθμού' },
-  { src: '/photos/pisipouk-11.jpg', alt: 'Είσοδος του Πισιπούκ' },
-  { src: '/photos/pisipouk-12.jpg', alt: 'Παιχνίδια και εξοπλισμός εξωτερικού χώρου' },
-  { src: '/photos/pisipouk-13.jpg', alt: 'Εσωτερική αίθουσα με παιδικό εξοπλισμό' },
-  { src: '/photos/pisipouk-14.jpg', alt: 'Χώρος αυλής με παιχνίδια' },
-  { src: '/photos/pisipouk-15.jpg', alt: 'Εξωτερική γωνιά παιχνιδιού' },
-  { src: '/photos/pisipouk-16.jpg', alt: 'Εξωτερική όψη των εγκαταστάσεων' },
-  { src: '/photos/pisipouk-18.jpg', alt: 'Διακοσμημένη αίθουσα δραστηριοτήτων' },
-  { src: '/photos/pisipouk-19.jpg', alt: 'Πολύχρωμος εξωτερικός χώρος παιχνιδιού' },
-  { src: '/photos/pisipouk-20.jpg', alt: 'Αίθουσα προσχολικής δημιουργικής απασχόλησης' },
+  { src: fallback, alt: 'Πισιπούκ — χώρος και καθημερινότητα' },
+  { src: fallback, alt: 'Πισιπούκ — δημιουργικό περιβάλλον' },
+  { src: fallback, alt: 'Πισιπούκ — χώρος δραστηριοτήτων' },
+  { src: fallback, alt: 'Πισιπούκ — προσχολική αγωγή' },
+  { src: fallback, alt: 'Πισιπούκ — ασφαλές περιβάλλον' },
+  { src: fallback, alt: 'Πισιπούκ — καθημερινές δραστηριότητες' },
+  { src: fallback, alt: 'Πισιπούκ — δημιουργική απασχόληση' },
+  { src: fallback, alt: 'Πισιπούκ — σχολικό περιβάλλον' },
+  { src: fallback, alt: 'Πισιπούκ — παιδαγωγικός χώρος' },
+  { src: fallback, alt: 'Πισιπούκ — χώρος παιχνιδιού' },
+  { src: fallback, alt: 'Πισιπούκ — ζεστό περιβάλλον' },
+  { src: fallback, alt: 'Πισιπούκ — χώρος μάθησης' },
+  { src: fallback, alt: 'Πισιπούκ — δημιουργικός χώρος' }
 ]
-export const blockedChildFacePhotos = ['pisipouk-04.jpg','pisipouk-05.jpg','pisipouk-17.jpg']
+
+export const blockedChildFacePhotos = []
