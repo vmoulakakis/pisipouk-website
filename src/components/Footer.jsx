@@ -1,4 +1,0 @@
-import { Link } from 'react-router-dom'
-import Brand from './Brand'
-
-export default function Footer(){return <footer className="border-t border-earth/10 bg-[#F5EFE5] py-14"><div className="site-shell grid gap-8 md:grid-cols-[1.2fr_.8fr_.8fr]"><div><Brand/><p className="mt-4 max-w-md text-sm leading-7 text-earth/70">Ένας χώρος φροντίδας, παιχνιδιού και ανακάλυψης στον Άγιο Δημήτριο.</p></div><div><p className="mono-label">ΕΠΙΚΟΙΝΩΝΙΑ</p><p className="mt-3 text-sm leading-7">Δημ. Ψυχογιού 20<br/>Άγιος Δημήτριος<br/><a href="tel:+302109756277">210 975 6277</a><br/><a href="mailto:pisipouk@windowslive.com">pisipouk@windowslive.com</a></p></div><div><p className="mono-label">ΠΛΟΗΓΗΣΗ</p><div className="mt-3 grid gap-2 text-sm"><Link to="/paroxes">Παροχές</Link><Link to="/gallery">Gallery</Link><Link to="/epikoinonia">Κλείσε επίσκεψη</Link></div></div></div></footer>}
