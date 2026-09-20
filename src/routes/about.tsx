@@ -55,10 +55,7 @@ function AboutPage() {
       </Section>
 
       <Section>
-        <div className="mx-auto grid max-w-5xl gap-8 rounded-3xl bg-card p-8 shadow-sm md:grid-cols-[200px,1fr] md:items-center">
-          <div className="mx-auto flex h-40 w-40 items-center justify-center rounded-full bg-gradient-to-br from-sky to-sun text-4xl font-bold text-foreground/70">
-            ΠΙ
-          </div>
+        <div className="mx-auto max-w-4xl rounded-[2rem] bg-card p-8 shadow-sm sm:p-10">
           <div>
             <p className="text-sm font-semibold uppercase tracking-wide text-primary">
               {lang === "gr" ? "Από τη Διοίκηση" : "From the Management"}
