@@ -50,6 +50,7 @@ export const Route = createRootRoute({
       { name: "twitter:title", content: "Ο Πισιπούκ | Παιδικός Σταθμός & Νηπιαγωγείο στον Άγιο Δημήτριο" },
       { name: "twitter:description", content: "Παιδικός σταθμός και νηπιαγωγείο στον Άγιο Δημήτριο για παιδιά 2,5–6 ετών." },
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/9c777e7b-a660-4220-a642-38fc8491d015/id-preview-91e5db08--36c3be08-d17a-4695-849a-8d3e8f005c38.lovable.app-1776841840428.png" },
+    ],
   }),
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
