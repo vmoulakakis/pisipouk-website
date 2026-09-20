@@ -1,0 +1,63 @@
+name: Deploy Vercel
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_TEAM_ID: team_jt3jd1HJUB4sK1oZdl9MUYGs
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Verify Vercel token
+        run: |
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "VERCEL_TOKEN secret is not configured in GitHub Actions."
+            exit 1
+          fi
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Ensure Vercel project exists
+        id: project
+        shell: bash
+        run: |
+          set -euo pipefail
+          RESPONSE=$(curl -sS -w "\n%{http_code}"             -H "Authorization: Bearer $VERCEL_TOKEN"             "https://api.vercel.com/v9/projects/pisipouk?teamId=$VERCEL_TEAM_ID")
+          BODY=$(echo "$RESPONSE" | sed '$d')
+          CODE=$(echo "$RESPONSE" | tail -n1)
+
+          if [ "$CODE" = "200" ]; then
+            PROJECT_ID=$(echo "$BODY" | python -c 'import json,sys; print(json.load(sys.stdin)["id"])')
+          else
+            CREATE=$(curl -sS -X POST               -H "Authorization: Bearer $VERCEL_TOKEN"               -H "Content-Type: application/json"               "https://api.vercel.com/v10/projects?teamId=$VERCEL_TEAM_ID"               -d '{"name":"pisipouk","framework":"vite"}')
+            PROJECT_ID=$(echo "$CREATE" | python -c 'import json,sys; d=json.load(sys.stdin); print(d.get("id",""))')
+          fi
+
+          if [ -z "$PROJECT_ID" ]; then
+            echo "Could not resolve or create Vercel project."
+            exit 1
+          fi
+
+          mkdir -p .vercel
+          printf '{"orgId":"%s","projectId":"%s"}\n' "$VERCEL_TEAM_ID" "$PROJECT_ID" > .vercel/project.json
+          echo "project_id=$PROJECT_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Build
+        run: npm run build
+
+      - name: Deploy production
+        run: |
+          npx --yes vercel@latest deploy --prod --yes             --token "$VERCEL_TOKEN"             --scope "$VERCEL_TEAM_ID"
