@@ -80,4 +80,36 @@ export async function submitLead(input:{
   return data as {ok:true;id:string;email_status:string};
 }
 
+export async function subscribeParentNotes(input:{
+  email:string; first_name?:string; consent:boolean; source?:string;
+}) {
+  const p=new URLSearchParams(location.search);
+  const res=await fetch(`${SUPABASE_URL}/functions/v1/pisipouk-subscribe`,{
+    method:"POST",
+    headers:{"Content-Type":"application/json","apikey":PUBLISHABLE_KEY},
+    body:JSON.stringify({
+      action:"subscribe",
+      email:input.email.trim(),
+      first_name:input.first_name?.trim() || "",
+      consent:input.consent,
+      source:input.source || location.pathname,
+      utm:{source:p.get("utm_source"),medium:p.get("utm_medium"),campaign:p.get("utm_campaign")}
+    })
+  });
+  const data=await res.json().catch(()=>({}));
+  if(!res.ok || !data.ok) throw new Error(data.error || "subscribe_failed");
+  return data as {ok:true;email_status:string};
+}
+
+export async function unsubscribeParentNotes(token:string) {
+  const res=await fetch(`${SUPABASE_URL}/functions/v1/pisipouk-subscribe`,{
+    method:"POST",
+    headers:{"Content-Type":"application/json","apikey":PUBLISHABLE_KEY},
+    body:JSON.stringify({action:"unsubscribe",token})
+  });
+  const data=await res.json().catch(()=>({}));
+  if(!res.ok || !data.ok) throw new Error(data.error || "unsubscribe_failed");
+  return data as {ok:true;unsubscribed:boolean};
+}
+
 export { SUPABASE_URL, PUBLISHABLE_KEY };
