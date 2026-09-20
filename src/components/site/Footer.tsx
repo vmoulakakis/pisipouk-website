@@ -6,7 +6,6 @@ import { trackEvent } from "@/lib/pisipoukApi";
 import logoImage from "@/assets/pisipouk-logo.webp";
 
 const GOOGLE_MAPS_URL = "https://www.google.com/maps/search/?api=1&query=%CE%9F%20%CE%A0%CE%B9%CF%83%CE%B9%CF%80%CE%BF%CF%8D%CE%BA&query_place_id=ChIJp2TdCdC9oRQR4_25R-evEqE";
-const GOOGLE_REVIEW_URL = "https://search.google.com/local/writereview?placeid=ChIJp2TdCdC9oRQR4_25R-evEqE";
 
 export function Footer() {
   const { lang } = useLanguage();
@@ -96,16 +95,13 @@ export function Footer() {
             </span>
             <ExternalLink className="mt-0.5 h-3.5 w-3.5 shrink-0" />
           </a>
-          <a
-            href={GOOGLE_REVIEW_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => trackEvent("share_click", { placement: "footer_google_review" })}
+          <Link
+            to="/reviews"
             className="mt-4 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-bold hover:bg-background"
           >
-            {lang === "gr" ? "Αξιολόγηση στο Google" : "Review us on Google"}
-            <ExternalLink className="h-4 w-4" />
-          </a>
+            {lang === "gr" ? "Αφήστε αξιολόγηση" : "Leave a review"}
+            <ArrowRight className="h-4 w-4" />
+          </Link>
           <button onClick={share} className="mt-3 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-bold hover:bg-background">
             <Share2 className="h-4 w-4" />{lang === "gr" ? "Μοιραστείτε τον Πισιπούκ" : "Share Pisipouk"}
           </button>
