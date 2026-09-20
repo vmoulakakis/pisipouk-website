@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import { SiteLayout } from "@/components/site/SiteLayout";
+import { ParentNotesSignup } from "@/components/site/ParentNotesSignup";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -781,6 +782,29 @@ function HomePage() {
                 <Button asChild size="lg" variant="outline" className="rounded-full border-white/25 bg-transparent text-white hover:bg-white/10 hover:text-white"><Link to="/blog">{lang === "gr" ? "Δείτε το blog για γονείς" : "Explore the parent blog"}<ArrowRight className="h-5 w-5" /></Link></Button>
               </div>
               <p className="mt-4 text-xs leading-5 text-background/55">{lang === "gr" ? "Δεν εμφανίζουμε τεχνητή διαθεσιμότητα ή ψεύτικες «τελευταίες θέσεις». Ρωτήστε μας για την πραγματική εικόνα." : "We do not show artificial scarcity or fake ‘last spots’. Ask us for the real availability."}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 sm:py-20">
+        <div className="mx-auto max-w-7xl px-4 lg:px-8">
+          <div className="grid gap-8 rounded-[2.5rem] border bg-card p-7 shadow-sm lg:grid-cols-[1fr_.95fr] lg:items-center sm:p-10">
+            <div>
+              <p className="section-kicker">Parent Notes</p>
+              <h2 className="mt-3 text-4xl font-black tracking-tight sm:text-5xl">
+                {lang === "gr"
+                  ? "Ένα χρήσιμο email αξίζει περισσότερο από μια έκπτωση."
+                  : "One useful email is worth more than a discount."}
+              </h2>
+              <p className="mt-5 max-w-2xl text-lg leading-8 text-muted-foreground">
+                {lang === "gr"
+                  ? "Λάβετε δωρεάν τον οδηγό 7 ημερών για πιο ήρεμη προσαρμογή στον παιδικό σταθμό και στη συνέχεια μόνο επιλεγμένα Parent Notes για θέματα που ενδιαφέρουν πραγματικά τους γονείς."
+                  : "Get the free 7-day guide for a calmer preschool transition, followed by selected Parent Notes on topics that genuinely matter to parents."}
+              </p>
+            </div>
+            <div className="rounded-[2rem] bg-background p-5 sm:p-6">
+              <ParentNotesSignup lang={lang} source="homepage" />
             </div>
           </div>
         </div>
