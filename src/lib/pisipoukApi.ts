@@ -26,6 +26,7 @@ export function isAnalyticsExcluded() {
 }
 
 export async function excludeThisBrowserFromAnalytics() {
+  try { localStorage.setItem(INTERNAL_TRAFFIC_KEY,"1"); } catch {}
   try {
     const {session_id,visitor_id}=ids();
     await fetch(`${SUPABASE_URL}/functions/v1/pisipouk-event`,{
@@ -34,9 +35,7 @@ export async function excludeThisBrowserFromAnalytics() {
       body:JSON.stringify({session_id,visitor_id,event_type:"internal_optout"}),
       keepalive:true
     });
-  } finally {
-    try { localStorage.setItem(INTERNAL_TRAFFIC_KEY,"1"); } catch {}
-  }
+  } catch {}
 }
 
 export function includeThisBrowserInAnalytics() {
