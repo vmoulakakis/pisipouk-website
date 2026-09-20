@@ -1,41 +1,105 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import { SiteLayout } from "@/components/site/SiteLayout";
-import { Section, PageHeader } from "@/components/site/Section";
-import { ShieldAlert } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ArrowRight, Camera, ShieldCheck, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
+import exterior from "@/assets/pisipouk-exterior.webp";
+import arrival from "@/assets/pisipouk-arrival.webp";
+import welcome from "@/assets/parent-welcome.webp";
+import classroom from "@/assets/pisipouk-classroom.webp";
+import creative from "@/assets/real-creative-table.webp";
+import artTable from "@/assets/real-art-table.webp";
+import circle from "@/assets/real-circle-play.webp";
+import greece from "@/assets/real-greece-circle.webp";
+import story from "@/assets/pisipouk-story.webp";
 
-const CATEGORIES = ["all", "classrooms", "activities", "play", "arts", "yard", "events"] as const;
-type Category = (typeof CATEGORIES)[number];
+type Category = "all" | "space" | "learning" | "outdoors" | "brand";
 
-const LABELS: Record<Category, { gr: string; en: string }> = {
-  all: { gr: "Όλα", en: "All" },
-  classrooms: { gr: "Αίθουσες", en: "Classrooms" },
-  activities: { gr: "Δραστηριότητες", en: "Activities" },
-  play: { gr: "Παιχνίδι", en: "Play" },
-  arts: { gr: "Εικαστικά", en: "Arts" },
-  yard: { gr: "Αυλή", en: "Yard" },
-  events: { gr: "Εκδηλώσεις", en: "Events" },
+const labels: Record<Category, { gr: string; en: string }> = {
+  all: { gr: "Όλες", en: "All" },
+  space: { gr: "Χώρος", en: "Space" },
+  learning: { gr: "Δημιουργία", en: "Learning" },
+  outdoors: { gr: "Αυλή", en: "Outdoors" },
+  brand: { gr: "Η ιστορία μας", en: "Our story" },
 };
 
-const PLACEHOLDERS: { cat: Exclude<Category, "all">; bg: string; icon: string }[] = [
-  { cat: "classrooms", bg: "from-sky to-sun", icon: "🏫" },
-  { cat: "activities", bg: "from-leaf to-sky", icon: "🎨" },
-  { cat: "play", bg: "from-sun to-blossom", icon: "🧸" },
-  { cat: "arts", bg: "from-blossom to-sun", icon: "🖌️" },
-  { cat: "yard", bg: "from-leaf to-sun", icon: "🌳" },
-  { cat: "events", bg: "from-sky to-blossom", icon: "🎉" },
-  { cat: "classrooms", bg: "from-sun to-leaf", icon: "📚" },
-  { cat: "play", bg: "from-blossom to-sky", icon: "🪀" },
-  { cat: "activities", bg: "from-sky to-leaf", icon: "🎵" },
+const images = [
+  {
+    src: exterior,
+    cat: "space" as const,
+    gr: "Η είσοδος του κόσμου του Πισιπούκ",
+    en: "Welcome to the world of Pisipouk",
+    type: "ai",
+  },
+  {
+    src: arrival,
+    cat: "space" as const,
+    gr: "Η άφιξη ως ήρεμη καθημερινή τελετουργία",
+    en: "Arrival as a calm daily ritual",
+    type: "ai",
+  },
+  {
+    src: welcome,
+    cat: "space" as const,
+    gr: "Η πρώτη επαφή γονέα, παιδιού και ομάδας",
+    en: "The first connection between family and team",
+    type: "ai",
+  },
+  {
+    src: creative,
+    cat: "learning" as const,
+    gr: "Χέρια που δημιουργούν μαζί",
+    en: "Hands creating together",
+    type: "real",
+  },
+  {
+    src: artTable,
+    cat: "learning" as const,
+    gr: "Συγκέντρωση, χρώμα και συνεργασία",
+    en: "Focus, colour and cooperation",
+    type: "real",
+  },
+  {
+    src: classroom,
+    cat: "learning" as const,
+    gr: "Μάθηση μέσα από παιχνίδι",
+    en: "Learning through play",
+    type: "ai",
+  },
+  {
+    src: circle,
+    cat: "outdoors" as const,
+    gr: "Ο κύκλος της ομάδας στην αυλή",
+    en: "The group circle outdoors",
+    type: "real",
+  },
+  {
+    src: greece,
+    cat: "outdoors" as const,
+    gr: "Μαζί στις γιορτές και στις κοινές εμπειρίες",
+    en: "Together in celebrations and shared experiences",
+    type: "real",
+  },
+  {
+    src: story,
+    cat: "brand" as const,
+    gr: "Ο Πισιπούκ μέσα από εικόνες και αξίες",
+    en: "Pisipouk through images and values",
+    type: "ai",
+  },
 ];
 
 export const Route = createFileRoute("/gallery")({
   head: () => ({
     meta: [
-      { title: "Gallery — Ο Πισιπούκ" },
-      { name: "description", content: "Στιγμές από την καθημερινότητα στον Πισιπούκ. / Moments from daily life at Pisipouk." },
+      { title: "Φωτογραφίες & Στιγμές | Ο Πισιπούκ" },
+      {
+        name: "description",
+        content:
+          "Πραγματικές στιγμές και δημιουργικές απεικονίσεις από την καθημερινότητα στον Πισιπούκ, με σεβασμό στην ιδιωτικότητα των παιδιών.",
+      },
     ],
   }),
   component: GalleryPage,
@@ -44,50 +108,124 @@ export const Route = createFileRoute("/gallery")({
 function GalleryPage() {
   const { lang } = useLanguage();
   const [active, setActive] = useState<Category>("all");
-  const items = PLACEHOLDERS.filter((p) => active === "all" || p.cat === active);
+  const visible = images.filter(
+    (image) => active === "all" || image.cat === active,
+  );
 
   return (
     <SiteLayout>
-      <Section>
-        <PageHeader
-          eyebrow="Gallery"
-          title={lang === "gr" ? "Στιγμές από τον Πισιπούκ" : "Moments at Pisipouk"}
-        />
-
-        <div className="mt-6 flex items-start gap-2 rounded-2xl bg-secondary/60 p-4 text-sm">
-          <ShieldAlert className="mt-0.5 h-5 w-5 text-secondary-foreground" />
-          <p className="text-secondary-foreground">
-            {lang === "gr"
-              ? "Δημοσιεύουμε φωτογραφίες παιδιών μόνο εφόσον υπάρχει γραπτή συναίνεση των γονέων. Οι παρακάτω εικόνες είναι ενδεικτικές."
-              : "We publish children's photos only with written parent consent. The images below are indicative placeholders."}
+      <section className="hero-field py-16 sm:py-24">
+        <div className="mx-auto max-w-7xl px-4 lg:px-8">
+          <p className="section-kicker">
+            {lang === "gr" ? "Η ζωή στον Πισιπούκ" : "Life at Pisipouk"}
           </p>
+          <h1 className="mt-3 max-w-4xl text-5xl font-black tracking-tight sm:text-7xl">
+            {lang === "gr"
+              ? "Όχι φωτογραφίες για εντύπωση. Στιγμές με νόημα."
+              : "Not photos for show. Moments that mean something."}
+          </h1>
+          <p className="mt-6 max-w-3xl text-lg leading-8 text-muted-foreground">
+            {lang === "gr"
+              ? "Συνδυάζουμε πραγματικές φωτογραφίες του σταθμού με δημιουργικές AI απεικονίσεις της ταυτότητας Πισιπούκ. Κάθε εικόνα δηλώνεται καθαρά και η ιδιωτικότητα των παιδιών προηγείται."
+              : "We combine real school photography with creative AI representations of the Pisipouk identity. Every image is labelled and children’s privacy comes first."}
+          </p>
+          <div className="mt-7 flex items-start gap-3 rounded-2xl border bg-white/70 p-4 text-sm leading-6">
+            <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+            <p>
+              {lang === "gr"
+                ? "Δεν δημοσιεύονται καθαρά αναγνωρίσιμα παιδικά πρόσωπα χωρίς επιβεβαιωμένη γραπτή συναίνεση."
+                : "Clearly identifiable children’s faces are not published without confirmed written consent."}
+            </p>
+          </div>
         </div>
+      </section>
 
-        <div className="mt-6 flex flex-wrap gap-2">
-          {CATEGORIES.map((c) => (
-            <button
-              key={c}
-              type="button"
-              onClick={() => setActive(c)}
-              className={cn(
-                "rounded-full border px-4 py-1.5 text-sm transition-colors",
-                active === c ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card hover:bg-accent",
-              )}
-            >
-              {LABELS[c][lang]}
-            </button>
-          ))}
-        </div>
+      <section className="py-14 sm:py-20">
+        <div className="mx-auto max-w-7xl px-4 lg:px-8">
+          <div
+            className="flex flex-wrap gap-2"
+            role="group"
+            aria-label={lang === "gr" ? "Φίλτρα φωτογραφιών" : "Photo filters"}
+          >
+            {(Object.keys(labels) as Category[]).map((category) => (
+              <button
+                key={category}
+                type="button"
+                onClick={() => setActive(category)}
+                aria-pressed={active === category}
+                className={cn(
+                  "min-h-11 rounded-full border px-5 py-2 text-sm font-bold transition-colors",
+                  active === category
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "bg-card hover:bg-accent",
+                )}
+              >
+                {labels[category][lang]}
+              </button>
+            ))}
+          </div>
 
-        <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3">
-          {items.map((it, i) => (
-            <div key={i} className={`flex aspect-square items-center justify-center rounded-3xl bg-gradient-to-br ${it.bg} text-5xl shadow-sm`}>
-              <span aria-hidden>{it.icon}</span>
-              <span className="sr-only">{LABELS[it.cat][lang]}</span>
+          <div className="gallery-masonry mt-8">
+            {visible.map((image, index) => (
+              <figure
+                key={image.src}
+                className={cn(
+                  "gallery-shot group",
+                  index % 5 === 0 && "gallery-shot-wide",
+                )}
+              >
+                <img
+                  src={image.src}
+                  alt={image[lang]}
+                  loading={index < 2 ? "eager" : "lazy"}
+                />
+                <figcaption>
+                  <span className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider">
+                    {image.type === "real" ? (
+                      <Camera className="h-3.5 w-3.5" />
+                    ) : (
+                      <Sparkles className="h-3.5 w-3.5" />
+                    )}
+                    {image.type === "real"
+                      ? lang === "gr"
+                        ? "Πραγματική στιγμή"
+                        : "Real moment"
+                      : lang === "gr"
+                        ? "Δημιουργική AI απεικόνιση"
+                        : "Creative AI representation"}
+                  </span>
+                  <strong>{image[lang]}</strong>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+
+          <div className="mt-16 rounded-[2rem] bg-sun p-7 sm:flex sm:items-center sm:justify-between sm:gap-8 sm:p-10">
+            <div>
+              <h2 className="text-3xl font-black">
+                {lang === "gr"
+                  ? "Οι φωτογραφίες βοηθούν. Η επίσκεψη αποφασίζει."
+                  : "Photos help. A visit decides."}
+              </h2>
+              <p className="mt-3 max-w-2xl leading-7 text-foreground/75">
+                {lang === "gr"
+                  ? "Γνωρίστε τον χώρο, την ομάδα και τον τρόπο που υποδεχόμαστε κάθε παιδί."
+                  : "Meet the space, the team and the way we welcome every child."}
+              </p>
             </div>
-          ))}
+            <Button
+              asChild
+              size="lg"
+              className="mt-6 shrink-0 rounded-full sm:mt-0"
+            >
+              <Link to="/book-visit">
+                {lang === "gr" ? "Κλείστε μια γνωριμία" : "Book a visit"}
+                <ArrowRight className="h-5 w-5" />
+              </Link>
+            </Button>
+          </div>
         </div>
-      </Section>
+      </section>
     </SiteLayout>
   );
 }

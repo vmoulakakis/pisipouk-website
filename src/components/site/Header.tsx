@@ -3,9 +3,9 @@ import { useEffect, useState } from "react";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import { dict } from "@/i18n/translations";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Sparkles, LogIn, LogOut, ShieldCheck } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { supabase, isSupabaseConfigured } from "@/integrations/supabase/client";
+import logoImage from "@/assets/pisipouk-logo.webp";
 
 const NAV_LINKS = [
   { to: "/", key: "home" as const },
@@ -14,7 +14,6 @@ const NAV_LINKS = [
   { to: "/daily-life", key: "daily" as const },
   { to: "/safety-care", key: "safety" as const },
   { to: "/gallery", key: "gallery" as const },
-  { to: "/blog", key: "blog" as const },
   { to: "/faq", key: "faq" as const },
   { to: "/contact", key: "contact" as const },
 ];
@@ -23,114 +22,113 @@ export function Header() {
   const { lang, setLang } = useLanguage();
   const [open, setOpen] = useState(false);
   const loc = useLocation();
-  const [authed, setAuthed] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    if (!isSupabaseConfigured) {
-      setAuthed(false);
-      setIsAdmin(false);
-      return;
-    }
+    setOpen(false);
+  }, [loc.pathname]);
 
-    const refresh = async () => {
-      const { data } = await supabase.auth.getSession();
-      const uid = data.session?.user.id;
-      setAuthed(!!uid);
-      if (uid) {
-        const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", uid);
-        setIsAdmin(!!roles?.some((r) => r.role === "admin"));
-      } else {
-        setIsAdmin(false);
-      }
-    };
-
-    refresh();
-    const { data: sub } = supabase.auth.onAuthStateChange(() => refresh());
-    return () => sub.subscription.unsubscribe();
-  }, []);
+  useEffect(() => {
+    if (!open) return;
+    const close = (event: KeyboardEvent) =>
+      event.key === "Escape" && setOpen(false);
+    document.addEventListener("keydown", close);
+    return () => document.removeEventListener("keydown", close);
+  }, [open]);
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/85 backdrop-blur-md">
-      <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4">
-        <Link to="/" className="flex items-center gap-2 font-bold" onClick={() => setOpen(false)}>
-          <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm">
-            <Sparkles className="h-5 w-5" aria-hidden="true" />
-          </span>
-          <span className="text-lg leading-tight">
-            <span className="block">Ο Πισιπούκ</span>
-          </span>
+    <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/90 backdrop-blur-xl">
+      <Link
+        to="/espa-2026-2027"
+        className="flex min-h-8 items-center justify-center gap-2 bg-foreground px-4 py-1.5 text-center text-xs font-bold text-background hover:bg-primary"
+      >
+        <span
+          className="h-2 w-2 animate-pulse rounded-full bg-sun"
+          aria-hidden="true"
+        />
+        {lang === "gr"
+          ? "Voucher ΕΕΤΑΑ / ΕΣΠΑ 2026–2027: επίσημη ενημέρωση γονέων"
+          : "EETAA voucher 2026–2027: official parent update"}
+      </Link>
+      <div className="mx-auto flex h-[76px] max-w-7xl items-center justify-between gap-3 px-4 lg:px-8">
+        <Link
+          to="/"
+          className="flex items-center gap-2 font-black"
+          aria-label={lang === "gr" ? "Πισιπούκ — Αρχική" : "Pisipouk — Home"}
+        >
+          <img
+            src={logoImage}
+            alt=""
+            className="h-14 w-14 object-contain"
+            aria-hidden="true"
+          />
+          <span className="text-lg leading-none">Ο Πισιπούκ</span>
         </Link>
 
-        <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary">
-          {NAV_LINKS.map((l) => {
-            const active = loc.pathname === l.to;
-            return (
-              <Link
-                key={l.to}
-                to={l.to}
-                className={cn(
-                  "rounded-full px-3 py-2 text-sm font-medium transition-colors hover:bg-accent",
-                  active && "bg-accent text-accent-foreground",
-                )}
-              >
-                {dict.nav[l.key][lang]}
-              </Link>
-            );
-          })}
+        <nav
+          className="hidden items-center gap-0.5 xl:flex"
+          aria-label={lang === "gr" ? "Κύρια πλοήγηση" : "Primary navigation"}
+        >
+          {NAV_LINKS.map((link) => (
+            <Link
+              key={link.to}
+              to={link.to}
+              className={cn(
+                "rounded-full px-3 py-2 text-sm font-bold transition-colors hover:bg-accent",
+                loc.pathname === link.to && "bg-accent text-accent-foreground",
+              )}
+            >
+              {dict.nav[link.key][lang]}
+            </Link>
+          ))}
         </nav>
 
         <div className="flex items-center gap-2">
-          <div className="flex items-center rounded-full border border-border bg-muted/40 p-0.5 text-xs font-medium">
+          <div className="hidden items-center rounded-full border bg-white/60 p-1 text-xs font-bold sm:flex">
             <button
               type="button"
               onClick={() => setLang("gr")}
               aria-pressed={lang === "gr"}
               className={cn(
-                "rounded-full px-3 py-1 transition-colors",
-                lang === "gr" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
+                "rounded-full px-2.5 py-1.5",
+                lang === "gr" && "bg-foreground text-background",
               )}
             >
-              Ελληνικά
+              ΕΛ
             </button>
             <button
               type="button"
               onClick={() => setLang("en")}
               aria-pressed={lang === "en"}
               className={cn(
-                "rounded-full px-3 py-1 transition-colors",
-                lang === "en" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
+                "rounded-full px-2.5 py-1.5",
+                lang === "en" && "bg-foreground text-background",
               )}
             >
-              English
+              EN
             </button>
           </div>
-
-          {isAdmin && (
-            <Button asChild size="sm" variant="outline" className="hidden rounded-full md:inline-flex">
-              <Link to="/admin"><ShieldCheck className="h-4 w-4" /> Admin</Link>
-            </Button>
-          )}
-          {authed ? (
-            <Button size="sm" variant="ghost" className="hidden rounded-full md:inline-flex" onClick={() => supabase.auth.signOut()}>
-              <LogOut className="h-4 w-4" /> {dict.cta.logout[lang]}
-            </Button>
-          ) : (
-            <Button asChild size="sm" variant="ghost" className="hidden rounded-full md:inline-flex">
-              <Link to="/login"><LogIn className="h-4 w-4" /> {dict.cta.login[lang]}</Link>
-            </Button>
-          )}
-
-          <Button asChild size="sm" className="hidden rounded-full md:inline-flex">
-            <Link to="/enrollment">{dict.cta.book[lang]}</Link>
+          <Button
+            asChild
+            size="sm"
+            className="hidden rounded-full md:inline-flex"
+          >
+            <Link to="/book-visit">{dict.cta.book[lang]}</Link>
           </Button>
-
           <button
             type="button"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border lg:hidden"
-            onClick={() => setOpen((s) => !s)}
-            aria-label={open ? dict.chat.close[lang] : "Menu"}
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full border bg-white/60 xl:hidden"
+            onClick={() => setOpen((value) => !value)}
+            aria-label={
+              open
+                ? lang === "gr"
+                  ? "Κλείσιμο μενού"
+                  : "Close menu"
+                : lang === "gr"
+                  ? "Άνοιγμα μενού"
+                  : "Open menu"
+            }
             aria-expanded={open}
+            aria-controls="mobile-navigation"
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
@@ -138,37 +136,47 @@ export function Header() {
       </div>
 
       {open && (
-        <div className="border-t border-border/60 bg-background lg:hidden">
-          <nav className="container mx-auto flex max-w-7xl flex-col gap-1 px-4 py-3" aria-label="Mobile">
-            {NAV_LINKS.map((l) => (
-              <Link
-                key={l.to}
-                to={l.to}
-                onClick={() => setOpen(false)}
-                className="rounded-2xl px-4 py-3 text-base font-medium hover:bg-accent"
+        <div
+          id="mobile-navigation"
+          className="border-t bg-background xl:hidden"
+        >
+          <nav
+            className="mx-auto grid max-w-7xl gap-1 px-4 py-4"
+            aria-label={lang === "gr" ? "Μενού κινητού" : "Mobile menu"}
+          >
+            <div className="mb-2 flex items-center gap-2 sm:hidden">
+              <button
+                type="button"
+                onClick={() => setLang("gr")}
+                className={cn(
+                  "rounded-full border px-4 py-2 text-sm font-bold",
+                  lang === "gr" && "bg-foreground text-background",
+                )}
               >
-                {dict.nav[l.key][lang]}
+                Ελληνικά
+              </button>
+              <button
+                type="button"
+                onClick={() => setLang("en")}
+                className={cn(
+                  "rounded-full border px-4 py-2 text-sm font-bold",
+                  lang === "en" && "bg-foreground text-background",
+                )}
+              >
+                English
+              </button>
+            </div>
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                className="rounded-2xl px-4 py-3 text-base font-bold hover:bg-accent"
+              >
+                {dict.nav[link.key][lang]}
               </Link>
             ))}
-            <Link to="/portal" onClick={() => setOpen(false)} className="rounded-2xl px-4 py-3 text-base font-medium hover:bg-accent">
-              {dict.nav.portal[lang]}
-            </Link>
-            {isAdmin && (
-              <Link to="/admin" onClick={() => setOpen(false)} className="rounded-2xl px-4 py-3 text-base font-medium hover:bg-accent">
-                Admin
-              </Link>
-            )}
-            {authed ? (
-              <button onClick={() => { supabase.auth.signOut(); setOpen(false); }} className="rounded-2xl px-4 py-3 text-left text-base font-medium hover:bg-accent">
-                {dict.cta.logout[lang]}
-              </button>
-            ) : (
-              <Link to="/login" onClick={() => setOpen(false)} className="rounded-2xl px-4 py-3 text-base font-medium hover:bg-accent">
-                {dict.cta.login[lang]}
-              </Link>
-            )}
             <Button asChild size="lg" className="mt-2 rounded-full">
-              <Link to="/enrollment" onClick={() => setOpen(false)}>{dict.cta.book[lang]}</Link>
+              <Link to="/book-visit">{dict.cta.book[lang]}</Link>
             </Button>
           </nav>
         </div>
