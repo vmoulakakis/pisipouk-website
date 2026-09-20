@@ -93,10 +93,10 @@ export const dict = {
     email: { gr: "Email", en: "Email" },
     address: { gr: "Διεύθυνση", en: "Address" },
     hours: { gr: "Ωράριο λειτουργίας", en: "Opening hours" },
-    hoursValue: { gr: "Δευτέρα–Παρασκευή 07:00–16:00", en: "Monday–Friday 07:00–16:00" },
-    placeholderPhone: "+30 210 000 0000",
-    placeholderEmail: "info@pisipouk.gr",
-    placeholderAddress: { gr: "Οδός Παραδείγματος 1, Αθήνα", en: "1 Example Street, Athens" },
+    hoursValue: { gr: "Δευτέρα–Παρασκευή 07:00–17:00", en: "Monday–Friday 07:00–17:00" },
+    placeholderPhone: "+30 210 975 6277",
+    placeholderEmail: "pisipouk@windowslive.com",
+    placeholderAddress: { gr: "Δημητρίου Ψυχογιού 20, 17341 Άγιος Δημήτριος", en: "20 Dimitriou Psychogiou, 17341 Agios Dimitrios, Athens" },
   },
   footer: {
     tagline: {
