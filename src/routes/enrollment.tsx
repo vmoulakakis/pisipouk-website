@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { supabase } from "@/integrations/supabase/client";
+import { submitLead, trackEvent } from "@/lib/pisipoukApi";
 import { CheckCircle2, AlertCircle } from "lucide-react";
 
 export const Route = createFileRoute("/enrollment")({
@@ -70,24 +70,28 @@ function EnrollmentPage() {
     setErrors({});
     setSubmitting(true);
     try {
-      const payload = {
+      await trackEvent("form_submit", { form: "enrollment" });
+      const extra = [
+        parsed.data.child_name ? `Όνομα παιδιού: ${parsed.data.child_name}` : "",
+        parsed.data.desired_start ? `Επιθυμητή έναρξη: ${parsed.data.desired_start}` : "",
+        `Ενδιαφέρον: ${parsed.data.interest}`,
+        parsed.data.message || ""
+      ].filter(Boolean).join("\n");
+      await submitLead({
         parent_name: parsed.data.parent_name,
         phone: parsed.data.phone,
-        email: parsed.data.email || null,
-        child_name: parsed.data.child_name || null,
-        child_age: parsed.data.child_age || null,
-        desired_start: parsed.data.desired_start || null,
-        interest: parsed.data.interest,
-        message: parsed.data.message || null,
-        gdpr_consent: parsed.data.gdpr_consent,
-        source: "website" as const,
-      };
-      const { error } = await supabase.from("leads").insert(payload);
-      if (error) throw error;
+        email: parsed.data.email || "",
+        child_age: parsed.data.child_age || "",
+        message: extra,
+        gdpr_consent: true,
+        page: "/enrollment"
+      });
       setSubmitted(true);
+      await trackEvent("form_success", { form: "enrollment" });
     } catch (err) {
       console.error(err);
       setServerErr(dict.form.error[lang]);
+      await trackEvent("form_error", { form: "enrollment" });
     } finally {
       setSubmitting(false);
     }
