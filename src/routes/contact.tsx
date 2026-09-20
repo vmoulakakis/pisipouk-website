@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { submitLead, trackEvent } from "@/lib/pisipoukApi";
-import { Phone, Mail, MapPin, Clock, CheckCircle2, AlertCircle, CalendarDays, ShieldCheck, MessageCircle } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, CheckCircle2, AlertCircle, CalendarDays, ShieldCheck, MessageCircle, ExternalLink, Navigation } from "lucide-react";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -21,6 +21,9 @@ export const Route = createFileRoute("/contact")({
   }),
   component: ContactPage,
 });
+
+const GOOGLE_MAPS_URL = "https://www.google.com/maps/search/?api=1&query=%CE%9F%20%CE%A0%CE%B9%CF%83%CE%B9%CF%80%CE%BF%CF%8D%CE%BA&query_place_id=ChIJp2TdCdC9oRQR4_25R-evEqE";
+const GOOGLE_MAPS_EMBED_URL = "https://www.google.com/maps?q=%CE%94%CE%B7%CE%BC%CE%B7%CF%84%CF%81%CE%AF%CE%BF%CF%85%20%CE%A8%CF%85%CF%87%CE%BF%CE%B3%CE%B9%CE%BF%CF%8D%2020%2C%2017341%20%CE%86%CE%B3%CE%B9%CE%BF%CF%82%20%CE%94%CE%B7%CE%BC%CE%AE%CF%84%CF%81%CE%B9%CE%BF%CF%82&output=embed";
 
 function ContactPage() {
   const { lang } = useLanguage();
@@ -114,6 +117,40 @@ function ContactPage() {
                 <p className="text-center text-xs text-muted-foreground">{gr ? "Χωρίς δεσμεύσεις. Μια πρώτη επικοινωνία για να δείτε αν ταιριάζουμε στις ανάγκες της οικογένειάς σας." : "No obligation. A first conversation to see if we fit your family's needs."}</p>
               </form>
             )}
+          </div>
+        </div>
+        <div className="mx-auto mt-10 max-w-6xl overflow-hidden rounded-[2rem] border bg-card shadow-sm">
+          <div className="grid lg:grid-cols-[1.2fr_0.8fr]">
+            <iframe
+              title={gr ? "Χάρτης Ο Πισιπούκ στον Άγιο Δημήτριο" : "Map of O Pisipouk in Agios Dimitrios"}
+              src={GOOGLE_MAPS_EMBED_URL}
+              className="h-[360px] w-full border-0"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              allowFullScreen
+            />
+            <div className="p-6 sm:p-8">
+              <MapPin className="h-8 w-8 text-primary" />
+              <h2 className="mt-4 text-2xl font-black">
+                {gr ? "Βρείτε τον Πισιπούκ στο Google Maps" : "Find O Pisipouk on Google Maps"}
+              </h2>
+              <p className="mt-3 leading-7 text-muted-foreground">
+                {gr
+                  ? "Δημητρίου Ψυχογιού 20, 17341 Άγιος Δημήτριος. Ανοίξτε την επίσημη καταχώριση για πλοήγηση, στοιχεία επικοινωνίας και ενημερωμένο ωράριο."
+                  : "20 Dimitriou Psychogiou, 17341 Agios Dimitrios. Open the official listing for directions, contact details and current opening hours."}
+              </p>
+              <a
+                href={GOOGLE_MAPS_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackEvent("visit_click", { placement: "contact_google_maps" })}
+                className="mt-6 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-bold text-primary-foreground hover:bg-primary/90"
+              >
+                <Navigation className="h-4 w-4" />
+                {gr ? "Οδηγίες στο Google Maps" : "Directions in Google Maps"}
+                <ExternalLink className="h-4 w-4" />
+              </a>
+            </div>
           </div>
         </div>
       </Section>
