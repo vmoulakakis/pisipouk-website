@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Check, Clock3, Leaf, ShieldCheck, UtensilsCrossed } from "lucide-react";
+import { ArrowRight, Check, Clock3, Leaf, ShieldCheck, UtensilsCrossed, Stethoscope, BadgeCheck } from "lucide-react";
 
 export const Route = createFileRoute("/nutrition")({
   head: () => ({
@@ -72,6 +72,41 @@ function NutritionPage() {
               [UtensilsCrossed, gr ? "Κυρίως γεύμα" : "Main meal", gr ? "Εναλλαγή λαχανικών, οσπρίων, ψαριού, κοτόπουλου και κρέατος." : "A varied rotation of main dishes."],
               [ShieldCheck, gr ? "Αλλεργίες & ανάγκες" : "Allergies & needs", gr ? "Κάθε ειδική ανάγκη συζητείται προσωπικά πριν την έναρξη." : "Special needs are discussed before starting."],
             ].map(([Icon,title,body])=>{ const I=Icon as typeof Leaf; return <div key={String(title)} className="rounded-[1.5rem] border bg-white/80 p-5"><I className="h-7 w-7 text-primary"/><h2 className="mt-3 font-black">{title as string}</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">{body as string}</p></div>})}
+          </div>
+        </div>
+      </section>
+
+      <section className="pb-4 pt-10 sm:pt-14">
+        <div className="mx-auto max-w-7xl px-4 lg:px-8">
+          <div className="rounded-[2.5rem] border bg-card p-7 shadow-sm sm:p-10">
+            <div className="grid gap-7 lg:grid-cols-[.9fr_1.1fr] lg:items-center">
+              <div>
+                <div className="inline-flex items-center gap-2 rounded-full bg-leaf px-4 py-2 text-sm font-black">
+                  <BadgeCheck className="h-5 w-5" />
+                  {gr ? "Διατροφική ποιότητα & έλεγχος" : "Food quality & oversight"}
+                </div>
+                <h2 className="mt-5 text-4xl font-black tracking-tight">
+                  {gr ? "Το μενού δεν σχεδιάζεται στην τύχη." : "The menu is not planned by chance."}
+                </h2>
+                <p className="mt-4 text-lg leading-8 text-muted-foreground">
+                  {gr
+                    ? "Σύμφωνα με τον κανονισμό λειτουργίας 2026–2027 του σταθμού, το διαιτολόγιο καθορίζεται από διαιτολόγο, ελέγχεται κάθε μήνα από την παιδίατρο και οι γονείς λαμβάνουν μηνιαία ενημέρωση για το μενού."
+                    : "According to the school's 2026–2027 operating rules, the menu is set by a dietitian, reviewed monthly by the pediatrician and communicated to parents each month."}
+                </p>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-3">
+                {[
+                  [Leaf, gr ? "Διαιτολόγος" : "Dietitian", gr ? "Καθορίζει το διαιτολόγιο." : "Defines the meal plan."],
+                  [Stethoscope, gr ? "Παιδίατρος" : "Pediatrician", gr ? "Μηνιαίος έλεγχος του διαιτολογίου." : "Monthly review of the meal plan."],
+                  [ShieldCheck, gr ? "Διαφάνεια" : "Transparency", gr ? "Μηνιαία ενημέρωση των γονέων για το μενού." : "Monthly menu information for parents."],
+                ].map(([Icon,title,body])=>{ const I=Icon as typeof Leaf; return <div key={String(title)} className="rounded-[1.5rem] bg-muted/55 p-5"><I className="h-7 w-7 text-primary"/><h3 className="mt-3 font-black">{title as string}</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">{body as string}</p></div>})}
+              </div>
+            </div>
+            <p className="mt-6 text-xs leading-5 text-muted-foreground">
+              {gr
+                ? "Σημείωση: η παλαιότερη αναφορά σε ΕΦΕΤ / HACCP / ISO 22000 θα εμφανιστεί ως επίσημη πιστοποίηση μόνο όταν έχουμε το αντίστοιχο έγγραφο ή σαφή βεβαίωση."
+                : "Note: older references to EFET / HACCP / ISO 22000 will be displayed as formal certification only after the supporting document is verified."}
+            </p>
           </div>
         </div>
       </section>
