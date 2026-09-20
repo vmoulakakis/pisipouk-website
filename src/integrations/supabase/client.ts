@@ -1,44 +1,30 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "./types";
 
-export const isSupabaseConfigured = Boolean(
-  import.meta.env.VITE_SUPABASE_URL &&
-  (import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY)
-);
+const configuredUrl = import.meta.env.VITE_SUPABASE_URL;
+const configuredKey =
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+  import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-function createSupabaseClient() {
-  const url =
-    import.meta.env.VITE_SUPABASE_URL ||
-    (typeof process !== "undefined" ? process.env.SUPABASE_URL : undefined);
+export const isSupabaseConfigured = Boolean(configuredUrl && configuredKey);
 
-  const publishableKey =
-    import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
-    import.meta.env.VITE_SUPABASE_ANON_KEY ||
-    (typeof process !== "undefined"
-      ? process.env.SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_ANON_KEY
-      : undefined);
+const url =
+  configuredUrl ||
+  (typeof process !== "undefined" ? process.env.SUPABASE_URL : undefined) ||
+  "https://placeholder.supabase.co";
 
-  if (!url || !publishableKey) {
-    throw new Error(
-      "Missing Supabase environment variables: VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY."
-    );
-  }
+const publishableKey =
+  configuredKey ||
+  (typeof process !== "undefined"
+    ? process.env.SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_ANON_KEY
+    : undefined) ||
+  "placeholder-anon-key";
 
-  return createClient<Database>(url, publishableKey, {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: true,
-      storage: typeof window !== "undefined" ? window.localStorage : undefined,
-    },
-  });
-}
-
-let instance: ReturnType<typeof createSupabaseClient> | undefined;
-
-export const supabase = new Proxy({} as ReturnType<typeof createSupabaseClient>, {
-  get(_, prop, receiver) {
-    if (!instance) instance = createSupabaseClient();
-    return Reflect.get(instance, prop, receiver);
+export const supabase = createClient<Database>(url, publishableKey, {
+  auth: {
+    persistSession: isSupabaseConfigured,
+    autoRefreshToken: isSupabaseConfigured,
+    detectSessionInUrl: isSupabaseConfigured,
+    storage: isSupabaseConfigured && typeof window !== "undefined" ? window.localStorage : undefined,
   },
 });
