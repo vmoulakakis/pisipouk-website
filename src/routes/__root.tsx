@@ -2,7 +2,7 @@ import { Outlet, createRootRoute } from "@tanstack/react-router";
 import { useEffect } from "react";
 
 import { LanguageProvider } from "@/i18n/LanguageProvider";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, isSupabaseConfigured } from "@/integrations/supabase/client";
 import { primeSessionCache } from "@/lib/auth-cache";
 
 function NotFoundComponent() {
