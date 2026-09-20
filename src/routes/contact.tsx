@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { supabase, isSupabaseConfigured } from "@/integrations/supabase/client";
-import { Phone, Mail, MapPin, Clock, CheckCircle2, AlertCircle, CalendarDays, ShieldCheck } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, CheckCircle2, AlertCircle, CalendarDays, ShieldCheck, MessageCircle } from "lucide-react";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -66,7 +66,8 @@ function ContactPage() {
 
   const items = [
     { icon: Phone, label: gr ? "Τηλέφωνο" : "Phone", value: "210 975 6277", href: "tel:+302109756277" },
-    { icon: Mail, label: "Email", value: "pisipouk@windowslive.com", href: "mailto:pisipouk@windowslive.com" },
+    { icon: Mail, label: "Email", value: "pisipouk@windowslive.com", href: "mailto:pisipouk@windowslive.com?subject=Επικοινωνία%20από%20το%20site%20Πισιπούκ" },
+    { icon: MessageCircle, label: "Viber", value: "210 975 6277", href: "viber://contact?number=%2B302109756277" },
     { icon: MapPin, label: gr ? "Διεύθυνση" : "Address", value: gr ? "Δημητρίου Ψυχογιού 20, 17341 Άγιος Δημήτριος" : "20 Dimitriou Psychogiou, 17341 Agios Dimitrios" },
     { icon: Clock, label: gr ? "Ωράριο" : "Hours", value: gr ? "Δευτέρα–Παρασκευή 07:00–17:00" : "Monday–Friday 07:00–17:00" },
   ];
