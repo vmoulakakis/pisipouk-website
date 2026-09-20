@@ -1,12 +1,19 @@
 import { Link } from "@tanstack/react-router";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import { dict } from "@/i18n/translations";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Share2 } from "lucide-react";
+import { trackEvent } from "@/lib/pisipoukApi";
 import logoImage from "@/assets/pisipouk-logo.webp";
 
 export function Footer() {
   const { lang } = useLanguage();
   const year = new Date().getFullYear();
+  const share = async () => {
+    const url = `${window.location.origin}${window.location.pathname}?utm_source=parent_share&utm_medium=referral&utm_campaign=local_word_of_mouth`;
+    await trackEvent("share_click", { placement: "footer" });
+    if (navigator.share) await navigator.share({ title: "Ο Πισιπούκ", text: "Δείτε τον Πισιπούκ — Παιδικός Σταθμός & Νηπιαγωγείο στον Άγιο Δημήτριο.", url }).catch(()=>{});
+    else await navigator.clipboard.writeText(url).catch(()=>{});
+  };
 
   return (
     <footer className="border-t border-border/60 bg-muted/40">
@@ -73,6 +80,9 @@ export function Footer() {
             {lang === "gr" ? "Σελίδα επικοινωνίας" : "Contact page"}{" "}
             <ArrowRight className="h-4 w-4" />
           </Link>
+          <button onClick={share} className="mt-4 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-bold hover:bg-background">
+            <Share2 className="h-4 w-4" />{lang === "gr" ? "Μοιραστείτε τον Πισιπούκ" : "Share Pisipouk"}
+          </button>
         </div>
       </div>
 
