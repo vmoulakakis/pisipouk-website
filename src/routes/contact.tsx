@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { supabase, isSupabaseConfigured } from "@/integrations/supabase/client";
+import { submitLead, trackEvent } from "@/lib/pisipoukApi";
 import { Phone, Mail, MapPin, Clock, CheckCircle2, AlertCircle, CalendarDays, ShieldCheck, MessageCircle } from "lucide-react";
 
 export const Route = createFileRoute("/contact")({
@@ -35,32 +35,23 @@ function ContactPage() {
       return;
     }
     setState("sending");
-    const message = `CONTACT FORM | Ηλικία παιδιού: ${form.childAge || "-"} | ${form.message || "Χωρίς επιπλέον μήνυμα"}`;
+    await trackEvent("form_submit", { form: "contact" });
     try {
-      if (isSupabaseConfigured) {
-        const { error } = await supabase.from("leads").insert({
-          parent_name: form.name.trim(),
-          phone: form.phone.trim(),
-          email: form.email.trim() || null,
-          child_name: null,
-          child_age: form.childAge.trim() || null,
-          desired_start: null,
-          interest: "both",
-          message,
-          gdpr_consent: true,
-          source: "website",
-        });
-        if (error) throw error;
-        setState("sent");
-        return;
-      }
-      const subject = encodeURIComponent("Επικοινωνία από pisipouk.gr");
-      const body = encodeURIComponent(`Όνομα: ${form.name}\nΤηλέφωνο: ${form.phone}\nEmail: ${form.email}\nΗλικία παιδιού: ${form.childAge}\n\n${form.message}`);
-      window.location.href = `mailto:pisipouk@windowslive.com?subject=${subject}&body=${body}`;
+      await submitLead({
+        parent_name: form.name.trim(),
+        phone: form.phone.trim(),
+        email: form.email.trim(),
+        child_age: form.childAge.trim(),
+        message: form.message.trim(),
+        gdpr_consent: true,
+        page: "/contact"
+      });
       setState("sent");
+      await trackEvent("form_success", { form: "contact" });
     } catch (error) {
       console.error(error);
       setState("error");
+      await trackEvent("form_error", { form: "contact" });
     }
   };
 
@@ -87,7 +78,7 @@ function ContactPage() {
               {items.map(({ icon: Icon, label, value, href }, i) => (
                 <li key={i} className="flex items-start gap-4 rounded-2xl p-3">
                   <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-secondary text-secondary-foreground"><Icon className="h-5 w-5" /></span>
-                  <div><p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{label}</p>{href ? <a href={href} className="mt-0.5 block font-bold hover:text-primary">{value}</a> : <p className="mt-0.5 font-bold">{value}</p>}</div>
+                  <div><p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{label}</p>{href ? <a onClick={()=>trackEvent(label==="Viber"?"viber_click":label==="Email"?"email_click":"phone_click",{placement:"contact_page"})} href={href} className="mt-0.5 block font-bold hover:text-primary">{value}</a> : <p className="mt-0.5 font-bold">{value}</p>}</div>
                 </li>
               ))}
             </ul>
