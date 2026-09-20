@@ -1,9 +1,11 @@
 import { Link } from "@tanstack/react-router";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import { dict } from "@/i18n/translations";
-import { ArrowRight, Share2 } from "lucide-react";
+import { ArrowRight, Share2, MapPin, ExternalLink } from "lucide-react";
 import { trackEvent } from "@/lib/pisipoukApi";
 import logoImage from "@/assets/pisipouk-logo.webp";
+
+const GOOGLE_MAPS_URL = "https://www.google.com/maps/search/?api=1&query=%CE%9F%20%CE%A0%CE%B9%CF%83%CE%B9%CF%80%CE%BF%CF%8D%CE%BA&query_place_id=ChIJp2TdCdC9oRQR4_25R-evEqE";
 
 export function Footer() {
   const { lang } = useLanguage();
@@ -80,6 +82,19 @@ export function Footer() {
             {lang === "gr" ? "Σελίδα επικοινωνίας" : "Contact page"}{" "}
             <ArrowRight className="h-4 w-4" />
           </Link>
+          <a
+            href={GOOGLE_MAPS_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => trackEvent("visit_click", { placement: "footer_google_maps" })}
+            className="mt-4 flex items-start gap-2 text-sm font-bold text-foreground hover:text-primary"
+          >
+            <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
+            <span>
+              {lang === "gr" ? "Δημητρίου Ψυχογιού 20, Άγιος Δημήτριος" : "20 Dimitriou Psychogiou, Agios Dimitrios"}
+            </span>
+            <ExternalLink className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+          </a>
           <button onClick={share} className="mt-4 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-bold hover:bg-background">
             <Share2 className="h-4 w-4" />{lang === "gr" ? "Μοιραστείτε τον Πισιπούκ" : "Share Pisipouk"}
           </button>
