@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /parent
+Disallow: /auth
+
+Sitemap: https://pisipouk.vercel.app/sitemap.xml
