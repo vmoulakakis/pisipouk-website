@@ -5,7 +5,7 @@ import { dict } from "@/i18n/translations";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Sparkles, LogIn, LogOut, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, isSupabaseConfigured } from "@/integrations/supabase/client";
 
 const NAV_LINKS = [
   { to: "/", key: "home" as const },
@@ -27,6 +27,12 @@ export function Header() {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
+    if (!isSupabaseConfigured) {
+      setAuthed(false);
+      setIsAdmin(false);
+      return;
+    }
+
     const refresh = async () => {
       const { data } = await supabase.auth.getSession();
       const uid = data.session?.user.id;
@@ -38,6 +44,7 @@ export function Header() {
         setIsAdmin(false);
       }
     };
+
     refresh();
     const { data: sub } = supabase.auth.onAuthStateChange(() => refresh());
     return () => sub.subscription.unsubscribe();
