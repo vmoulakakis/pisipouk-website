@@ -65,6 +65,11 @@ export function Footer() {
                 {dict.nav.faq[lang]}
               </Link>
             </li>
+            <li>
+              <Link to="/parent-notes" className="hover:text-foreground">
+                {lang === "gr" ? "Parent Notes — δωρεάν οδηγός" : "Parent Notes — free guide"}
+              </Link>
+            </li>
           </ul>
         </div>
 
