@@ -9,6 +9,7 @@
   <url><loc>https://pisipouk.vercel.app/faq</loc><priority>0.8</priority></url>
   <url><loc>https://pisipouk.vercel.app/blog</loc><priority>0.8</priority></url>
   <url><loc>https://pisipouk.vercel.app/contact</loc><priority>0.9</priority></url>
+  <url><loc>https://pisipouk.vercel.app/reviews</loc><priority>0.7</priority></url>
   <url><loc>https://pisipouk.vercel.app/enrollment</loc><priority>0.9</priority></url>
   <url><loc>https://pisipouk.vercel.app/book-visit</loc><priority>0.9</priority></url>
   <url><loc>https://pisipouk.vercel.app/espa-2026-2027</loc><priority>0.9</priority></url>
