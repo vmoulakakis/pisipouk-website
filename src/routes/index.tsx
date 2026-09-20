@@ -25,6 +25,8 @@ import {
   TicketCheck,
   School,
   PhoneCall,
+  Star,
+  ExternalLink,
 } from "lucide-react";
 import logoImage from "@/assets/pisipouk-logo.webp";
 import arrivalImage from "@/assets/pisipouk-arrival.webp";
@@ -704,6 +706,47 @@ function HomePage() {
                 : "Illustrative example — not the current binding menu."}
             </figcaption>
           </figure>
+        </div>
+      </section>
+
+      <section className="py-16 sm:py-20">
+        <div className="mx-auto max-w-7xl px-4 lg:px-8">
+          <div className="rounded-[2.5rem] border bg-card p-7 shadow-sm sm:p-10">
+            <div className="grid gap-8 lg:grid-cols-[1fr_.85fr] lg:items-center">
+              <div>
+                <p className="section-kicker">{lang === "gr" ? "Επιλεγμένες θετικές αξιολογήσεις" : "Selected positive reviews"}</p>
+                <h2 className="mt-3 text-4xl font-black tracking-tight sm:text-5xl">
+                  {lang === "gr" ? "Η εμπιστοσύνη των γονέων μετρά περισσότερο." : "Parent trust matters most."}
+                </h2>
+                <p className="mt-5 max-w-3xl text-lg leading-8 text-muted-foreground">
+                  {lang === "gr"
+                    ? "Προβάλλουμε μόνο αξιολογήσεις και βαθμολογίες που μπορούμε να επαληθεύσουμε από δημόσιες πηγές. Δεν δημιουργούμε ή αποδίδουμε λόγια σε γονείς χωρίς πηγή."
+                    : "We only show ratings and reviews that can be verified from public sources. We do not invent parent quotes."}
+                </p>
+              </div>
+              <a
+                href="https://kidup.gr/business/o-pisipouk-paidikos-stathmos-agios-demetrios-68b6"
+                target="_blank"
+                rel="noreferrer"
+                className="group rounded-[2rem] bg-sun p-7 transition-transform hover:-translate-y-1"
+              >
+                <div className="flex items-center gap-1">
+                  {[0,1,2,3,4].map(i => <Star key={i} className="h-6 w-6 fill-current" />)}
+                </div>
+                <p className="mt-5 text-5xl font-black">5.0/5</p>
+                <p className="mt-2 text-lg font-black">Kidup</p>
+                <p className="mt-4 text-sm leading-6 text-foreground/70">
+                  {lang === "gr"
+                    ? "Δημόσια καταχώριση του Πισιπούκ στον Άγιο Δημήτριο."
+                    : "Public listing for Pisipouk in Agios Dimitrios."}
+                </p>
+                <span className="mt-5 inline-flex items-center gap-2 text-sm font-black">
+                  {lang === "gr" ? "Δείτε την πηγή" : "View source"}
+                  <ExternalLink className="h-4 w-4" />
+                </span>
+              </a>
+            </div>
+          </div>
         </div>
       </section>
 
