@@ -1,6 +1,7 @@
 {
   "name": "tanstack_start_ts",
   "private": true,
+  "description": "Parent-first preschool website for O Pisipouk",
   "sideEffects": false,
   "type": "module",
   "scripts": {
