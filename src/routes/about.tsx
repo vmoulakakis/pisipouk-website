@@ -61,14 +61,16 @@ function AboutPage() {
           </div>
           <div>
             <p className="text-sm font-semibold uppercase tracking-wide text-primary">
-              {lang === "gr" ? "Από την υπεύθυνη του σταθμού" : "From the school director"}
+              {lang === "gr" ? "Από τη Διοίκηση" : "From the Management"}
             </p>
-            <h2 className="mt-2 text-2xl font-bold">{lang === "gr" ? "Καλωσορίσατε στον Πισιπούκ" : "Welcome to Pisipouk"}</h2>
+            <h2 className="mt-2 text-2xl font-bold">{lang === "gr" ? "Κατερίνα Υφαντή — Καλωσορίσατε στον Πισιπούκ" : "Katerina Yfanti — Welcome to Pisipouk"}</h2>
             <p className="mt-3 text-muted-foreground">
               {lang === "gr"
-                ? "Με πολλή αγάπη και πάνω από μία δεκαετία εμπειρίας στην προσχολική αγωγή, χτίζουμε καθημερινά έναν χώρο όπου τα παιδιά νιώθουν ασφάλεια, εμπιστοσύνη και χαρά. Σας περιμένουμε για να γνωριστούμε."
-                : "With great love and over a decade of experience in early childhood education, we build every day a space where children feel safe, trusted and happy. We look forward to meeting you."}
+                ? "Όταν ένας γονιός μάς εμπιστεύεται το παιδί του, μάς εμπιστεύεται ό,τι πολυτιμότερο έχει. Θέλουμε ο Πισιπούκ να είναι ένας χώρος όπου κάθε παιδί νιώθει οικεία, χαρούμενα και ασφαλές, ενώ ταυτόχρονα μαθαίνει, κοινωνικοποιείται και ανακαλύπτει τον κόσμο μέσα από το παιχνίδι. Για εμάς είναι εξίσου σημαντική η ουσιαστική επικοινωνία και η σχέση εμπιστοσύνης με την οικογένεια. Σας προσκαλώ να γνωρίσετε από κοντά τον χώρο, την ομάδα και τη φιλοσοφία μας."
+                : "When a parent entrusts us with their child, they are entrusting us with what matters most. We want Pisipouk to feel warm, joyful and safe, while children learn, socialise and discover the world through play. Meaningful communication and trust with each family are equally important to us. I invite you to visit, meet the team and experience our philosophy in person."}
             </p>
+            <p className="mt-5 font-black">Κατερίνα Υφαντή</p>
+            <p className="text-sm text-muted-foreground">{lang === "gr" ? "Διοίκηση — Ο Πισιπούκ" : "Management — O Pisipouk"}</p>
           </div>
         </div>
       </Section>
