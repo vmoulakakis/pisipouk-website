@@ -707,6 +707,42 @@ function HomePage() {
         </div>
       </section>
 
+      <section className="bg-foreground py-16 text-background sm:py-20">
+        <div className="mx-auto max-w-7xl px-4 lg:px-8">
+          <div className="grid gap-8 lg:grid-cols-[1.1fr_.9fr] lg:items-center">
+            <div>
+              <p className="section-kicker text-sun">{lang === "gr" ? "Οι ερωτήσεις που έχει κάθε γονιός" : "The questions every parent has"}</p>
+              <h2 className="mt-3 text-4xl font-black tracking-tight sm:text-5xl">
+                {lang === "gr" ? "Θα νιώθει ασφαλές; Θα περνά καλά; Θα ξέρω πώς ήταν η μέρα του;" : "Will my child feel safe, enjoy the day and will I know how it went?"}
+              </h2>
+              <p className="mt-5 max-w-3xl text-lg leading-8 text-background/75">
+                {lang === "gr"
+                  ? "Αυτές είναι οι σωστές ερωτήσεις. Η καθημερινή φροντίδα, η σχέση με τους παιδαγωγούς, η επικοινωνία με την οικογένεια και η ομαλή προσαρμογή είναι πιο σημαντικές από μια λίστα παροχών."
+                  : "These are the right questions. Daily care, trusted educators, family communication and a thoughtful settling-in process matter more than a list of features."}
+              </p>
+              <div className="mt-7 grid gap-3 sm:grid-cols-2">
+                {[
+                  lang === "gr" ? "Καθημερινή ενημέρωση γονέων" : "Daily parent updates",
+                  lang === "gr" ? "Υποστήριξη από παιδοψυχολόγο" : "Child psychologist support",
+                  lang === "gr" ? "Πλήρης διατροφή με διαιτολόγο" : "Meal plan with dietitian guidance",
+                  lang === "gr" ? "Μεγάλος αυλόγυρος & δραστηριότητες" : "Large outdoor space & activities",
+                ].map((item)=><div key={item} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-4"><Check className="h-5 w-5 shrink-0 text-sun" /><span className="font-bold">{item}</span></div>)}
+              </div>
+            </div>
+            <div className="rounded-[2rem] bg-white/8 p-7 ring-1 ring-white/10">
+              <p className="text-sm font-black uppercase tracking-[.15em] text-sun">{lang === "gr" ? "Σχολική χρονιά 2026–2027" : "School year 2026–2027"}</p>
+              <h3 className="mt-4 text-3xl font-black">{lang === "gr" ? "Μην περιμένετε να αποφασίσετε από φωτογραφίες." : "Do not decide from photos alone."}</h3>
+              <p className="mt-4 leading-7 text-background/75">{lang === "gr" ? "Οι επισκέψεις γίνονται κατόπιν συνεννόησης και η διαθεσιμότητα επιβεβαιώνεται προσωπικά από τον σταθμό. Αν σκέφτεστε εγγραφή, προγραμματίστε έγκαιρα μια γνωριμία." : "Visits are by appointment and availability is confirmed directly by the school. If you are considering enrollment, arrange a visit early."}</p>
+              <div className="mt-6 grid gap-3">
+                <Button asChild size="lg" variant="secondary" className="rounded-full"><Link to="/book-visit"><CalendarDays className="h-5 w-5" />{lang === "gr" ? "Κλείστε επίσκεψη" : "Book a visit"}</Link></Button>
+                <Button asChild size="lg" variant="outline" className="rounded-full border-white/25 bg-transparent text-white hover:bg-white/10 hover:text-white"><Link to="/blog">{lang === "gr" ? "Δείτε το blog για γονείς" : "Explore the parent blog"}<ArrowRight className="h-5 w-5" /></Link></Button>
+              </div>
+              <p className="mt-4 text-xs leading-5 text-background/55">{lang === "gr" ? "Δεν εμφανίζουμε τεχνητή διαθεσιμότητα ή ψεύτικες «τελευταίες θέσεις». Ρωτήστε μας για την πραγματική εικόνα." : "We do not show artificial scarcity or fake ‘last spots’. Ask us for the real availability."}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="pb-20 sm:pb-28">
         <div className="mx-auto max-w-7xl px-4 lg:px-8">
           <div className="relative overflow-hidden rounded-[2.5rem] bg-sun px-6 py-12 sm:px-12 lg:px-16 lg:py-16">
