@@ -1,5 +1,6 @@
 const SUPABASE_URL = "https://gqpbskssrvpfjtujwezc.supabase.co";
 const PUBLISHABLE_KEY = "sb_publishable_Kcat2PHVjGn32ubiefotfA_iJjCU-B2";
+const INTERNAL_TRAFFIC_KEY = "pisipouk_internal_traffic";
 
 function ids() {
   const get = (key:string) => {
@@ -19,8 +20,32 @@ function utm() {
   };
 }
 
+export function isAnalyticsExcluded() {
+  try { return localStorage.getItem(INTERNAL_TRAFFIC_KEY) === "1"; }
+  catch { return false; }
+}
+
+export async function excludeThisBrowserFromAnalytics() {
+  try {
+    const {session_id,visitor_id}=ids();
+    await fetch(`${SUPABASE_URL}/functions/v1/pisipouk-event`,{
+      method:"POST",
+      headers:{"Content-Type":"application/json","apikey":PUBLISHABLE_KEY},
+      body:JSON.stringify({session_id,visitor_id,event_type:"internal_optout"}),
+      keepalive:true
+    });
+  } finally {
+    try { localStorage.setItem(INTERNAL_TRAFFIC_KEY,"1"); } catch {}
+  }
+}
+
+export function includeThisBrowserInAnalytics() {
+  try { localStorage.removeItem(INTERNAL_TRAFFIC_KEY); } catch {}
+}
+
 export async function trackEvent(event_type:string, metadata:Record<string,unknown>={}) {
   try {
+    if (isAnalyticsExcluded()) return;
     const {session_id,visitor_id}=ids();
     const u=utm();
     await fetch(`${SUPABASE_URL}/functions/v1/pisipouk-event`,{
