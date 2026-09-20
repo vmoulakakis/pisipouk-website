@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "./types";
 
-function createSupabaseClient() {
+export const isSupabaseConfigured = Boolean(\n  import.meta.env.VITE_SUPABASE_URL &&\n  (import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY)\n);\n\nfunction createSupabaseClient() {
   const url =
     import.meta.env.VITE_SUPABASE_URL ||
     (typeof process !== "undefined" ? process.env.SUPABASE_URL : undefined);
