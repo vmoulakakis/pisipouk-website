@@ -1,9 +1,11 @@
-import { Outlet, createRootRoute } from "@tanstack/react-router";
+import { HeadContent, Outlet, createRootRoute, useLocation } from "@tanstack/react-router";
 import { useEffect } from "react";
 
 import { LanguageProvider } from "@/i18n/LanguageProvider";
 import { supabase, isSupabaseConfigured } from "@/integrations/supabase/client";
 import { primeSessionCache } from "@/lib/auth-cache";
+
+const PRIMARY_ORIGIN = "https://pisipouk.vercel.app";
 
 function NotFoundComponent() {
   return (
@@ -57,6 +59,32 @@ export const Route = createRootRoute({
 });
 
 function RootComponent() {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+
+    const normalizedPath =
+      location.pathname === "/" ? "/" : location.pathname.replace(/\/+$/, "");
+    const canonicalUrl = `${PRIMARY_ORIGIN}${normalizedPath}`;
+
+    let canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement("link");
+      canonical.rel = "canonical";
+      document.head.appendChild(canonical);
+    }
+    canonical.href = canonicalUrl;
+
+    let ogUrl = document.querySelector<HTMLMetaElement>('meta[property="og:url"]');
+    if (!ogUrl) {
+      ogUrl = document.createElement("meta");
+      ogUrl.setAttribute("property", "og:url");
+      document.head.appendChild(ogUrl);
+    }
+    ogUrl.content = canonicalUrl;
+  }, [location.pathname]);
+
   useEffect(() => {
     if (typeof window === "undefined" || !isSupabaseConfigured) return;
 
@@ -75,6 +103,7 @@ function RootComponent() {
 
   return (
     <LanguageProvider>
+      <HeadContent />
       <Outlet />
     </LanguageProvider>
   );
