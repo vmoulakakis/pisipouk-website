@@ -8,7 +8,7 @@ import {
   Heart, Shield, Sparkles, Users, GraduationCap, Sprout, Sun, Smile,
   CheckCircle2, MessageCircle, Calendar, Phone, Mail, MapPin, ChevronRight,
 } from "lucide-react";
-import heroImage from "@/assets/hero.jpg";
+import heroImage from "@/assets/hero.webp";
 
 export const Route = createFileRoute("/")({
   head: () => ({
