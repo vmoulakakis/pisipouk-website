@@ -56,10 +56,8 @@ export const Route = createRootRoute({
 
 function RootComponent() {
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined" || !isSupabaseConfigured) return;
 
-    // Prime cache once on first load. The auth state subscription is
-    // owned by useAdminGuard to avoid duplicate role/session lookups.
     supabase.auth.getSession().then(({ data }) => {
       primeSessionCache(data.session ?? null);
     });
