@@ -15,6 +15,7 @@ const NAV_LINKS = [
   { to: "/safety-care", key: "safety" as const },
   { to: "/gallery", key: "gallery" as const },
   { to: "/faq", key: "faq" as const },
+  { to: "/blog", key: "blog" as const },
   { to: "/contact", key: "contact" as const },
 ];
 
