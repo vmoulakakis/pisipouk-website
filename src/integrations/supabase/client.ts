@@ -6,19 +6,19 @@ const configuredKey =
   import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
   import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-export const isSupabaseConfigured = Boolean(configuredUrl && configuredKey);
+export const isSupabaseConfigured = true;
 
 const url =
   configuredUrl ||
   (typeof process !== "undefined" ? process.env.SUPABASE_URL : undefined) ||
-  "https://placeholder.supabase.co";
+  "https://gqpbskssrvpfjtujwezc.supabase.co";
 
 const publishableKey =
   configuredKey ||
   (typeof process !== "undefined"
     ? process.env.SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_ANON_KEY
     : undefined) ||
-  "placeholder-anon-key";
+  "sb_publishable_Kcat2PHVjGn32ubiefotfA_iJjCU-B2";
 
 export const supabase = createClient<Database>(url, publishableKey, {
   auth: {
