@@ -8,8 +8,8 @@ import creative from "@/assets/real-creative-table.webp";
 import circle from "@/assets/real-circle-play.webp";
 
 const SCHEDULE = [
-  ["07:00–09:00", "Προσέλευση & ελεύθερο παιχνίδι", "Arrival & free play"],
-  ["09:00–09:30", "Πρωινός κύκλος", "Morning circle"],
+  ["07:00–08:00", "Προσέλευση & ελεύθερο παιχνίδι", "Arrival & free play"],
+  ["08:00–09:00", "Πρωινός κύκλος", "Morning circle"],
   ["09:30–10:30", "Παιδαγωγική δραστηριότητα", "Learning activity"],
   ["10:30–11:00", "Δεκατιανό", "Morning snack"],
   ["11:00–12:00", "Δημιουργία & κίνηση", "Making & movement"],
