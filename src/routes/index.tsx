@@ -373,6 +373,16 @@ function HomePage() {
                   <ArrowRight className="h-5 w-5" />
                 </Link>
               </Button>
+              <Button
+                asChild
+                size="lg"
+                className="h-13 rounded-full bg-gradient-to-r from-pink-500 via-violet-500 to-sky-500 px-7 text-base text-white shadow-lg shadow-violet-500/20 hover:opacity-95"
+              >
+                <Link to="/virtual-preschool">
+                  <Paintbrush className="h-5 w-5" />
+                  {lang === "gr" ? "Online Preschool" : "Online Preschool"}
+                </Link>
+              </Button>
             </div>
             <ul className="mt-8 flex flex-wrap gap-x-5 gap-y-3 text-sm font-semibold text-foreground/75">
               {c.trust.map((item) => (
@@ -767,8 +777,8 @@ function HomePage() {
                 </h2>
                 <p className="mt-4 max-w-2xl text-lg leading-8 text-muted-foreground">
                   {lang === "gr"
-                    ? "Ένα απλό, ήρεμο online παιχνίδι για παιδιά: επιλέγουν χρώμα, πατούν στις περιοχές της εικόνας και δημιουργούν τη δική τους ζωγραφιά."
-                    : "A simple, calm online activity: choose a color, tap the picture areas and create your own coloring page."}
+                    ? "Το Online Preschool του Πισιπούκ με ζωγραφική, κατασκευές και εποχικές δραστηριότητες για παιδιά 2–6 ετών."
+                    : "Pisipouk Online Preschool with coloring, crafts and seasonal activities for children ages 2–6."}
                 </p>
                 <div className="mt-6 flex flex-wrap gap-3 text-sm font-bold text-muted-foreground">
                   <span className="rounded-full border bg-card px-4 py-2">Χωρίς login</span>
@@ -778,7 +788,7 @@ function HomePage() {
                 <Button asChild size="lg" className="mt-7 rounded-full">
                   <Link to="/virtual-preschool">
                     <Paintbrush className="h-5 w-5" />
-                    {lang === "gr" ? "Ζωγράφισε τώρα" : "Start coloring"}
+                    {lang === "gr" ? "Μπες στο Online Preschool" : "Open Online Preschool"}
                   </Link>
                 </Button>
               </div>
