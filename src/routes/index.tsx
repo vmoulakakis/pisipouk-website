@@ -28,6 +28,8 @@ import {
   PhoneCall,
   Star,
   ExternalLink,
+  Paintbrush,
+  Download,
 } from "lucide-react";
 import logoImage from "@/assets/pisipouk-logo.webp";
 import arrivalImage from "@/assets/pisipouk-arrival.webp";
@@ -746,6 +748,68 @@ function HomePage() {
                   <ExternalLink className="h-4 w-4" />
                 </span>
               </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-14 sm:py-18">
+        <div className="mx-auto max-w-7xl px-4 lg:px-8">
+          <div className="overflow-hidden rounded-[2.5rem] border bg-gradient-to-br from-sky/15 via-background to-sun/20 p-6 shadow-sm sm:p-9">
+            <div className="grid gap-8 lg:grid-cols-[1.05fr_.95fr] lg:items-center">
+              <div>
+                <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-sm font-black text-primary">
+                  <Paintbrush className="h-4 w-4" />
+                  {lang === "gr" ? "Εικονικός Παιδικός Σταθμός" : "Virtual Preschool"}
+                </div>
+                <h2 className="mt-4 text-4xl font-black tracking-tight sm:text-5xl">
+                  {lang === "gr" ? "Μια νέα ζωγραφιά κάθε μέρα." : "A new coloring page every day."}
+                </h2>
+                <p className="mt-4 max-w-2xl text-lg leading-8 text-muted-foreground">
+                  {lang === "gr"
+                    ? "Ένα απλό, ήρεμο online παιχνίδι για παιδιά: επιλέγουν χρώμα, πατούν στις περιοχές της εικόνας και δημιουργούν τη δική τους ζωγραφιά."
+                    : "A simple, calm online activity: choose a color, tap the picture areas and create your own coloring page."}
+                </p>
+                <div className="mt-6 flex flex-wrap gap-3 text-sm font-bold text-muted-foreground">
+                  <span className="rounded-full border bg-card px-4 py-2">Χωρίς login</span>
+                  <span className="rounded-full border bg-card px-4 py-2">Αποθήκευση PNG</span>
+                  <span className="rounded-full border bg-card px-4 py-2">Εκτύπωση</span>
+                </div>
+                <Button asChild size="lg" className="mt-7 rounded-full">
+                  <Link to="/virtual-preschool">
+                    <Paintbrush className="h-5 w-5" />
+                    {lang === "gr" ? "Ζωγράφισε τώρα" : "Start coloring"}
+                  </Link>
+                </Button>
+              </div>
+
+              <Link
+                to="/virtual-preschool"
+                className="group rounded-[2rem] border bg-card p-5 transition-transform hover:-translate-y-1"
+                aria-label={lang === "gr" ? "Άνοιγμα Εικονικού Παιδικού Σταθμού" : "Open Virtual Preschool"}
+              >
+                <div className="aspect-[4/3] rounded-[1.5rem] bg-white p-4 shadow-inner">
+                  <svg viewBox="0 0 320 240" className="h-full w-full" aria-hidden="true">
+                    <rect x="14" y="14" width="292" height="212" rx="28" fill="#fff" stroke="#111" strokeWidth="5"/>
+                    <circle cx="160" cy="105" r="52" fill="#f7d37c" stroke="#111" strokeWidth="5"/>
+                    <circle cx="123" cy="72" r="22" fill="#f3a7a7" stroke="#111" strokeWidth="5"/>
+                    <circle cx="197" cy="72" r="22" fill="#8fd2e8" stroke="#111" strokeWidth="5"/>
+                    <circle cx="142" cy="102" r="6" fill="#111"/>
+                    <circle cx="178" cy="102" r="6" fill="#111"/>
+                    <path d="M143 130 Q160 145 177 130" fill="none" stroke="#111" strokeWidth="5" strokeLinecap="round"/>
+                    <path d="M77 188 Q160 145 243 188" fill="#9fd59f" stroke="#111" strokeWidth="5"/>
+                  </svg>
+                </div>
+                <div className="mt-4 flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-black uppercase tracking-[.12em] text-primary">{lang === "gr" ? "Η σημερινή ζωγραφιά" : "Today's coloring"}</p>
+                    <p className="mt-1 text-lg font-black">{lang === "gr" ? "Χρωμάτισε τον Πισιπούκ" : "Color Pisipouk"}</p>
+                  </div>
+                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                    <ArrowRight className="h-5 w-5" />
+                  </div>
+                </div>
+              </Link>
             </div>
           </div>
         </div>
