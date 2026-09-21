@@ -464,7 +464,8 @@ function VirtualPreschool() {
     });
   }, [daySeed]);
 
-  const [designId, setDesignId] = useState(dailyChoices[0].id);\n  const [selectedAge, setSelectedAge] = useState<Design["age"]>(dailyChoices[0].age);
+  const [designId, setDesignId] = useState(dailyChoices[0].id);
+  const [selectedAge, setSelectedAge] = useState<Design["age"]>(dailyChoices[0].age);
   const [color, setColor] = useState(COLORS[0]);
   const [brushSize, setBrushSize] = useState(24);
   const [erasing, setErasing] = useState(false);
