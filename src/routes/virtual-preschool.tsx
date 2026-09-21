@@ -4,6 +4,7 @@ import { SiteLayout } from "@/components/site/SiteLayout";
 import { Button } from "@/components/ui/button";
 import { Download, Eraser, Paintbrush, Printer, RotateCcw, Sparkles } from "lucide-react";
 import { trackEvent } from "@/lib/pisipoukApi";
+import pisipoukLogo from "@/assets/pisipouk-logo.webp";
 
 export const Route = createFileRoute("/virtual-preschool")({
   head: () => ({
@@ -518,6 +519,9 @@ function VirtualPreschool() {
     if (nextDesign) setSelectedAge(nextDesign.age);
     clearCanvas();
     setErasing(false);
+    requestAnimationFrame(() => {
+      document.getElementById("coloring-studio")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
   };
 
   const point = (e: React.PointerEvent<HTMLCanvasElement>) => {
@@ -601,269 +605,210 @@ function VirtualPreschool() {
 
   return (
     <SiteLayout>
-      <section className="py-10 sm:py-14">
-        <div className="mx-auto max-w-7xl px-4 lg:px-8">
-          <div className="overflow-hidden rounded-[2.5rem] border bg-gradient-to-br from-amber-50 via-white to-sky-50 p-6 shadow-sm sm:p-9">
-            <div className="mx-auto max-w-4xl text-center">
-              <div className="flex flex-wrap items-center justify-center gap-2">
-                <span className="rounded-full bg-white px-3 py-1 text-xs font-black text-primary shadow-sm">🎨 ΔΩΡΕΑΝ</span>
-                <span className="rounded-full bg-white px-3 py-1 text-xs font-black text-foreground shadow-sm">Χωρίς login</span>
-                <span className="rounded-full bg-white px-3 py-1 text-xs font-black text-foreground shadow-sm">2–6 ετών</span>
+      <section className="bg-white py-8 sm:py-12">
+        <div className="mx-auto max-w-[1500px] px-3 sm:px-5 lg:px-7">
+          <div className="overflow-hidden rounded-[2rem] border bg-white shadow-sm">
+            <div className="relative px-5 pb-6 pt-6 sm:px-8 lg:px-10">
+              <div className="absolute right-6 top-6 hidden text-5xl lg:block">☀️</div>
+              <div className="grid items-center gap-5 lg:grid-cols-[280px_1fr_280px]">
+                <div className="flex justify-center lg:justify-start">
+                  <img src={pisipoukLogo} alt="Ο Πισιπούκ" className="h-auto w-56 max-w-full object-contain" />
+                </div>
+                <div className="text-center">
+                  <p className="text-sm font-black uppercase tracking-[0.18em] text-primary">Εικονικός Παιδικός Σταθμός</p>
+                  <h1 className="mt-2 text-4xl font-black tracking-tight text-[#0b3b82] sm:text-5xl lg:text-6xl">
+                    Βιβλιοθήκη Ζωγραφικής
+                  </h1>
+                  <p className="mt-2 text-base font-bold text-[#0b3b82] sm:text-lg">
+                    45 μοναδικά σχέδια, 15 για κάθε ηλικιακή ομάδα
+                  </p>
+                </div>
+                <div className="hidden text-center font-black italic text-[#0b3b82] lg:block">
+                  <div className="text-2xl">Μικρά χεράκια</div>
+                  <div className="mt-1 text-3xl">Μεγάλες ιδέες!</div>
+                </div>
               </div>
-              <p className="section-kicker mt-5">Εικονικός Παιδικός Σταθμός</p>
-              <h1 className="mt-3 text-4xl font-black tracking-tight sm:text-6xl">
-                Ζωγράφισε, παίξε, δημιούργησε
-              </h1>
-              <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">
-                45 σχέδια οργανωμένα ανά ηλικία, με κανονικό πινέλο, γόμα, αποθήκευση και εκτύπωση. Κάθε παιδί ξεκινά από το επίπεδο που του ταιριάζει.
-              </p>
             </div>
 
-            <div className="mt-7 grid gap-3 md:grid-cols-3">
+            <div className="grid gap-3 p-3 lg:grid-cols-3">
               {(["2–3","4–5","5–6"] as const).map((age) => {
                 const meta = AGE_META[age];
-                const active = selectedAge === age;
+                const ageDesigns = DESIGNS.filter((item) => item.age === age);
+                const panel =
+                  age === "2–3"
+                    ? "border-rose-200 bg-gradient-to-b from-rose-50 to-pink-100/70"
+                    : age === "4–5"
+                      ? "border-sky-200 bg-gradient-to-b from-sky-50 to-blue-100/70"
+                      : "border-emerald-200 bg-gradient-to-b from-emerald-50 to-green-100/70";
+                const heading = age === "2–3" ? "text-rose-600" : age === "4–5" ? "text-blue-600" : "text-green-700";
+                const slogan =
+                  age === "2–3"
+                    ? "Μεγάλα σχήματα, απλά σχέδια, πολλή χαρά!"
+                    : age === "4–5"
+                      ? "Περισσότερες λεπτομέρειες, περισσότερες ιστορίες!"
+                      : "Ολόκληρες σκηνές, μικρές προκλήσεις, μεγάλα όνειρα!";
                 return (
-                  <button
-                    key={age}
-                    type="button"
-                    onClick={() => setSelectedAge(age)}
-                    className={
-                      "rounded-[1.6rem] border bg-gradient-to-br p-5 text-left transition-all " +
-                      meta.accent +
-                      (active ? " ring-2 ring-primary ring-offset-2" : " hover:-translate-y-0.5 hover:shadow-md")
-                    }
-                  >
-                    <div className="flex items-center justify-between gap-3">
-                      <span className="text-3xl">{meta.emoji}</span>
-                      <span className="rounded-full bg-white/90 px-3 py-1 text-sm font-black">{age} ετών</span>
+                  <div key={age} className={"rounded-[1.8rem] border p-4 sm:p-5 " + panel}>
+                    <div className="text-center">
+                      <div className={"text-4xl font-black sm:text-5xl " + heading}>{age} ετών</div>
+                      <p className={"mt-2 text-sm font-black sm:text-base " + heading}>{slogan}</p>
                     </div>
-                    <h2 className="mt-4 text-lg font-black">{meta.title}</h2>
-                    <p className="mt-1 text-sm leading-6 text-muted-foreground">{meta.description}</p>
-                  </button>
+
+                    <div className="mt-5 grid grid-cols-3 gap-2 sm:grid-cols-5 lg:grid-cols-3 xl:grid-cols-5">
+                      {ageDesigns.map((item, index) => (
+                        <button
+                          key={item.id}
+                          type="button"
+                          onClick={() => pickDesign(item.id)}
+                          className={
+                            "group rounded-xl border bg-white p-1.5 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md " +
+                            (designId === item.id ? "ring-2 ring-primary ring-offset-1" : "")
+                          }
+                        >
+                          <div className="aspect-[4/3] overflow-hidden rounded-lg bg-white">
+                            <svg viewBox="0 0 900 650" className="h-full w-full" aria-hidden="true">
+                              <Outline id={item.id} />
+                            </svg>
+                          </div>
+                          <div className="mt-1 min-h-[2.4rem] text-center">
+                            <p className="text-[10px] font-black leading-tight text-slate-800 sm:text-[11px]">
+                              {index + 1}. {item.title}
+                            </p>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+
+                    <div className="mt-5 rounded-full bg-white/75 px-4 py-3 text-center text-sm font-black shadow-sm">
+                      {age === "2–3"
+                        ? "Τα πρώτα τους βήματα στον κόσμο των χρωμάτων!"
+                        : age === "4–5"
+                          ? "Φαντασία, δημιουργικότητα και χαμόγελα!"
+                          : "Μεγαλώνουμε μέσα από τη δημιουργία!"}
+                    </div>
+                  </div>
                 );
               })}
             </div>
 
-            <div className="mt-7 rounded-[1.6rem] border bg-white/80 p-4">
-              <div className="grid gap-3 text-center sm:grid-cols-4">
+            <div className="border-t bg-white px-4 py-5 sm:px-7">
+              <div className="grid gap-3 text-center sm:grid-cols-5">
                 {[
-                  ["1", "Διάλεξε σχέδιο"],
-                  ["2", "Ζωγράφισε"],
-                  ["3", "Αποθήκευσε"],
-                  ["4", "Εκτύπωσε"],
-                ].map(([step, label]) => (
-                  <div key={step} className="flex items-center justify-center gap-2 rounded-xl bg-background px-3 py-3">
-                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-xs font-black text-primary-foreground">{step}</span>
-                    <span className="text-sm font-black">{label}</span>
+                  ["🎨", "Διάλεξε σχέδιο"],
+                  ["🖌️", "Ζωγράφισε"],
+                  ["⬇️", "Αποθήκευσε"],
+                  ["🖨️", "Εκτύπωσε"],
+                  ["❤️", "Δημιούργησε ξανά!"],
+                ].map(([icon, label]) => (
+                  <div key={label} className="flex items-center justify-center gap-2 rounded-full bg-slate-50 px-3 py-2.5">
+                    <span className="text-xl">{icon}</span>
+                    <span className="text-sm font-black text-[#0b3b82]">{label}</span>
                   </div>
                 ))}
               </div>
             </div>
           </div>
 
-          <div className="mt-8">
-            <div className="mb-4 flex items-end justify-between gap-4">
-              <div>
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-primary">Προτάσεις της ημέρας</p>
-                <h2 className="mt-1 text-2xl font-black">Ξεκίνα με μία από τις σημερινές ζωγραφιές</h2>
-              </div>
-              <span className="hidden text-sm text-muted-foreground sm:block">6 επιλογές · 2 ανά ηλικία</span>
+          <div id="coloring-studio" className="scroll-mt-24 pt-10">
+            <div className="mb-4 text-center">
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-primary">Ζωγραφική</p>
+              <h2 className="mt-2 text-3xl font-black sm:text-4xl">{current.emoji} {current.title}</h2>
+              <p className="mt-2 text-sm text-muted-foreground">{current.age} ετών · {current.level}</p>
             </div>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-              {dailyChoices.map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => pickDesign(item.id)}
-                  className={
-                    "group rounded-2xl border bg-card p-3 text-left transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md " +
-                    (designId === item.id ? "border-primary ring-2 ring-primary/15" : "")
-                  }
-                >
-                  <div className="aspect-[4/3] overflow-hidden rounded-xl border bg-white p-1.5">
-                    <svg viewBox="0 0 900 650" className="h-full w-full" aria-hidden="true">
-                      <Outline id={item.id} />
+
+            <div className="grid gap-6 xl:grid-cols-[1fr_360px] xl:items-start">
+              <div className="min-w-0">
+                <div className="print-area rounded-[2rem] border bg-white p-3 shadow-sm sm:p-5">
+                  <div className="relative mx-auto aspect-[900/650] w-full max-w-5xl overflow-hidden rounded-[1.4rem] bg-white">
+                    <canvas
+                      ref={canvasRef}
+                      width={900}
+                      height={650}
+                      onPointerDown={startDraw}
+                      onPointerMove={draw}
+                      onPointerUp={stopDraw}
+                      onPointerCancel={stopDraw}
+                      onPointerLeave={stopDraw}
+                      className="absolute inset-0 z-10 h-full w-full touch-none cursor-crosshair"
+                      aria-label="Καμβάς ζωγραφικής"
+                    />
+                    <svg
+                      ref={svgRef}
+                      viewBox="0 0 900 650"
+                      className="pointer-events-none absolute inset-0 z-20 h-full w-full"
+                      aria-label={`Σχέδιο: ${current.title}`}
+                    >
+                      <Outline id={designId} />
                     </svg>
                   </div>
-                  <div className="mt-2 flex items-center justify-between gap-2">
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-black">{item.title}</p>
-                      <p className="text-xs text-muted-foreground">{item.age} ετών</p>
-                    </div>
-                    <span className="text-lg transition-transform group-hover:rotate-6">{item.emoji}</span>
+                  <div className="hidden print:block pt-3 text-center text-sm font-bold text-gray-700">
+                    Η ζωγραφιά μου στον Πισιπούκ - pisipouk.vercel.app
                   </div>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="mt-8 grid gap-6 xl:grid-cols-[1fr_380px] xl:items-start">
-            <div className="min-w-0">
-              <div className="print-area rounded-[2rem] border bg-white p-3 shadow-sm sm:p-5">
-                <div className="relative mx-auto aspect-[900/650] w-full max-w-4xl overflow-hidden rounded-[1.4rem] bg-white">
-                  <canvas
-                    ref={canvasRef}
-                    width={900}
-                    height={650}
-                    onPointerDown={startDraw}
-                    onPointerMove={draw}
-                    onPointerUp={stopDraw}
-                    onPointerCancel={stopDraw}
-                    onPointerLeave={stopDraw}
-                    className="absolute inset-0 z-10 h-full w-full touch-none cursor-crosshair"
-                    aria-label="Καμβάς ζωγραφικής"
-                  />
-                  <svg
-                    ref={svgRef}
-                    viewBox="0 0 900 650"
-                    className="pointer-events-none absolute inset-0 z-20 h-full w-full"
-                    aria-label={`Σχέδιο: ${current.title}`}
-                  >
-                    <Outline id={designId} />
-                  </svg>
-                </div>
-                <div className="hidden print:block pt-3 text-center text-sm font-bold text-gray-700">
-                  Η ζωγραφιά μου στον Πισιπούκ - pisipouk.vercel.app
                 </div>
               </div>
 
-              <div className="mt-5 rounded-[2rem] border bg-card p-5">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <p className="text-sm font-black text-primary">{current.age} ετών · {current.level}</p>
-                    <h2 className="mt-1 text-2xl font-black">{current.emoji} {current.title}</h2>
-                    <p className="mt-1 text-sm text-muted-foreground">{AGE_META[current.age].description}</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Paintbrush className="h-5 w-5 text-primary"/>
-                    <span className="text-sm font-black">Παλέτα</span>
-                  </div>
+              <aside className="rounded-[2rem] border bg-card p-5 xl:sticky xl:top-24">
+                <div className="flex items-center gap-2">
+                  <Paintbrush className="h-5 w-5 text-primary" />
+                  <h3 className="font-black">Παλέτα ζωγραφικής</h3>
                 </div>
 
+                <p className="mt-2 text-xs leading-5 text-muted-foreground">
+                  {AGE_META[current.age].description}
+                </p>
+
                 <div className="mt-5 flex flex-wrap gap-3">
-                  {COLORS.map((c) => (
+                  {COLORS.map((paintColor) => (
                     <button
-                      key={c}
+                      key={paintColor}
                       type="button"
-                      onClick={() => { setColor(c); setErasing(false); }}
-                      aria-label={"Χρώμα " + c}
-                      className={"h-11 w-11 rounded-full border-2 transition-transform " + (!erasing && color === c ? "scale-110 ring-2 ring-primary ring-offset-2" : "")}
-                      style={{ backgroundColor: c }}
+                      onClick={() => { setColor(paintColor); setErasing(false); }}
+                      aria-label={"Χρώμα " + paintColor}
+                      className={"h-11 w-11 rounded-full border-2 transition-transform " + (!erasing && color === paintColor ? "scale-110 ring-2 ring-primary ring-offset-2" : "")}
+                      style={{ backgroundColor: paintColor }}
                     />
                   ))}
                 </div>
 
-                <div className="mt-5 grid gap-3 sm:grid-cols-3">
-                  {[14,26,42].map((size) => (
-                    <button
-                      key={size}
-                      type="button"
-                      onClick={() => setBrushSize(size)}
-                      className={"flex h-12 items-center justify-center rounded-xl border bg-background " + (brushSize === size ? "ring-2 ring-primary" : "")}
-                    >
-                      <span className="rounded-full bg-foreground" style={{ width: Math.max(8,size/2), height: Math.max(8,size/2) }}/>
-                    </button>
-                  ))}
-                </div>
-
-                <div className="mt-5 grid gap-3 sm:grid-cols-4">
-                  <Button type="button" variant={erasing ? "default" : "outline"} className="rounded-full" onClick={() => setErasing(v => !v)}>
-                    <Eraser className="h-4 w-4"/>{erasing ? "Γόμα ενεργή" : "Γόμα"}
-                  </Button>
-                  <Button type="button" variant="outline" className="rounded-full" onClick={clearCanvas}>
-                    <RotateCcw className="h-4 w-4"/>Καθάρισέ το
-                  </Button>
-                  <Button type="button" className="rounded-full" onClick={download}>
-                    <Download className="h-4 w-4"/>Αποθήκευση
-                  </Button>
-                  <Button type="button" variant="secondary" className="rounded-full" onClick={print}>
-                    <Printer className="h-4 w-4"/>Εκτύπωση
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            <aside className="rounded-[2rem] border bg-card p-5 xl:sticky xl:top-24">
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex items-center gap-2">
-                  <Sparkles className="mt-0.5 h-5 w-5 text-primary"/>
-                  <div>
-                    <h2 className="font-black">Βιβλιοθήκη ζωγραφικής</h2>
-                    <p className="text-xs text-muted-foreground">45 σχέδια · 15 ανά ηλικία</p>
+                <div className="mt-5">
+                  <p className="mb-2 text-xs font-black uppercase tracking-[0.14em] text-muted-foreground">Πάχος πινέλου</p>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[14,26,42].map((size) => (
+                      <button
+                        key={size}
+                        type="button"
+                        onClick={() => setBrushSize(size)}
+                        className={"flex h-12 items-center justify-center rounded-xl border bg-background " + (brushSize === size ? "ring-2 ring-primary" : "")}
+                      >
+                        <span className="rounded-full bg-foreground" style={{ width: Math.max(8,size/2), height: Math.max(8,size/2) }} />
+                      </button>
+                    ))}
                   </div>
                 </div>
-                <span className="rounded-full bg-primary/10 px-2.5 py-1 text-[10px] font-black text-primary">LIVE</span>
-              </div>
 
-              <div className="mt-5 rounded-2xl border bg-background/70 p-4">
-                <p className="text-xs font-black uppercase tracking-[0.16em] text-primary">Ηλικιακή λογική</p>
-                <p className="mt-2 text-xs leading-5 text-muted-foreground">
-                  2–3: ένα μεγάλο θέμα και πολύ καθαρό περίγραμμα · 4–5: περισσότερα αντικείμενα και μικρές ιστορίες · 5–6: ολοκληρωμένες σκηνές με περισσότερες περιοχές για χρώμα.
-                </p>
-              </div>
+                <div className="mt-5 grid gap-3">
+                  <Button type="button" variant={erasing ? "default" : "outline"} className="rounded-full" onClick={() => setErasing(v => !v)}>
+                    <Eraser className="h-4 w-4" />{erasing ? "Γόμα ενεργή" : "Γόμα"}
+                  </Button>
+                  <Button type="button" variant="outline" className="rounded-full" onClick={clearCanvas}>
+                    <RotateCcw className="h-4 w-4" />Καθάρισέ το
+                  </Button>
+                  <Button type="button" className="rounded-full" onClick={download}>
+                    <Download className="h-4 w-4" />Αποθήκευση PNG
+                  </Button>
+                  <Button type="button" variant="secondary" className="rounded-full" onClick={print}>
+                    <Printer className="h-4 w-4" />Εκτύπωση
+                  </Button>
+                </div>
 
-              <div className="mt-5 grid grid-cols-3 gap-2">
-                {(["2–3","4–5","5–6"] as const).map((age) => (
-                  <button
-                    key={age}
-                    type="button"
-                    onClick={() => setSelectedAge(age)}
-                    className={
-                      "rounded-xl border px-2 py-3 text-sm font-black transition-all " +
-                      (selectedAge === age ? "border-primary bg-primary/10 text-primary ring-2 ring-primary/15" : "bg-background")
-                    }
-                  >
-                    {age}
-                  </button>
-                ))}
-              </div>
-
-              <div className="mt-5 flex items-center justify-between">
-                <h3 className="text-sm font-black">{selectedAge} ετών</h3>
-                <span className="text-xs text-muted-foreground">
-                  {selectedAge === "2–3" ? "Εύκολα" : selectedAge === "4–5" ? "Μεσαία" : "Πιο λεπτομερή"}
-                </span>
-              </div>
-
-              <div className="mt-3 grid gap-2">
-                {DESIGNS.filter((item) => item.age === selectedAge).map((item) => {
-                  const featured = dailyChoices.some((d) => d.id === item.id);
-                  return (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => pickDesign(item.id)}
-                      className={
-                        "flex w-full items-center gap-3 rounded-2xl border p-3 text-left transition-all " +
-                        (designId === item.id
-                          ? "border-primary bg-primary/10 ring-2 ring-primary/15"
-                          : "bg-background hover:border-primary/40")
-                      }
-                    >
-                      <span className="flex h-16 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl border bg-white p-1">
-                        <svg viewBox="0 0 900 650" className="h-full w-full" aria-hidden="true">
-                          <rect width="900" height="650" fill="#fff" />
-                          <Outline id={item.id} />
-                        </svg>
-                      </span>
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate text-sm font-black">{item.title}</span>
-                        <span className="block text-xs text-muted-foreground">{item.level}</span>
-                      </span>
-                      {featured && <span className="rounded-full bg-primary/10 px-2 py-1 text-[10px] font-black text-primary">ΣΗΜΕΡΑ</span>}
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div className="mt-6 rounded-2xl bg-primary/5 p-4">
-                <p className="text-xs font-black text-primary">Μικρή υπενθύμιση</p>
-                <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                  Δεν υπάρχει «σωστό» χρώμα. Στόχος είναι το παιδί να πειραματίζεται, να επιλέγει και να χαίρεται τη δημιουργία.
-                </p>
-              </div>
-            </aside>
+                <div className="mt-5 rounded-2xl bg-primary/5 p-4">
+                  <p className="text-xs font-black text-primary">Μικρή υπενθύμιση</p>
+                  <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                    Δεν υπάρχει «σωστό» χρώμα. Το παιδί επιλέγει, πειραματίζεται και δημιουργεί ελεύθερα.
+                  </p>
+                </div>
+              </aside>
+            </div>
           </div>
         </div>
       </section>
