@@ -286,7 +286,7 @@ function Outline({ id }: { id: string }) {
     <ellipse {...common} cx="450" cy="365" rx="70" ry="50"/>
     <circle cx="450" cy="350" r="12" fill="#111"/>
     <path {...common} d="M330 480 Q285 545 335 585 M570 480 Q615 545 565 585"/>
-    ${id === "pisipouk-easy" ? <path {...common} d="M330 140 Q450 55 570 140 Q500 110 450 120 Q400 110 330 140Z"/> : null}
+    {id === "pisipouk-easy" ? <path {...common} d="M330 140 Q450 55 570 140 Q500 110 450 120 Q400 110 330 140Z"/> : null}
   </>;
 
   if (id === "dino") return <>
