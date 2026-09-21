@@ -30,26 +30,56 @@ type Design = {
 };
 
 const DESIGNS: Design[] = [
+  // 2–3: μεγάλα, καθαρά αντικείμενα
   { id: "sun", title: "Ήλιος", emoji: "☀️", age: "2–3", level: "Εύκολο" },
   { id: "apple", title: "Μήλο", emoji: "🍎", age: "2–3", level: "Εύκολο" },
   { id: "balloon", title: "Μπαλόνι", emoji: "🎈", age: "2–3", level: "Εύκολο" },
   { id: "cat", title: "Γατούλα", emoji: "🐱", age: "2–3", level: "Εύκολο" },
   { id: "fish", title: "Ψαράκι", emoji: "🐠", age: "2–3", level: "Εύκολο" },
   { id: "flower", title: "Λουλούδι", emoji: "🌼", age: "2–3", level: "Εύκολο" },
+  { id: "duck", title: "Παπάκι", emoji: "🐤", age: "2–3", level: "Εύκολο" },
+  { id: "car", title: "Αυτοκινητάκι", emoji: "🚗", age: "2–3", level: "Εύκολο" },
+  { id: "cloud", title: "Σύννεφο & βροχή", emoji: "🌧️", age: "2–3", level: "Εύκολο" },
+  { id: "star", title: "Αστεράκι", emoji: "⭐", age: "2–3", level: "Εύκολο" },
+  { id: "house", title: "Σπιτάκι", emoji: "🏠", age: "2–3", level: "Εύκολο" },
+  { id: "icecream", title: "Παγωτό", emoji: "🍦", age: "2–3", level: "Εύκολο" },
+  { id: "turtle", title: "Χελωνίτσα", emoji: "🐢", age: "2–3", level: "Εύκολο" },
+  { id: "bear", title: "Αρκουδάκι", emoji: "🧸", age: "2–3", level: "Εύκολο" },
+  { id: "pisipouk-easy", title: "Ο Πισιπούκ", emoji: "🐻", age: "2–3", level: "Εύκολο" },
 
+  // 4–5: μικρές σκηνές και περισσότερα στοιχεία
   { id: "bunny", title: "Κουνελάκι", emoji: "🐰", age: "4–5", level: "Μεσαίο" },
   { id: "elephant", title: "Ελεφαντάκι", emoji: "🐘", age: "4–5", level: "Μεσαίο" },
   { id: "train", title: "Τρενάκι", emoji: "🚂", age: "4–5", level: "Μεσαίο" },
   { id: "firetruck", title: "Πυροσβεστικό", emoji: "🚒", age: "4–5", level: "Μεσαίο" },
   { id: "unicorn", title: "Μονόκερος", emoji: "🦄", age: "4–5", level: "Μεσαίο" },
   { id: "butterfly", title: "Πεταλούδα", emoji: "🦋", age: "4–5", level: "Μεσαίο" },
+  { id: "dino", title: "Δεινόσαυρος", emoji: "🦕", age: "4–5", level: "Μεσαίο" },
+  { id: "rocket", title: "Πύραυλος", emoji: "🚀", age: "4–5", level: "Μεσαίο" },
+  { id: "seabed", title: "Μικρός βυθός", emoji: "🐟", age: "4–5", level: "Μεσαίο" },
+  { id: "fruit-basket", title: "Καλάθι με φρούτα", emoji: "🍓", age: "4–5", level: "Μεσαίο" },
+  { id: "bee-garden", title: "Μέλισσα στον κήπο", emoji: "🐝", age: "4–5", level: "Μεσαίο" },
+  { id: "airplane", title: "Αεροπλανάκι", emoji: "✈️", age: "4–5", level: "Μεσαίο" },
+  { id: "boat", title: "Καραβάκι", emoji: "⛵", age: "4–5", level: "Μεσαίο" },
+  { id: "pisipouk-balloon", title: "Πισιπούκ με μπαλόνι", emoji: "🐻", age: "4–5", level: "Μεσαίο" },
+  { id: "pisipouk-garden", title: "Πισιπούκ στον κήπο", emoji: "🐻", age: "4–5", level: "Μεσαίο" },
 
+  // 5–6: σύνθετες σκηνές / περισσότερες περιοχές
   { id: "dino-scene", title: "Δεινόσαυρος στο δάσος", emoji: "🦕", age: "5–6", level: "Πιο λεπτομερές" },
   { id: "space-scene", title: "Διάστημα & πλανήτες", emoji: "🚀", age: "5–6", level: "Πιο λεπτομερές" },
   { id: "farm-scene", title: "Αγρόκτημα", emoji: "🚜", age: "5–6", level: "Πιο λεπτομερές" },
   { id: "ocean-scene", title: "Βυθός", emoji: "🐙", age: "5–6", level: "Πιο λεπτομερές" },
   { id: "castle-scene", title: "Κάστρο & ουράνιο τόξο", emoji: "🏰", age: "5–6", level: "Πιο λεπτομερές" },
   { id: "garden-scene", title: "Κήπος με έντομα", emoji: "🌻", age: "5–6", level: "Πιο λεπτομερές" },
+  { id: "forest-scene", title: "Ζωάκια στο δάσος", emoji: "🦊", age: "5–6", level: "Πιο λεπτομερές" },
+  { id: "construction-scene", title: "Εργοτάξιο", emoji: "🚧", age: "5–6", level: "Πιο λεπτομερές" },
+  { id: "park-scene", title: "Παιχνίδι στο πάρκο", emoji: "🛝", age: "5–6", level: "Πιο λεπτομερές" },
+  { id: "classroom-scene", title: "Η τάξη μας", emoji: "🎨", age: "5–6", level: "Πιο λεπτομερές" },
+  { id: "beach-scene", title: "Μέρα στην παραλία", emoji: "🏖️", age: "5–6", level: "Πιο λεπτομερές" },
+  { id: "city-scene", title: "Μικρή πόλη", emoji: "🏘️", age: "5–6", level: "Πιο λεπτομερές" },
+  { id: "weather-scene", title: "Ο καιρός", emoji: "🌦️", age: "5–6", level: "Πιο λεπτομερές" },
+  { id: "pisipouk-class", title: "Ο Πισιπούκ στην τάξη", emoji: "🐻", age: "5–6", level: "Πιο λεπτομερές" },
+  { id: "pisipouk-adventure", title: "Η περιπέτεια του Πισιπούκ", emoji: "🐻", age: "5–6", level: "Πιο λεπτομερές" },
 ];
 
 const common = {
@@ -225,7 +255,7 @@ function VirtualPreschool() {
     });
   }, [daySeed]);
 
-  const [designId, setDesignId] = useState(dailyChoices[0].id);
+  const [designId, setDesignId] = useState(dailyChoices[0].id);\n  const [selectedAge, setSelectedAge] = useState<Design["age"]>(dailyChoices[0].age);
   const [color, setColor] = useState(COLORS[0]);
   const [brushSize, setBrushSize] = useState(24);
   const [erasing, setErasing] = useState(false);
@@ -247,7 +277,9 @@ function VirtualPreschool() {
   };
 
   const pickDesign = (id: string) => {
+    const nextDesign = DESIGNS.find((d) => d.id === id);
     setDesignId(id);
+    if (nextDesign) setSelectedAge(nextDesign.age);
     clearCanvas();
     setErasing(false);
   };
@@ -428,45 +460,62 @@ function VirtualPreschool() {
               <div className="flex items-center gap-2">
                 <Sparkles className="h-5 w-5 text-primary"/>
                 <div>
-                  <h2 className="font-black">Σημερινές ζωγραφιές</h2>
-                  <p className="text-xs text-muted-foreground">2 επιλογές από κάθε ηλικιακή ομάδα</p>
+                  <h2 className="font-black">Βιβλιοθήκη ζωγραφικής</h2>
+                  <p className="text-xs text-muted-foreground">45 σχέδια · 15 για κάθε ηλικιακή ομάδα</p>
                 </div>
               </div>
 
-              {(["2–3","4–5","5–6"] as const).map((age) => (
-                <div key={age} className="mt-6">
-                  <div className="mb-2 flex items-center justify-between">
-                    <h3 className="text-sm font-black">{age} ετών</h3>
-                    <span className="text-xs text-muted-foreground">
-                      {age === "2–3" ? "Εύκολα" : age === "4–5" ? "Μεσαία" : "Πιο λεπτομερή"}
-                    </span>
-                  </div>
-                  <div className="grid gap-2">
-                    {dailyChoices.filter((item) => item.age === age).map((item) => (
-                      <button
-                        key={item.id}
-                        type="button"
-                        onClick={() => pickDesign(item.id)}
-                        className={
-                          "flex w-full items-center gap-3 rounded-2xl border p-3 text-left transition-all " +
-                          (designId === item.id
-                            ? "border-primary bg-primary/10 ring-2 ring-primary/15"
-                            : "bg-background hover:border-primary/40")
-                        }
-                      >
-                        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-muted text-2xl">{item.emoji}</span>
-                        <span className="min-w-0">
-                          <span className="block truncate text-sm font-black">{item.title}</span>
-                          <span className="block text-xs text-muted-foreground">{item.level}</span>
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              ))}
+              <div className="mt-5 grid grid-cols-3 gap-2">
+                {(["2–3","4–5","5–6"] as const).map((age) => (
+                  <button
+                    key={age}
+                    type="button"
+                    onClick={() => setSelectedAge(age)}
+                    className={
+                      "rounded-xl border px-2 py-3 text-sm font-black transition-all " +
+                      (selectedAge === age ? "border-primary bg-primary/10 text-primary ring-2 ring-primary/15" : "bg-background")
+                    }
+                  >
+                    {age}
+                  </button>
+                ))}
+              </div>
+
+              <div className="mt-5 flex items-center justify-between">
+                <h3 className="text-sm font-black">{selectedAge} ετών</h3>
+                <span className="text-xs text-muted-foreground">
+                  {selectedAge === "2–3" ? "Εύκολα" : selectedAge === "4–5" ? "Μεσαία" : "Πιο λεπτομερή"}
+                </span>
+              </div>
+
+              <div className="mt-3 grid gap-2">
+                {DESIGNS.filter((item) => item.age === selectedAge).map((item) => {
+                  const featured = dailyChoices.some((d) => d.id === item.id);
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => pickDesign(item.id)}
+                      className={
+                        "flex w-full items-center gap-3 rounded-2xl border p-3 text-left transition-all " +
+                        (designId === item.id
+                          ? "border-primary bg-primary/10 ring-2 ring-primary/15"
+                          : "bg-background hover:border-primary/40")
+                      }
+                    >
+                      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-muted text-2xl">{item.emoji}</span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-sm font-black">{item.title}</span>
+                        <span className="block text-xs text-muted-foreground">{item.level}</span>
+                      </span>
+                      {featured && <span className="rounded-full bg-primary/10 px-2 py-1 text-[10px] font-black text-primary">ΣΗΜΕΡΑ</span>}
+                    </button>
+                  );
+                })}
+              </div>
 
               <p className="mt-6 text-xs leading-5 text-muted-foreground">
-                Η λίστα αλλάζει κάθε μέρα αυτόματα. Τα σχέδια για 5–6 ετών έχουν περισσότερα στοιχεία και μικρότερες περιοχές για πιο απαιτητική ζωγραφική.
+                Κάθε ηλικιακή ομάδα έχει 15 επιλογές. Δύο από κάθε ομάδα επισημαίνονται καθημερινά ως προτάσεις, ενώ όλη η βιβλιοθήκη παραμένει διαθέσιμη.
               </p>
             </aside>
           </div>
