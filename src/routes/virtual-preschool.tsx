@@ -232,6 +232,213 @@ function Outline({ id }: { id: string }) {
     <path d="M60 155 H20 M170 155 H210 M115 100 V60" {...common} fill="none" strokeWidth={6}/>
   </>;
 
+  if (id === "duck") return <>
+    <ellipse {...common} cx="430" cy="340" rx="180" ry="120"/>
+    <circle {...common} cx="585" cy="285" r="85"/>
+    <path {...common} d="M655 285 L755 325 L655 350Z"/>
+    <circle cx="610" cy="260" r="9" fill="#111"/>
+    <path {...common} d="M300 445 Q260 515 305 545 M465 445 Q430 520 475 550"/>
+  </>;
+
+  if (id === "car") return <>
+    <path {...common} d="M190 395 L245 285 H575 L680 395 V485 H190Z"/>
+    <path {...common} d="M315 285 L380 205 H520 L575 285Z"/>
+    <circle {...common} cx="300" cy="500" r="62"/><circle {...common} cx="575" cy="500" r="62"/>
+    <rect {...common} x="385" y="225" width="115" height="60" rx="10"/>
+  </>;
+
+  if (id === "cloud") return <>
+    <path {...common} d="M255 330 Q265 245 350 250 Q390 165 485 220 Q590 200 615 295 Q705 300 705 380 H230 Q205 345 255 330Z"/>
+    <path d="M300 430 L275 500 M390 430 L365 500 M480 430 L455 500 M570 430 L545 500" {...common} fill="none"/>
+  </>;
+
+  if (id === "star") return <>
+    <path {...common} d="M450 105 L500 245 L650 250 L530 340 L575 485 L450 400 L325 485 L370 340 L250 250 L400 245Z"/>
+    <circle cx="410" cy="285" r="10" fill="#111"/><circle cx="490" cy="285" r="10" fill="#111"/>
+    <path d="M410 340 Q450 375 490 340" {...common} fill="none" strokeWidth={6}/>
+  </>;
+
+  if (id === "house") return <>
+    <path {...common} d="M210 320 L450 125 L690 320Z"/>
+    <rect {...common} x="255" y="320" width="390" height="255"/>
+    <rect {...common} x="400" y="420" width="100" height="155"/>
+    <rect {...common} x="305" y="370" width="75" height="75"/><rect {...common} x="520" y="370" width="75" height="75"/>
+  </>;
+
+  if (id === "icecream") return <>
+    <circle {...common} cx="450" cy="220" r="115"/>
+    <path {...common} d="M340 315 H560 L450 575Z"/>
+    <path d="M385 365 L520 500 M515 365 L380 500" {...common} fill="none" strokeWidth={5}/>
+  </>;
+
+  if (id === "turtle") return <>
+    <ellipse {...common} cx="430" cy="340" rx="210" ry="140"/>
+    <circle {...common} cx="655" cy="335" r="70"/>
+    <circle cx="680" cy="315" r="8" fill="#111"/>
+    <path {...common} d="M300 230 Q260 180 225 230 M300 450 Q255 505 220 455 M540 225 Q585 175 620 225 M535 455 Q585 510 620 455"/>
+    <path d="M350 260 L510 420 M510 260 L350 420 M430 210 V470 M225 340 L635 340" {...common} fill="none" strokeWidth={5}/>
+  </>;
+
+  if (id === "bear" || id === "pisipouk-easy") return <>
+    <circle {...common} cx="335" cy="185" r="70"/><circle {...common} cx="565" cy="185" r="70"/>
+    <ellipse {...common} cx="450" cy="330" rx="190" ry="175"/>
+    <circle cx="390" cy="300" r="10" fill="#111"/><circle cx="510" cy="300" r="10" fill="#111"/>
+    <ellipse {...common} cx="450" cy="365" rx="70" ry="50"/>
+    <circle cx="450" cy="350" r="12" fill="#111"/>
+    <path {...common} d="M330 480 Q285 545 335 585 M570 480 Q615 545 565 585"/>
+    ${id === "pisipouk-easy" ? <path {...common} d="M330 140 Q450 55 570 140 Q500 110 450 120 Q400 110 330 140Z"/> : null}
+  </>;
+
+  if (id === "dino") return <>
+    <path {...common} d="M190 465 Q170 330 245 260 Q315 190 430 210 Q520 105 655 140 Q755 170 730 255 Q710 305 630 305 L590 470 Q530 520 470 475 L425 390 Q380 445 315 460 L285 555 L215 555 L230 455Z"/>
+    <circle cx="665" cy="205" r="9" fill="#111"/>
+    <path d="M300 245 L335 185 L370 235 L410 170 L450 225 L495 165 L530 220" {...common} fill="none"/>
+  </>;
+
+  if (id === "rocket") return <>
+    <path {...common} d="M450 90 Q560 170 560 340 Q560 460 450 525 Q340 460 340 340 Q340 170 450 90Z"/>
+    <circle {...common} cx="450" cy="280" r="65"/>
+    <path {...common} d="M340 365 L255 450 L345 455 M560 365 L645 450 L555 455 M405 510 Q450 600 495 510"/>
+    <path d="M410 555 Q450 625 490 555" {...common} fill="none"/>
+  </>;
+
+  if (id === "seabed") return <>
+    <path d="M0 165 Q110 120 220 165 Q330 210 440 165 Q550 120 660 165 Q770 210 900 165" {...common} fill="none"/>
+    <ellipse {...common} cx="390" cy="340" rx="180" ry="105"/><path {...common} d="M565 340 L680 260 L680 420Z"/>
+    <circle cx="335" cy="315" r="9" fill="#111"/>
+    <path {...common} d="M145 560 Q175 470 210 560 M235 560 Q265 455 300 560 M700 560 Q735 465 770 560"/>
+  </>;
+
+  if (id === "fruit-basket") return <>
+    <path {...common} d="M250 360 Q450 280 650 360 L600 545 H300Z"/>
+    <circle {...common} cx="340" cy="315" r="70"/><circle {...common} cx="450" cy="280" r="75"/><circle {...common} cx="560" cy="315" r="70"/>
+    <path d="M450 205 Q445 155 485 125 M340 250 Q330 210 360 185 M560 250 Q575 205 610 190" {...common} fill="none"/>
+    <path d="M300 410 H600 M320 465 H580" {...common} fill="none" strokeWidth={5}/>
+  </>;
+
+  if (id === "bee-garden") return <>
+    <ellipse {...common} cx="445" cy="285" rx="110" ry="75"/>
+    <ellipse {...common} cx="365" cy="230" rx="70" ry="95"/><ellipse {...common} cx="525" cy="230" rx="70" ry="95"/>
+    <path d="M380 250 H510 M375 300 H515" {...common} fill="none" strokeWidth={6}/>
+    <circle cx="410" cy="270" r="8" fill="#111"/><circle cx="480" cy="270" r="8" fill="#111"/>
+    <circle {...common} cx="250" cy="470" r="50"/><circle {...common} cx="650" cy="465" r="50"/>
+    <path d="M250 520 V590 M650 515 V590" {...common} fill="none"/>
+  </>;
+
+  if (id === "airplane") return <>
+    <path {...common} d="M110 335 L390 300 L560 145 L620 160 L545 300 L760 325 Q815 335 760 365 L545 370 L620 505 L560 520 L390 380 L110 350Z"/>
+    <circle {...common} cx="500" cy="335" r="12"/><circle {...common} cx="560" cy="335" r="12"/><circle {...common} cx="620" cy="335" r="12"/>
+  </>;
+
+  if (id === "boat") return <>
+    <path {...common} d="M220 420 H680 Q640 535 450 560 Q260 535 220 420Z"/>
+    <path d="M450 420 V135" {...common} fill="none"/>
+    <path {...common} d="M455 150 L455 375 L640 375Z"/>
+    <path {...common} d="M445 175 L445 360 L300 360Z"/>
+    <path d="M95 585 Q220 535 345 585 Q470 535 595 585 Q720 535 825 585" {...common} fill="none"/>
+  </>;
+
+  if (id === "pisipouk-balloon") return <>
+    <circle {...common} cx="335" cy="185" r="60"/><circle {...common} cx="515" cy="185" r="60"/>
+    <ellipse {...common} cx="425" cy="325" rx="160" ry="150"/>
+    <circle cx="380" cy="300" r="9" fill="#111"/><circle cx="470" cy="300" r="9" fill="#111"/>
+    <ellipse {...common} cx="425" cy="355" rx="60" ry="45"/>
+    <path {...common} d="M330 455 Q290 520 330 565 M520 455 Q560 520 520 565"/>
+    <ellipse {...common} cx="700" cy="190" rx="80" ry="105"/>
+    <path d="M700 295 Q650 390 545 420" {...common} fill="none"/>
+  </>;
+
+  if (id === "pisipouk-garden") return <>
+    <circle {...common} cx="330" cy="190" r="55"/><circle {...common} cx="500" cy="190" r="55"/>
+    <ellipse {...common} cx="415" cy="325" rx="150" ry="140"/>
+    <circle cx="375" cy="300" r="9" fill="#111"/><circle cx="455" cy="300" r="9" fill="#111"/>
+    <ellipse {...common} cx="415" cy="350" rx="55" ry="42"/>
+    <path {...common} d="M320 455 Q280 520 320 565 M510 455 Q550 520 510 565"/>
+    <circle {...common} cx="700" cy="360" r="45"/><path d="M700 405 V575" {...common} fill="none"/>
+    <path {...common} d="M630 575 Q665 515 700 575 Q735 515 770 575Z"/>
+  </>;
+
+  if (id === "forest-scene") return <>
+    <path {...common} d="M130 565 Q160 430 210 565Z M690 565 Q730 400 780 565Z"/>
+    <circle {...common} cx="210" cy="250" r="95"/><circle {...common} cx="730" cy="235" r="100"/>
+    <path {...common} d="M330 430 Q365 330 410 430 Q455 330 500 430 Q545 330 590 430 L575 565 H345Z"/>
+    <circle {...common} cx="455" cy="395" r="42"/><circle cx="440" cy="385" r="7" fill="#111"/><circle cx="470" cy="385" r="7" fill="#111"/>
+    <path d="M80 590 Q260 540 440 590 Q620 540 830 590" {...common} fill="none"/>
+  </>;
+
+  if (id === "construction-scene") return <>
+    <rect {...common} x="160" y="390" width="360" height="150" rx="18"/>
+    <circle {...common} cx="240" cy="555" r="58"/><circle {...common} cx="455" cy="555" r="58"/>
+    <path {...common} d="M420 390 L565 210 L620 235 L520 390Z"/>
+    <path {...common} d="M610 235 L740 300 L680 405 L560 350Z"/>
+    <path {...common} d="M120 590 H780"/>
+    <path {...common} d="M690 530 L735 440 L780 530Z"/>
+  </>;
+
+  if (id === "park-scene") return <>
+    <path {...common} d="M130 560 V300 H330 V560 M130 360 H330"/>
+    <path d="M175 360 V520 M285 360 V520" {...common} fill="none"/>
+    <path {...common} d="M470 565 L540 330 L610 565"/>
+    <path {...common} d="M540 330 Q660 360 700 465 H570"/>
+    <circle {...common} cx="770" cy="210" r="90"/><path d="M770 300 V560" {...common} fill="none"/>
+    <path d="M60 590 Q260 545 460 590 Q660 545 840 590" {...common} fill="none"/>
+  </>;
+
+  if (id === "classroom-scene") return <>
+    <rect {...common} x="170" y="115" width="560" height="220" rx="12"/>
+    <rect {...common} x="210" y="405" width="220" height="110"/><rect {...common} x="500" y="405" width="220" height="110"/>
+    <path {...common} d="M250 515 V585 M390 515 V585 M540 515 V585 M680 515 V585"/>
+    <circle {...common} cx="275" cy="245" r="42"/><circle {...common} cx="450" cy="245" r="42"/><circle {...common} cx="625" cy="245" r="42"/>
+    <path d="M230 160 H670 M230 200 H600" {...common} fill="none" strokeWidth={5}/>
+  </>;
+
+  if (id === "beach-scene") return <>
+    <circle {...common} cx="150" cy="155" r="65"/>
+    <path d="M0 355 Q150 300 300 355 Q450 410 600 355 Q750 300 900 355" {...common} fill="none"/>
+    <path {...common} d="M300 530 L360 300 L420 530"/>
+    <path {...common} d="M360 300 Q500 320 560 450 H390"/>
+    <path {...common} d="M620 485 Q680 420 740 485 Q770 530 710 565 Q650 585 605 545Z"/>
+    <path {...common} d="M100 585 Q280 530 450 585 Q620 530 820 585"/>
+  </>;
+
+  if (id === "city-scene") return <>
+    <rect {...common} x="90" y="300" width="180" height="270"/><rect {...common} x="300" y="220" width="210" height="350"/><rect {...common} x="540" y="330" width="220" height="240"/>
+    <rect {...common} x="130" y="350" width="50" height="50"/><rect {...common} x="205" y="350" width="50" height="50"/>
+    <rect {...common} x="350" y="275" width="55" height="55"/><rect {...common} x="430" y="275" width="55" height="55"/>
+    <rect {...common} x="585" y="380" width="55" height="55"/><rect {...common} x="675" y="380" width="55" height="55"/>
+    <path {...common} d="M40 585 H840"/>
+  </>;
+
+  if (id === "weather-scene") return <>
+    <circle {...common} cx="165" cy="170" r="65"/>
+    <path {...common} d="M365 195 Q375 125 445 135 Q480 80 545 120 Q610 110 625 175 Q690 180 690 240 H345 Q325 210 365 195Z"/>
+    <path d="M390 285 L365 350 M470 285 L445 350 M550 285 L525 350 M630 285 L605 350" {...common} fill="none"/>
+    <path {...common} d="M210 520 Q305 410 400 520 Q500 410 590 520 Q680 430 780 520"/>
+    <path d="M165 80 V35 M80 170 H35 M250 170 H295" {...common} fill="none" strokeWidth={6}/>
+  </>;
+
+  if (id === "pisipouk-class") return <>
+    <circle {...common} cx="300" cy="185" r="55"/><circle {...common} cx="470" cy="185" r="55"/>
+    <ellipse {...common} cx="385" cy="320" rx="150" ry="140"/>
+    <circle cx="345" cy="295" r="9" fill="#111"/><circle cx="425" cy="295" r="9" fill="#111"/>
+    <ellipse {...common} cx="385" cy="345" rx="55" ry="42"/>
+    <rect {...common} x="555" y="160" width="220" height="170"/>
+    <path d="M585 210 H745 M585 250 H700" {...common} fill="none" strokeWidth={5}/>
+    <rect {...common} x="240" y="485" width="450" height="85" rx="15"/>
+    <circle {...common} cx="300" cy="530" r="22"/><circle {...common} cx="360" cy="530" r="22"/><circle {...common} cx="420" cy="530" r="22"/>
+  </>;
+
+  if (id === "pisipouk-adventure") return <>
+    <circle {...common} cx="290" cy="190" r="55"/><circle {...common} cx="460" cy="190" r="55"/>
+    <ellipse {...common} cx="375" cy="325" rx="150" ry="140"/>
+    <circle cx="335" cy="300" r="9" fill="#111"/><circle cx="415" cy="300" r="9" fill="#111"/>
+    <ellipse {...common} cx="375" cy="350" rx="55" ry="42"/>
+    <path {...common} d="M610 565 Q650 410 700 565Z"/>
+    <circle {...common} cx="720" cy="230" r="90"/>
+    <path {...common} d="M560 500 Q620 420 680 500 Q740 420 800 500 L800 590 H560Z"/>
+    <path {...common} d="M105 590 Q280 530 455 590 Q630 530 825 590"/>
+  </>;
+
   return <>
     <circle {...common} cx="450" cy="245" r="62"/>
     {Array.from({length:10}).map((_,i)=>{const a=i*Math.PI/5;const x=450+Math.cos(a)*115;const y=245+Math.sin(a)*115;return <ellipse key={i} {...common} cx={x} cy={y} rx="40" ry="70" transform={`rotate(${i*36} ${x} ${y})`}/>})}
