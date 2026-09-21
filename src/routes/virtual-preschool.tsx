@@ -21,6 +21,27 @@ export const Route = createFileRoute("/virtual-preschool")({
 
 const COLORS = ["#ef4444","#f97316","#facc15","#22c55e","#06b6d4","#3b82f6","#8b5cf6","#ec4899","#8b5e3c","#111827"];
 
+const AGE_META = {
+  "2–3": {
+    title: "Τα πρώτα μου χρώματα",
+    description: "Μεγάλα σχήματα, παχιά περιγράμματα και ένα καθαρό θέμα.",
+    accent: "from-rose-100 via-pink-50 to-orange-50",
+    emoji: "🧸",
+  },
+  "4–5": {
+    title: "Παίζω με ιστορίες",
+    description: "Περισσότερα αντικείμενα, χαρακτήρες και μικρές σκηνές.",
+    accent: "from-sky-100 via-cyan-50 to-indigo-50",
+    emoji: "🚀",
+  },
+  "5–6": {
+    title: "Δημιουργώ ολόκληρες σκηνές",
+    description: "Πιο σύνθετες εικόνες, φόντο και πολλές περιοχές για χρώμα.",
+    accent: "from-emerald-100 via-lime-50 to-teal-50",
+    emoji: "🏰",
+  },
+} as const;
+
 type Design = {
   id: string;
   title: string;
@@ -582,12 +603,99 @@ function VirtualPreschool() {
     <SiteLayout>
       <section className="py-10 sm:py-14">
         <div className="mx-auto max-w-7xl px-4 lg:px-8">
-          <div className="text-center">
-            <p className="section-kicker">Εικονικός Παιδικός Σταθμός</p>
-            <h1 className="mt-3 text-4xl font-black tracking-tight sm:text-5xl">Ζωγράφισε με το δάχτυλό σου</h1>
-            <p className="mx-auto mt-4 max-w-2xl text-lg leading-8 text-muted-foreground">
-              45 σχέδια οργανωμένα αναπτυξιακά: πολύ καθαρές φόρμες για 2–3 ετών, περισσότερα στοιχεία για 4–5 και ολοκληρωμένες σκηνές για 5–6 ετών.
-            </p>
+          <div className="overflow-hidden rounded-[2.5rem] border bg-gradient-to-br from-amber-50 via-white to-sky-50 p-6 shadow-sm sm:p-9">
+            <div className="mx-auto max-w-4xl text-center">
+              <div className="flex flex-wrap items-center justify-center gap-2">
+                <span className="rounded-full bg-white px-3 py-1 text-xs font-black text-primary shadow-sm">🎨 ΔΩΡΕΑΝ</span>
+                <span className="rounded-full bg-white px-3 py-1 text-xs font-black text-foreground shadow-sm">Χωρίς login</span>
+                <span className="rounded-full bg-white px-3 py-1 text-xs font-black text-foreground shadow-sm">2–6 ετών</span>
+              </div>
+              <p className="section-kicker mt-5">Εικονικός Παιδικός Σταθμός</p>
+              <h1 className="mt-3 text-4xl font-black tracking-tight sm:text-6xl">
+                Ζωγράφισε, παίξε, δημιούργησε
+              </h1>
+              <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">
+                45 σχέδια οργανωμένα ανά ηλικία, με κανονικό πινέλο, γόμα, αποθήκευση και εκτύπωση. Κάθε παιδί ξεκινά από το επίπεδο που του ταιριάζει.
+              </p>
+            </div>
+
+            <div className="mt-7 grid gap-3 md:grid-cols-3">
+              {(["2–3","4–5","5–6"] as const).map((age) => {
+                const meta = AGE_META[age];
+                const active = selectedAge === age;
+                return (
+                  <button
+                    key={age}
+                    type="button"
+                    onClick={() => setSelectedAge(age)}
+                    className={
+                      "rounded-[1.6rem] border bg-gradient-to-br p-5 text-left transition-all " +
+                      meta.accent +
+                      (active ? " ring-2 ring-primary ring-offset-2" : " hover:-translate-y-0.5 hover:shadow-md")
+                    }
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="text-3xl">{meta.emoji}</span>
+                      <span className="rounded-full bg-white/90 px-3 py-1 text-sm font-black">{age} ετών</span>
+                    </div>
+                    <h2 className="mt-4 text-lg font-black">{meta.title}</h2>
+                    <p className="mt-1 text-sm leading-6 text-muted-foreground">{meta.description}</p>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="mt-7 rounded-[1.6rem] border bg-white/80 p-4">
+              <div className="grid gap-3 text-center sm:grid-cols-4">
+                {[
+                  ["1", "Διάλεξε σχέδιο"],
+                  ["2", "Ζωγράφισε"],
+                  ["3", "Αποθήκευσε"],
+                  ["4", "Εκτύπωσε"],
+                ].map(([step, label]) => (
+                  <div key={step} className="flex items-center justify-center gap-2 rounded-xl bg-background px-3 py-3">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-xs font-black text-primary-foreground">{step}</span>
+                    <span className="text-sm font-black">{label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-8">
+            <div className="mb-4 flex items-end justify-between gap-4">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-primary">Προτάσεις της ημέρας</p>
+                <h2 className="mt-1 text-2xl font-black">Ξεκίνα με μία από τις σημερινές ζωγραφιές</h2>
+              </div>
+              <span className="hidden text-sm text-muted-foreground sm:block">6 επιλογές · 2 ανά ηλικία</span>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+              {dailyChoices.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => pickDesign(item.id)}
+                  className={
+                    "group rounded-2xl border bg-card p-3 text-left transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md " +
+                    (designId === item.id ? "border-primary ring-2 ring-primary/15" : "")
+                  }
+                >
+                  <div className="aspect-[4/3] overflow-hidden rounded-xl border bg-white p-1.5">
+                    <svg viewBox="0 0 900 650" className="h-full w-full" aria-hidden="true">
+                      <Outline id={item.id} />
+                    </svg>
+                  </div>
+                  <div className="mt-2 flex items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-black">{item.title}</p>
+                      <p className="text-xs text-muted-foreground">{item.age} ετών</p>
+                    </div>
+                    <span className="text-lg transition-transform group-hover:rotate-6">{item.emoji}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="mt-8 grid gap-6 xl:grid-cols-[1fr_380px] xl:items-start">
@@ -625,6 +733,7 @@ function VirtualPreschool() {
                   <div>
                     <p className="text-sm font-black text-primary">{current.age} ετών · {current.level}</p>
                     <h2 className="mt-1 text-2xl font-black">{current.emoji} {current.title}</h2>
+                    <p className="mt-1 text-sm text-muted-foreground">{AGE_META[current.age].description}</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <Paintbrush className="h-5 w-5 text-primary"/>
@@ -676,12 +785,15 @@ function VirtualPreschool() {
             </div>
 
             <aside className="rounded-[2rem] border bg-card p-5 xl:sticky xl:top-24">
-              <div className="flex items-center gap-2">
-                <Sparkles className="h-5 w-5 text-primary"/>
-                <div>
-                  <h2 className="font-black">Βιβλιοθήκη ζωγραφικής</h2>
-                  <p className="text-xs text-muted-foreground">45 σχέδια · 15 ανά ηλικία · αυξανόμενη λεπτομέρεια</p>
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="mt-0.5 h-5 w-5 text-primary"/>
+                  <div>
+                    <h2 className="font-black">Βιβλιοθήκη ζωγραφικής</h2>
+                    <p className="text-xs text-muted-foreground">45 σχέδια · 15 ανά ηλικία</p>
+                  </div>
                 </div>
+                <span className="rounded-full bg-primary/10 px-2.5 py-1 text-[10px] font-black text-primary">LIVE</span>
               </div>
 
               <div className="mt-5 rounded-2xl border bg-background/70 p-4">
@@ -745,9 +857,12 @@ function VirtualPreschool() {
                 })}
               </div>
 
-              <p className="mt-6 text-xs leading-5 text-muted-foreground">
-                Κάθε ηλικιακή ομάδα έχει 15 διαφορετικά σχέδια. Τα thumbnails δείχνουν το ίδιο το σχέδιο που θα ανοίξει στον καμβά, ενώ δύο από κάθε ομάδα επισημαίνονται καθημερινά ως προτάσεις.
-              </p>
+              <div className="mt-6 rounded-2xl bg-primary/5 p-4">
+                <p className="text-xs font-black text-primary">Μικρή υπενθύμιση</p>
+                <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                  Δεν υπάρχει «σωστό» χρώμα. Στόχος είναι το παιδί να πειραματίζεται, να επιλέγει και να χαίρεται τη δημιουργία.
+                </p>
+              </div>
             </aside>
           </div>
         </div>
