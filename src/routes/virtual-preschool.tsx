@@ -82,15 +82,20 @@ const DESIGNS: Design[] = [
   { id: "pisipouk-adventure", title: "Η περιπέτεια του Πισιπούκ", emoji: "🐻", age: "5–6", level: "Πιο λεπτομερές" },
 ];
 
-const common = {
-  fill: "#fff",
-  stroke: "#111",
-  strokeWidth: 8,
-  strokeLinecap: "round" as const,
-  strokeLinejoin: "round" as const,
+const outlineStyle = (id: string) => {
+  const age = DESIGNS.find((design) => design.id === id)?.age ?? "4–5";
+  const strokeWidth = age === "2–3" ? 9 : age === "4–5" ? 6.5 : 5;
+  return {
+    fill: "#fff",
+    stroke: "#111827",
+    strokeWidth,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+  };
 };
 
 function Outline({ id }: { id: string }) {
+  const common = outlineStyle(id);
   if (id === "sun") return <>
     <circle {...common} cx="450" cy="325" r="130"/>
     {Array.from({length:12}).map((_,i)=>{const a=i*Math.PI/6;return <line key={i} x1={450+Math.cos(a)*180} y1={325+Math.sin(a)*180} x2={450+Math.cos(a)*245} y2={325+Math.sin(a)*245} {...common}/>})}
@@ -552,8 +557,8 @@ function VirtualPreschool() {
     const bg = new Image();
 
     bg.onload = () => {
-      ctx.drawImage(bg, 0, 0, 1200, 867);
       ctx.drawImage(paint, 0, 0, 1200, 867);
+      ctx.drawImage(bg, 0, 0, 1200, 867);
       ctx.fillStyle = "#333";
       ctx.font = "26px sans-serif";
       ctx.textAlign = "center";
@@ -581,7 +586,7 @@ function VirtualPreschool() {
             <p className="section-kicker">Εικονικός Παιδικός Σταθμός</p>
             <h1 className="mt-3 text-4xl font-black tracking-tight sm:text-5xl">Ζωγράφισε με το δάχτυλό σου</h1>
             <p className="mx-auto mt-4 max-w-2xl text-lg leading-8 text-muted-foreground">
-              Επιλογές για παιδιά 2–6 ετών, από πολύ απλά σχέδια μέχρι πιο λεπτομερείς σκηνές για τα μεγαλύτερα παιδιά.
+              45 σχέδια οργανωμένα αναπτυξιακά: πολύ καθαρές φόρμες για 2–3 ετών, περισσότερα στοιχεία για 4–5 και ολοκληρωμένες σκηνές για 5–6 ετών.
             </p>
           </div>
 
@@ -589,10 +594,6 @@ function VirtualPreschool() {
             <div className="min-w-0">
               <div className="print-area rounded-[2rem] border bg-white p-3 shadow-sm sm:p-5">
                 <div className="relative mx-auto aspect-[900/650] w-full max-w-4xl overflow-hidden rounded-[1.4rem] bg-white">
-                  <svg ref={svgRef} viewBox="0 0 900 650" className="absolute inset-0 h-full w-full" aria-label={`Σχέδιο: ${current.title}`}>
-                    <rect width="900" height="650" fill="#fff" />
-                    <Outline id={designId} />
-                  </svg>
                   <canvas
                     ref={canvasRef}
                     width={900}
@@ -602,9 +603,17 @@ function VirtualPreschool() {
                     onPointerUp={stopDraw}
                     onPointerCancel={stopDraw}
                     onPointerLeave={stopDraw}
-                    className="absolute inset-0 h-full w-full touch-none cursor-crosshair"
+                    className="absolute inset-0 z-10 h-full w-full touch-none cursor-crosshair"
                     aria-label="Καμβάς ζωγραφικής"
                   />
+                  <svg
+                    ref={svgRef}
+                    viewBox="0 0 900 650"
+                    className="pointer-events-none absolute inset-0 z-20 h-full w-full"
+                    aria-label={`Σχέδιο: ${current.title}`}
+                  >
+                    <Outline id={designId} />
+                  </svg>
                 </div>
                 <div className="hidden print:block pt-3 text-center text-sm font-bold text-gray-700">
                   Η ζωγραφιά μου στον Πισιπούκ - pisipouk.vercel.app
@@ -671,8 +680,15 @@ function VirtualPreschool() {
                 <Sparkles className="h-5 w-5 text-primary"/>
                 <div>
                   <h2 className="font-black">Βιβλιοθήκη ζωγραφικής</h2>
-                  <p className="text-xs text-muted-foreground">45 πραγματικά σχέδια · 15 για κάθε ηλικιακή ομάδα</p>
+                  <p className="text-xs text-muted-foreground">45 σχέδια · 15 ανά ηλικία · αυξανόμενη λεπτομέρεια</p>
                 </div>
+              </div>
+
+              <div className="mt-5 rounded-2xl border bg-background/70 p-4">
+                <p className="text-xs font-black uppercase tracking-[0.16em] text-primary">Ηλικιακή λογική</p>
+                <p className="mt-2 text-xs leading-5 text-muted-foreground">
+                  2–3: ένα μεγάλο θέμα και πολύ καθαρό περίγραμμα · 4–5: περισσότερα αντικείμενα και μικρές ιστορίες · 5–6: ολοκληρωμένες σκηνές με περισσότερες περιοχές για χρώμα.
+                </p>
               </div>
 
               <div className="mt-5 grid grid-cols-3 gap-2">
