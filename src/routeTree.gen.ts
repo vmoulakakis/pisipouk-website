@@ -170,6 +170,7 @@ export interface FileRouteTypes {
     | '/philosophy'
     | '/program'
     | '/safety-care'
+    | '/virtual-preschool'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -186,6 +187,7 @@ export interface FileRouteTypes {
     | '/philosophy'
     | '/program'
     | '/safety-care'
+    | '/virtual-preschool'
   id:
     | '__root__'
     | '/'
@@ -202,6 +204,7 @@ export interface FileRouteTypes {
     | '/philosophy'
     | '/program'
     | '/safety-care'
+    | '/virtual-preschool'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
