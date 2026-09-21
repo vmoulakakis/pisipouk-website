@@ -133,6 +133,7 @@ export interface FileRoutesByTo {
   '/philosophy': typeof PhilosophyRoute
   '/program': typeof ProgramRoute
   '/safety-care': typeof SafetyCareRoute
+  '/virtual-preschool': typeof VirtualPreschoolRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
