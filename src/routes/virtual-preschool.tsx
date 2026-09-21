@@ -439,7 +439,7 @@ function Outline({ id }: { id: string }) {
     <path {...common} d="M105 590 Q280 530 455 590 Q630 530 825 590"/>
   </>;
 
-  return <>
+  if (id === "garden-scene") return <>
     <circle {...common} cx="450" cy="245" r="62"/>
     {Array.from({length:10}).map((_,i)=>{const a=i*Math.PI/5;const x=450+Math.cos(a)*115;const y=245+Math.sin(a)*115;return <ellipse key={i} {...common} cx={x} cy={y} rx="40" ry="70" transform={`rotate(${i*36} ${x} ${y})`}/>})}
     <path {...common} d="M430 355 Q390 470 410 580 H490 Q510 470 470 355Z"/>
@@ -448,6 +448,8 @@ function Outline({ id }: { id: string }) {
     <circle {...common} cx="220" cy="410" r="32"/><path d="M220 378 V330 M188 410 H145 M252 410 H295" {...common} fill="none" strokeWidth={5}/>
     <path {...common} d="M670 365 Q715 320 760 365 Q785 410 740 450 Q695 465 655 430 Q625 390 670 365Z"/>
   </>;
+
+  return null;
 }
 
 function VirtualPreschool() {
@@ -582,7 +584,7 @@ function VirtualPreschool() {
             </p>
           </div>
 
-          <div className="mt-8 grid gap-6 xl:grid-cols-[1fr_330px] xl:items-start">
+          <div className="mt-8 grid gap-6 xl:grid-cols-[1fr_380px] xl:items-start">
             <div className="min-w-0">
               <div className="print-area rounded-[2rem] border bg-white p-3 shadow-sm sm:p-5">
                 <div className="relative mx-auto aspect-[900/650] w-full max-w-4xl overflow-hidden rounded-[1.4rem] bg-white">
@@ -668,7 +670,7 @@ function VirtualPreschool() {
                 <Sparkles className="h-5 w-5 text-primary"/>
                 <div>
                   <h2 className="font-black">Βιβλιοθήκη ζωγραφικής</h2>
-                  <p className="text-xs text-muted-foreground">45 σχέδια · 15 για κάθε ηλικιακή ομάδα</p>
+                  <p className="text-xs text-muted-foreground">45 πραγματικά σχέδια · 15 για κάθε ηλικιακή ομάδα</p>
                 </div>
               </div>
 
@@ -710,7 +712,12 @@ function VirtualPreschool() {
                           : "bg-background hover:border-primary/40")
                       }
                     >
-                      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-muted text-2xl">{item.emoji}</span>
+                      <span className="flex h-16 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl border bg-white p-1">
+                        <svg viewBox="0 0 900 650" className="h-full w-full" aria-hidden="true">
+                          <rect width="900" height="650" fill="#fff" />
+                          <Outline id={item.id} />
+                        </svg>
+                      </span>
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-sm font-black">{item.title}</span>
                         <span className="block text-xs text-muted-foreground">{item.level}</span>
@@ -722,7 +729,7 @@ function VirtualPreschool() {
               </div>
 
               <p className="mt-6 text-xs leading-5 text-muted-foreground">
-                Κάθε ηλικιακή ομάδα έχει 15 επιλογές. Δύο από κάθε ομάδα επισημαίνονται καθημερινά ως προτάσεις, ενώ όλη η βιβλιοθήκη παραμένει διαθέσιμη.
+                Κάθε ηλικιακή ομάδα έχει 15 διαφορετικά σχέδια. Τα thumbnails δείχνουν το ίδιο το σχέδιο που θα ανοίξει στον καμβά, ενώ δύο από κάθε ομάδα επισημαίνονται καθημερινά ως προτάσεις.
               </p>
             </aside>
           </div>
