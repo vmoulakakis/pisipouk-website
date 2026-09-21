@@ -23,7 +23,6 @@ import { Route as NutritionRouteImport } from './routes/nutrition'
 import { Route as PhilosophyRouteImport } from './routes/philosophy'
 import { Route as ProgramRouteImport } from './routes/program'
 import { Route as SafetyCareRouteImport } from './routes/safety-care'
-import { Route as VirtualPreschoolRouteImport } from './routes/virtual-preschool'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -95,11 +94,6 @@ const SafetyCareRoute = SafetyCareRouteImport.update({
   path: '/safety-care',
   getParentRoute: () => rootRouteImport,
 } as any)
-const VirtualPreschoolRoute = VirtualPreschoolRouteImport.update({
-  id: '/virtual-preschool',
-  path: '/virtual-preschool',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -116,7 +110,6 @@ export interface FileRoutesByFullPath {
   '/philosophy': typeof PhilosophyRoute
   '/program': typeof ProgramRoute
   '/safety-care': typeof SafetyCareRoute
-  '/virtual-preschool': typeof VirtualPreschoolRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -133,7 +126,6 @@ export interface FileRoutesByTo {
   '/philosophy': typeof PhilosophyRoute
   '/program': typeof ProgramRoute
   '/safety-care': typeof SafetyCareRoute
-  '/virtual-preschool': typeof VirtualPreschoolRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -151,7 +143,6 @@ export interface FileRoutesById {
   '/philosophy': typeof PhilosophyRoute
   '/program': typeof ProgramRoute
   '/safety-care': typeof SafetyCareRoute
-  '/virtual-preschool': typeof VirtualPreschoolRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -170,7 +161,6 @@ export interface FileRouteTypes {
     | '/philosophy'
     | '/program'
     | '/safety-care'
-    | '/virtual-preschool'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -187,7 +177,6 @@ export interface FileRouteTypes {
     | '/philosophy'
     | '/program'
     | '/safety-care'
-    | '/virtual-preschool'
   id:
     | '__root__'
     | '/'
@@ -204,7 +193,6 @@ export interface FileRouteTypes {
     | '/philosophy'
     | '/program'
     | '/safety-care'
-    | '/virtual-preschool'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -222,7 +210,6 @@ export interface RootRouteChildren {
   PhilosophyRoute: typeof PhilosophyRoute
   ProgramRoute: typeof ProgramRoute
   SafetyCareRoute: typeof SafetyCareRoute
-  VirtualPreschoolRoute: typeof VirtualPreschoolRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -325,13 +312,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SafetyCareRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/virtual-preschool': {
-      id: '/virtual-preschool'
-      path: '/virtual-preschool'
-      fullPath: '/virtual-preschool'
-      preLoaderRoute: typeof VirtualPreschoolRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -350,7 +330,6 @@ const rootRouteChildren: RootRouteChildren = {
   PhilosophyRoute: PhilosophyRoute,
   ProgramRoute: ProgramRoute,
   SafetyCareRoute: SafetyCareRoute,
-  VirtualPreschoolRoute: VirtualPreschoolRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
