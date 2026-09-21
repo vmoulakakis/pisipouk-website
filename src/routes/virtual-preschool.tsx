@@ -51,6 +51,39 @@ type Design = {
   level: "Εύκολο" | "Μεσαίο" | "Πιο λεπτομερές";
 };
 
+type Craft = {
+  id: string;
+  title: string;
+  emoji: string;
+  age: "2–3" | "4–5" | "5–6";
+  season: "Όλο τον χρόνο" | "Φθινόπωρο" | "Χριστούγεννα" | "Απόκριες" | "25η Μαρτίου" | "Πάσχα" | "Καλοκαίρι" | "28η Οκτωβρίου";
+  materials: string[];
+  steps: string[];
+};
+
+const CRAFTS: Craft[] = [
+  { id: "leaf-collage", title: "Κολάζ με φθινοπωρινά φύλλα", emoji: "🍂", age: "2–3", season: "Φθινόπωρο", materials: ["χαρτόνι", "φύλλα", "κόλλα"], steps: ["Μαζεύουμε φύλλα.", "Τα ακουμπάμε πάνω στο χαρτόνι.", "Κολλάμε ελεύθερα και δημιουργούμε ένα μεγάλο δέντρο."] },
+  { id: "paper-sun", title: "Ήλιος με χάρτινες ακτίνες", emoji: "☀️", age: "2–3", season: "Όλο τον χρόνο", materials: ["κίτρινο χαρτί", "κόλλα", "κηρομπογιές"], steps: ["Χρωματίζουμε έναν μεγάλο κύκλο.", "Κολλάμε χάρτινες λωρίδες γύρω του.", "Ζωγραφίζουμε ένα χαμογελαστό πρόσωπο."] },
+  { id: "apple-stamp", title: "Τυπώματα με μήλο", emoji: "🍎", age: "2–3", season: "Φθινόπωρο", materials: ["μήλο κομμένο από ενήλικα", "τέμπερα", "χαρτί"], steps: ["Ο ενήλικας κόβει το μήλο.", "Βουτάμε απαλά στην τέμπερα.", "Κάνουμε μεγάλα τυπώματα στο χαρτί."] },
+  { id: "easter-egg-stickers", title: "Πασχαλινό αυγό με χαρτάκια", emoji: "🥚", age: "2–3", season: "Πάσχα", materials: ["χαρτόνι", "χρωματιστά χαρτάκια", "κόλλα"], steps: ["Κόβουμε ένα μεγάλο αυγό.", "Σκίζουμε μικρά χρωματιστά χαρτάκια.", "Τα κολλάμε πάνω στο αυγό."] },
+  { id: "summer-fish", title: "Ψαράκι με πολύχρωμα λέπια", emoji: "🐟", age: "2–3", season: "Καλοκαίρι", materials: ["χάρτινο ψαράκι", "κύκλοι χαρτιού", "κόλλα"], steps: ["Διαλέγουμε χρώματα.", "Κολλάμε κύκλους σαν λέπια.", "Προσθέτουμε μάτι και χαμόγελο."] },
+  { id: "christmas-tree-dots", title: "Χριστουγεννιάτικο δέντρο με βούλες", emoji: "🎄", age: "2–3", season: "Χριστούγεννα", materials: ["πράσινο χαρτόνι", "δαχτυλομπογιές", "αστέρι χαρτιού"], steps: ["Φτιάχνουμε το τρίγωνο του δέντρου.", "Βάζουμε χρωματιστές βούλες με το δάχτυλο.", "Κολλάμε το αστέρι στην κορυφή."] },
+
+  { id: "paper-butterfly", title: "Πεταλούδα με συμμετρικά χρώματα", emoji: "🦋", age: "4–5", season: "Όλο τον χρόνο", materials: ["χαρτί", "τέμπερες", "μαρκαδόρος"], steps: ["Διπλώνουμε το χαρτί στη μέση.", "Βάζουμε χρώματα στη μία πλευρά.", "Κλείνουμε, πιέζουμε και ανοίγουμε για συμμετρικά φτερά."] },
+  { id: "rocket-roll", title: "Πύραυλος από ρολό χαρτιού", emoji: "🚀", age: "4–5", season: "Όλο τον χρόνο", materials: ["ρολό χαρτιού", "χαρτόνια", "κόλλα"], steps: ["Ντύνουμε το ρολό με χαρτί.", "Προσθέτουμε μύτη και πτερύγια.", "Κολλάμε λωρίδες σαν φλόγες."] },
+  { id: "greek-flag-collage", title: "Ελληνική σημαία με κολάζ", emoji: "🇬🇷", age: "4–5", season: "28η Οκτωβρίου", materials: ["μπλε και λευκό χαρτί", "κόλλα", "χαρτόνι"], steps: ["Χωρίζουμε τη σημαία σε λωρίδες.", "Κολλάμε μπλε και λευκά κομμάτια.", "Προσθέτουμε τον σταυρό με βοήθεια ενήλικα."] },
+  { id: "mask-craft", title: "Αποκριάτικη μάσκα", emoji: "🎭", age: "4–5", season: "Απόκριες", materials: ["χαρτόνι", "λάστιχο", "πούλιες ή χαρτάκια"], steps: ["Σχεδιάζουμε το σχήμα της μάσκας.", "Διακοσμούμε με χρώματα και κολλάζ.", "Ο ενήλικας ανοίγει τρύπες και περνά το λάστιχο."] },
+  { id: "easter-bunny-cup", title: "Λαγουδάκι από χάρτινο ποτηράκι", emoji: "🐰", age: "4–5", season: "Πάσχα", materials: ["χάρτινο ποτηράκι", "χαρτί", "κόλλα", "μαρκαδόρος"], steps: ["Κολλάμε δύο μεγάλα αυτιά.", "Ζωγραφίζουμε μάτια και μουσούδα.", "Προσθέτουμε ουρίτσα από χαρτί."] },
+  { id: "boat-craft", title: "Καραβάκι με χάρτινο πανί", emoji: "⛵", age: "4–5", season: "Καλοκαίρι", materials: ["χαρτόνι", "καλαμάκι", "χρωματιστό χαρτί"], steps: ["Φτιάχνουμε τη βάση του καραβιού.", "Ο ενήλικας στερεώνει το καλαμάκι.", "Προσθέτουμε πανί και ζωγραφίζουμε κύματα."] },
+
+  { id: "forest-diorama", title: "Μικρό δάσος σε κουτί", emoji: "🌲", age: "5–6", season: "Φθινόπωρο", materials: ["μικρό κουτί", "χαρτόνια", "φύλλα", "κόλλα"], steps: ["Ντύνουμε το εσωτερικό του κουτιού.", "Φτιάχνουμε δέντρα και ζωάκια από χαρτί.", "Στήνουμε τα στοιχεία σε διαφορετικά επίπεδα."] },
+  { id: "city-recycle", title: "Μικρή πόλη από ανακυκλώσιμα", emoji: "🏙️", age: "5–6", season: "Όλο τον χρόνο", materials: ["κουτάκια", "ρολά", "χαρτόνι", "κόλλα"], steps: ["Διαλέγουμε κτίρια και οχήματα.", "Ντύνουμε τα κουτάκια με χαρτί.", "Στήνουμε δρόμους και μικρή γειτονιά."] },
+  { id: "peace-dove", title: "Περιστέρι ειρήνης", emoji: "🕊️", age: "5–6", season: "28η Οκτωβρίου", materials: ["λευκό χαρτόνι", "μπλε χαρτί", "κορδέλα"], steps: ["Σχεδιάζουμε το περίγραμμα του περιστεριού.", "Κόβουμε με βοήθεια ενήλικα.", "Προσθέτουμε κλαδί ή μπλε-λευκές λεπτομέρειες."] },
+  { id: "march-wreath", title: "Ανοιξιάτικο στεφάνι", emoji: "🌼", age: "5–6", season: "25η Μαρτίου", materials: ["χάρτινο πιάτο", "χρωματιστά χαρτιά", "κόλλα"], steps: ["Ο ενήλικας αφαιρεί το κέντρο του πιάτου.", "Φτιάχνουμε λουλούδια και φύλλα.", "Τα κολλάμε γύρω από το στεφάνι."] },
+  { id: "christmas-village", title: "Χριστουγεννιάτικο χωριό", emoji: "🏠", age: "5–6", season: "Χριστούγεννα", materials: ["χαρτόκουτα", "λευκό χαρτί", "βαμβάκι", "κόλλα"], steps: ["Φτιάχνουμε μικρά σπιτάκια.", "Προσθέτουμε πόρτες, παράθυρα και σκεπές.", "Στήνουμε χιονισμένο χωριό με βαμβάκι."] },
+  { id: "summer-aquarium", title: "Τρισδιάστατο ενυδρείο", emoji: "🐠", age: "5–6", season: "Καλοκαίρι", materials: ["χάρτινο κουτί", "νήμα", "χαρτόνια", "κόλλα"], steps: ["Ζωγραφίζουμε το εσωτερικό σαν θάλασσα.", "Φτιάχνουμε ψάρια και φύκια.", "Κρεμάμε τα ψάρια με νήμα από την οροφή του κουτιού."] },
+];
+
 const DESIGNS: Design[] = [
   // 2–3: μεγάλα, καθαρά αντικείμενα
   { id: "sun", title: "Ήλιος", emoji: "☀️", age: "2–3", level: "Εύκολο" },
@@ -607,7 +640,30 @@ function VirtualPreschool() {
     <SiteLayout>
       <section className="bg-white py-8 sm:py-12">
         <div className="mx-auto max-w-[1500px] px-3 sm:px-5 lg:px-7">
-          <div className="overflow-hidden rounded-[2rem] border bg-white shadow-sm">
+          <div className="mb-6 grid gap-3 sm:grid-cols-2">
+            <a href="#coloring-library" className="group rounded-[1.8rem] border bg-gradient-to-br from-pink-50 to-sky-50 p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
+              <div className="flex items-center gap-4">
+                <span className="text-4xl">🎨</span>
+                <div>
+                  <p className="text-xs font-black uppercase tracking-[0.16em] text-primary">Online Preschool</p>
+                  <h2 className="mt-1 text-2xl font-black text-[#0b3b82]">Ζωγραφική</h2>
+                  <p className="mt-1 text-sm text-muted-foreground">45 σχέδια ανά ηλικία + online studio</p>
+                </div>
+              </div>
+            </a>
+            <a href="#crafts-library" className="group rounded-[1.8rem] border bg-gradient-to-br from-amber-50 to-emerald-50 p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
+              <div className="flex items-center gap-4">
+                <span className="text-4xl">✂️</span>
+                <div>
+                  <p className="text-xs font-black uppercase tracking-[0.16em] text-primary">Online Preschool</p>
+                  <h2 className="mt-1 text-2xl font-black text-[#0b3b82]">Κατασκευές</h2>
+                  <p className="mt-1 text-sm text-muted-foreground">Ιδέες, υλικά και βήματα για παιδιά 2–6 ετών</p>
+                </div>
+              </div>
+            </a>
+          </div>
+
+          <div id="coloring-library" className="scroll-mt-24 overflow-hidden rounded-[2rem] border bg-white shadow-sm">
             <div className="relative px-5 pb-6 pt-6 sm:px-8 lg:px-10">
               <div className="absolute right-6 top-6 hidden text-5xl lg:block">☀️</div>
               <div className="grid items-center gap-5 lg:grid-cols-[280px_1fr_280px]">
@@ -708,6 +764,78 @@ function VirtualPreschool() {
               </div>
             </div>
           </div>
+
+
+          <section id="crafts-library" className="scroll-mt-24 pt-10">
+            <div className="rounded-[2rem] border bg-gradient-to-br from-amber-50 via-white to-emerald-50 p-5 shadow-sm sm:p-8">
+              <div className="mx-auto max-w-3xl text-center">
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-primary">Κατασκευές Πισιπούκ</p>
+                <h2 className="mt-2 text-3xl font-black text-[#0b3b82] sm:text-5xl">Φτιάχνουμε με τα χέρια μας ✂️</h2>
+                <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
+                  Πρωτότυπες ιδέες ανά ηλικία, με απλά υλικά και σύντομα βήματα. Οι εποχικές δραστηριότητες αλλάζουν μαζί με τη χρονιά.
+                </p>
+              </div>
+
+              <div className="mt-7 flex flex-wrap justify-center gap-2">
+                {["Όλο τον χρόνο","Φθινόπωρο","28η Οκτωβρίου","Χριστούγεννα","Απόκριες","25η Μαρτίου","Πάσχα","Καλοκαίρι"].map((season) => (
+                  <span key={season} className="rounded-full border bg-white px-3 py-1.5 text-xs font-black text-[#0b3b82]">{season}</span>
+                ))}
+              </div>
+
+              <div className="mt-8 grid gap-6 lg:grid-cols-3">
+                {(["2–3","4–5","5–6"] as const).map((age) => {
+                  const panel =
+                    age === "2–3"
+                      ? "border-rose-200 bg-rose-50/80"
+                      : age === "4–5"
+                        ? "border-sky-200 bg-sky-50/80"
+                        : "border-emerald-200 bg-emerald-50/80";
+                  return (
+                    <div key={age} className={"rounded-[1.8rem] border p-4 sm:p-5 " + panel}>
+                      <div className="text-center">
+                        <div className="text-3xl font-black text-[#0b3b82]">{age} ετών</div>
+                        <p className="mt-1 text-xs font-bold text-muted-foreground">{AGE_META[age].description}</p>
+                      </div>
+                      <div className="mt-5 grid gap-3">
+                        {CRAFTS.filter((craft) => craft.age === age).map((craft) => (
+                          <article key={craft.id} className="rounded-2xl border bg-white p-4 shadow-sm">
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="flex items-center gap-3">
+                                <span className="text-3xl">{craft.emoji}</span>
+                                <div>
+                                  <h3 className="text-sm font-black leading-tight text-slate-900">{craft.title}</h3>
+                                  <span className="mt-1 inline-flex rounded-full bg-primary/10 px-2 py-1 text-[10px] font-black text-primary">{craft.season}</span>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="mt-3">
+                              <p className="text-[11px] font-black uppercase tracking-[0.12em] text-muted-foreground">Υλικά</p>
+                              <p className="mt-1 text-xs leading-5 text-slate-700">{craft.materials.join(" · ")}</p>
+                            </div>
+                            <div className="mt-3">
+                              <p className="text-[11px] font-black uppercase tracking-[0.12em] text-muted-foreground">Βήματα</p>
+                              <ol className="mt-1 space-y-1 text-xs leading-5 text-slate-700">
+                                {craft.steps.map((step, index) => (
+                                  <li key={step}><span className="font-black text-primary">{index + 1}.</span> {step}</li>
+                                ))}
+                              </ol>
+                            </div>
+                          </article>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="mt-7 rounded-2xl border bg-white p-4 text-center">
+                <p className="text-sm font-black text-[#0b3b82]">Με ενήλικα δίπλα μας 👩‍👧‍👦</p>
+                <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                  Ψαλίδι, μικρά εξαρτήματα και οποιοδήποτε κόψιμο ή τρύπημα γίνονται πάντα με επίβλεψη και βοήθεια ενήλικα.
+                </p>
+              </div>
+            </div>
+          </section>
 
           <div id="coloring-studio" className="scroll-mt-24 pt-10">
             <div className="mb-4 text-center">
