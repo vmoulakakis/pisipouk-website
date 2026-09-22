@@ -9,7 +9,7 @@ import circle from "@/assets/real-circle-play.webp";
 
 const SCHEDULE = [
   ["07:00–08:00", "Προσέλευση & ελεύθερο παιχνίδι", "Arrival & free play"],
-  ["08:00–09:00", "Πρωινός κύκλος", "Morning circle"],
+  ["08:00–09:00", "Πρωινό", "Morning circle"],
   ["09:30–10:30", "Παιδαγωγική δραστηριότητα", "Learning activity"],
   ["11:00–12:00", "Δημιουργία & κίνηση", "Making & movement"],
   ["12:00–13:00", "Γεύμα", "Lunch"],
