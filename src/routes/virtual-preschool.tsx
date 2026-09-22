@@ -86,6 +86,8 @@ const CRAFTS: Craft[] = [
 
 const DESIGNS: Design[] = [
   // 2–3: μεγάλα, καθαρά αντικείμενα
+  { id: "sept-leaf", title: "Φθινοπωρινό φύλλο", emoji: "🍂", age: "2–3", level: "Εύκολο" },
+  { id: "sept-pencil", title: "Το πρώτο μου μολύβι", emoji: "✏️", age: "2–3", level: "Εύκολο" },
   { id: "sun", title: "Ήλιος", emoji: "☀️", age: "2–3", level: "Εύκολο" },
   { id: "apple", title: "Μήλο", emoji: "🍎", age: "2–3", level: "Εύκολο" },
   { id: "balloon", title: "Μπαλόνι", emoji: "🎈", age: "2–3", level: "Εύκολο" },
@@ -103,6 +105,8 @@ const DESIGNS: Design[] = [
   { id: "pisipouk-easy", title: "Ο Πισιπούκ", emoji: "🐻", age: "2–3", level: "Εύκολο" },
 
   // 4–5: μικρές σκηνές και περισσότερα στοιχεία
+  { id: "sept-backpack", title: "Η σχολική μου τσάντα", emoji: "🎒", age: "4–5", level: "Μεσαίο" },
+  { id: "sept-schoolbus", title: "Σχολικό λεωφορείο", emoji: "🚌", age: "4–5", level: "Μεσαίο" },
   { id: "bunny", title: "Κουνελάκι", emoji: "🐰", age: "4–5", level: "Μεσαίο" },
   { id: "elephant", title: "Ελεφαντάκι", emoji: "🐘", age: "4–5", level: "Μεσαίο" },
   { id: "train", title: "Τρενάκι", emoji: "🚂", age: "4–5", level: "Μεσαίο" },
@@ -120,6 +124,8 @@ const DESIGNS: Design[] = [
   { id: "pisipouk-garden", title: "Πισιπούκ στον κήπο", emoji: "🐻", age: "4–5", level: "Μεσαίο" },
 
   // 5–6: σύνθετες σκηνές / περισσότερες περιοχές
+  { id: "sept-autumn-tree", title: "Το φθινοπωρινό μας δέντρο", emoji: "🍁", age: "5–6", level: "Πιο λεπτομερές" },
+  { id: "sept-school-day", title: "Η πρώτη μέρα στην τάξη", emoji: "🏫", age: "5–6", level: "Πιο λεπτομερές" },
   { id: "dino-scene", title: "Δεινόσαυρος στο δάσος", emoji: "🦕", age: "5–6", level: "Πιο λεπτομερές" },
   { id: "space-scene", title: "Διάστημα & πλανήτες", emoji: "🚀", age: "5–6", level: "Πιο λεπτομερές" },
   { id: "farm-scene", title: "Αγρόκτημα", emoji: "🚜", age: "5–6", level: "Πιο λεπτομερές" },
@@ -141,7 +147,7 @@ const outlineStyle = (id: string) => {
   const age = DESIGNS.find((design) => design.id === id)?.age ?? "4–5";
   const strokeWidth = age === "2–3" ? 9 : age === "4–5" ? 6.5 : 5;
   return {
-    fill: "#fff",
+    fill: "none",
     stroke: "#111827",
     strokeWidth,
     strokeLinecap: "round" as const,
@@ -509,6 +515,53 @@ function Outline({ id }: { id: string }) {
     <path {...common} d="M670 365 Q715 320 760 365 Q785 410 740 450 Q695 465 655 430 Q625 390 670 365Z"/>
   </>;
 
+
+  if (id === "sept-leaf") return <>
+    <path {...common} d="M455 115 Q365 155 300 235 Q250 315 280 405 Q320 515 450 565 Q580 515 620 405 Q650 315 600 235 Q535 155 455 115Z"/>
+    <path d="M450 145 V540 M450 260 L355 210 M450 335 L555 275 M450 410 L350 365" {...common} fill="none"/>
+  </>;
+
+  if (id === "sept-pencil") return <>
+    <path {...common} d="M250 470 L565 155 L690 280 L375 595 L235 610Z"/>
+    <path {...common} d="M565 155 L620 100 L745 225 L690 280Z"/>
+    <path {...common} d="M250 470 L235 610 L375 595Z"/>
+    <path d="M300 520 L610 210 M350 570 L660 260" {...common} fill="none" strokeWidth={5}/>
+  </>;
+
+  if (id === "sept-backpack") return <>
+    <path {...common} d="M315 245 Q330 145 450 145 Q570 145 585 245"/>
+    <rect {...common} x="275" y="220" width="350" height="330" rx="75"/>
+    <rect {...common} x="335" y="355" width="230" height="135" rx="38"/>
+    <path d="M305 285 Q225 320 250 500 M595 285 Q675 320 650 500" {...common} fill="none"/>
+    <path d="M405 250 H495" {...common} fill="none"/>
+  </>;
+
+  if (id === "sept-schoolbus") return <>
+    <rect {...common} x="155" y="260" width="590" height="255" rx="40"/>
+    <rect {...common} x="225" y="305" width="105" height="85"/><rect {...common} x="355" y="305" width="105" height="85"/><rect {...common} x="485" y="305" width="105" height="85"/><rect {...common} x="615" y="305" width="80" height="85"/>
+    <circle {...common} cx="290" cy="525" r="58"/><circle {...common} cx="620" cy="525" r="58"/>
+    <path d="M155 430 H745 M205 225 H520" {...common} fill="none"/>
+  </>;
+
+  if (id === "sept-autumn-tree") return <>
+    <path {...common} d="M410 575 Q390 480 420 390 Q390 330 410 255 Q450 180 500 255 Q520 330 490 390 Q520 480 500 575Z"/>
+    <circle {...common} cx="330" cy="250" r="95"/><circle {...common} cx="450" cy="190" r="110"/><circle {...common} cx="565" cy="260" r="95"/>
+    <path {...common} d="M120 565 Q155 500 190 565 Q225 500 260 565Z"/>
+    <path {...common} d="M650 565 Q690 495 730 565 Q770 500 805 565Z"/>
+    <path d="M255 500 Q300 450 345 500 M570 500 Q620 450 665 500" {...common} fill="none"/>
+    <path {...common} d="M205 390 Q235 350 270 390 Q245 425 205 390Z"/>
+    <path {...common} d="M620 395 Q650 350 690 390 Q660 430 620 395Z"/>
+  </>;
+
+  if (id === "sept-school-day") return <>
+    <rect {...common} x="145" y="120" width="610" height="220" rx="20"/>
+    <path d="M200 180 H700 M200 235 H625" {...common} fill="none"/>
+    <rect {...common} x="190" y="410" width="210" height="120" rx="16"/><rect {...common} x="500" y="410" width="210" height="120" rx="16"/>
+    <circle {...common} cx="260" cy="375" r="42"/><circle {...common} cx="575" cy="375" r="42"/>
+    <path d="M220 530 V590 M370 530 V590 M530 530 V590 M680 530 V590" {...common} fill="none"/>
+    <path {...common} d="M760 455 Q810 420 840 470 Q805 505 765 490Z"/>
+  </>;
+
   return null;
 }
 
@@ -567,13 +620,27 @@ function VirtualPreschool() {
   };
 
   const startDraw = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    e.preventDefault();
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const p = point(e);
     drawingRef.current = true;
-    lastRef.current = point(e);
+    lastRef.current = p;
     e.currentTarget.setPointerCapture(e.pointerId);
+    if (!ctx) return;
+    ctx.save();
+    ctx.globalCompositeOperation = erasing ? "destination-out" : "source-over";
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, brushSize / 2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
   };
 
   const draw = (e: React.PointerEvent<HTMLCanvasElement>) => {
     if (!drawingRef.current || !lastRef.current) return;
+    e.preventDefault();
     const canvas = canvasRef.current!;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
@@ -647,7 +714,7 @@ function VirtualPreschool() {
                 <div>
                   <p className="text-xs font-black uppercase tracking-[0.16em] text-primary">Online Preschool</p>
                   <h2 className="mt-1 text-2xl font-black text-[#0b3b82]">Ζωγραφική</h2>
-                  <p className="mt-1 text-sm text-muted-foreground">45 σχέδια ανά ηλικία + online studio</p>
+                  <p className="mt-1 text-sm text-muted-foreground">51 σχέδια + online studio · ανανέωση κάθε μήνα</p>
                 </div>
               </div>
             </a>
@@ -676,8 +743,11 @@ function VirtualPreschool() {
                     Βιβλιοθήκη Ζωγραφικής
                   </h1>
                   <p className="mt-2 text-base font-bold text-[#0b3b82] sm:text-lg">
-                    45 μοναδικά σχέδια, 15 για κάθε ηλικιακή ομάδα
+                    51 πρωτότυπα σχέδια · 6 νέα για τον Σεπτέμβριο 2026
                   </p>
+                  <div className="mt-3 inline-flex rounded-full bg-amber-100 px-4 py-2 text-xs font-black text-amber-800">
+                    ✨ Νέα μηνιαία συλλογή: Φθινόπωρο & επιστροφή στο σχολείο
+                  </div>
                 </div>
                 <div className="hidden text-center font-black italic text-[#0b3b82] lg:block">
                   <div className="text-2xl">Μικρά χεράκια</div>
