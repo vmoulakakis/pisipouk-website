@@ -34,7 +34,50 @@ const GAME_META: Record<GameId, { title: string; emoji: string }> = {
 
 type VoiceMood = Mood;
 
-function usePisipoukVoice() {
+const AGE_VOICE = {
+  "2-3": {
+    rate: 0.86,
+    pitch: 0.96,
+    hello: "Γεια σου! Είμαι ο Πισιπούκ. Πάμε μαζί, σιγά σιγά.",
+  },
+  "4-5": {
+    rate: 0.9,
+    pitch: 0.93,
+    hello: "Γεια σου! Είμαι ο Πισιπούκ. Θα το βρούμε μαζί. Κοίτα καλά και δοκίμασε.",
+  },
+  "5-6": {
+    rate: 0.93,
+    pitch: 0.91,
+    hello: "Γεια σου! Είμαι ο Πισιπούκ. Σκέψου πρώτα, διάλεξε μετά, και αν κάτι δεν πετύχει, θα μάθουμε από αυτό.",
+  },
+} satisfies Record<Age, { rate: number; pitch: number; hello: string }>;
+
+function cleanSpeech(text: string) {
+  return text
+    .replace(/[🐻🎒⭐🐍✨💭🎲🌀🧠🔷🧺🧢🍎🎉]/g, "")
+    .replace(/…/g, "...")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function ageSpeech(age: Age, mood: VoiceMood, text: string) {
+  const cleaned = cleanSpeech(text);
+  if (mood === "thinking") {
+    if (age === "2-3") return "Χμμ... για κοίτα ξανά. " + cleaned;
+    if (age === "4-5") return "Χμμ... σκέψου το λίγο ακόμη. " + cleaned;
+    return "Καλή προσπάθεια. Ας δούμε τι μας έδειξε αυτή η κίνηση. " + cleaned;
+  }
+  if (mood === "success") {
+    if (age === "2-3") return "Ναι! Μπράβο! " + cleaned;
+    if (age === "4-5") return "Ωραία! Το βρήκες. " + cleaned;
+    return "Πολύ καλά. Η σκέψη σου σε οδήγησε σωστά. " + cleaned;
+  }
+  if (age === "2-3") return "Πάμε μαζί. " + cleaned;
+  if (age === "4-5") return "Πάμε να το δούμε. " + cleaned;
+  return cleaned;
+}
+
+function usePisipoukVoice(age: Age) {
   const [enabled, setEnabled] = useState(false);
   const [supported, setSupported] = useState(false);
   const enabledRef = useRef(false);
@@ -54,11 +97,12 @@ function usePisipoukVoice() {
       const score = (voice: SpeechSynthesisVoice) => {
         const name = voice.name.toLowerCase();
         let value = 0;
-        if (voice.lang.toLowerCase() === "el-gr") value += 40;
-        if (voice.localService) value += 15;
-        if (/melina|athina|eleni|female/.test(name)) value += 60;
-        if (/google/.test(name) && /greek|ελλην/.test(name)) value += 35;
-        if (/microsoft/.test(name) && /eleni|greek|ελλην/.test(name)) value += 30;
+        if (voice.lang.toLowerCase() === "el-gr") value += 50;
+        if (voice.localService) value += 16;
+        if (/nikos|stefanos|alexandros|male|man/.test(name)) value += 75;
+        if (/google/.test(name) && /greek|ελλην/.test(name)) value += 38;
+        if (/microsoft/.test(name) && /greek|ελλην|stefanos|nikos/.test(name)) value += 32;
+        if (/melina|athina|eleni/.test(name)) value += 12;
         return value;
       };
       voiceRef.current = [...greekVoices].sort((a, b) => score(b) - score(a))[0] ?? null;
@@ -79,17 +123,18 @@ function usePisipoukVoice() {
     try {
       const synth = window.speechSynthesis;
       synth.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
+      const profile = AGE_VOICE[age];
+      const utterance = new SpeechSynthesisUtterance(ageSpeech(age, mood, text));
       utterance.lang = "el-GR";
       if (voiceRef.current) utterance.voice = voiceRef.current;
       utterance.volume = 1;
-      utterance.rate = mood === "thinking" ? 0.84 : mood === "success" ? 0.93 : 0.88;
-      utterance.pitch = mood === "success" ? 1.1 : mood === "thinking" ? 1.02 : 1.06;
+      utterance.rate = profile.rate + (mood === "thinking" ? -0.03 : mood === "success" ? 0.02 : 0);
+      utterance.pitch = profile.pitch + (mood === "success" ? 0.04 : mood === "thinking" ? -0.01 : 0);
       synth.speak(utterance);
     } catch {
       // The game remains usable even if the browser blocks speech.
     }
-  }, []);
+  }, [age]);
 
   const speak = useCallback((text: string, mood: VoiceMood = "idle") => {
     if (!enabledRef.current) return;
@@ -99,8 +144,8 @@ function usePisipoukVoice() {
   const activate = useCallback((text: string) => {
     enabledRef.current = true;
     setEnabled(true);
-    speakDirect(text, "idle");
-  }, [speakDirect]);
+    speakDirect(AGE_VOICE[age].hello + " " + text, "idle");
+  }, [age, speakDirect]);
 
   const disable = useCallback(() => {
     enabledRef.current = false;
@@ -258,7 +303,7 @@ function GameShell({
   skills: string[];
   parentNote: string;
 }) {
-  const { enabled: voiceEnabled, supported: voiceSupported, speak, speakDirect, activate, disable } = usePisipoukVoice();
+  const { enabled: voiceEnabled, supported: voiceSupported, speak, speakDirect, activate, disable } = usePisipoukVoice(age);
 
   useEffect(() => {
     if (beat > 0) speak(message, mood);
@@ -301,7 +346,7 @@ function GameShell({
                     size="sm"
                     className="w-full rounded-full"
                     disabled={!voiceSupported}
-                    onClick={() => activate("Γεια σου! Είμαι ο Πισιπούκ. " + instruction + " " + message)}
+                    onClick={() => activate(instruction + " " + message)}
                   >
                     {voiceSupported ? "🔊 Άκου τον Πισιπούκ" : "🔇 Χωρίς φωνή στη συσκευή"}
                   </Button>
