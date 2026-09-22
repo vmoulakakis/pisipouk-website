@@ -844,7 +844,7 @@ function VirtualPreschool() {
     lastRef.current = null;
   };
 
-  const composeDrawing = () =>
+  const composeDrawing = (printerSafe = false) =>
     new Promise<HTMLCanvasElement>((resolve, reject) => {
       const paint = canvasRef.current;
       const svg = svgRef.current;
@@ -853,10 +853,10 @@ function VirtualPreschool() {
         return;
       }
 
-      // A4 landscape ratio, so printing/PDF fills the sheet instead of shrinking.
+      // Exact A4 landscape ratio at higher resolution for crisp browser/PDF printing.
       const out = document.createElement("canvas");
-      out.width = 1400;
-      out.height = 990;
+      out.width = 1684;
+      out.height = 1191;
       const ctx = out.getContext("2d");
       if (!ctx) {
         reject(new Error("Canvas is not available"));
@@ -865,23 +865,42 @@ function VirtualPreschool() {
       ctx.fillStyle = "#fff";
       ctx.fillRect(0, 0, out.width, out.height);
 
-      const svgText = new XMLSerializer().serializeToString(svg);
+      const printableSvg = svg.cloneNode(true) as SVGSVGElement;
+      if (printerSafe) {
+        printableSvg.querySelectorAll<SVGElement>("[stroke]").forEach((node) => {
+          const rawWidth = Number.parseFloat(node.getAttribute("stroke-width") ?? "5");
+          node.setAttribute("stroke", "#000000");
+          node.setAttribute("stroke-width", String(Math.max(8, rawWidth * 1.65)));
+          node.setAttribute("opacity", "1");
+          node.style.stroke = "#000000";
+          node.style.opacity = "1";
+        });
+        printableSvg.querySelectorAll<SVGElement>("[fill]").forEach((node) => {
+          const fill = (node.getAttribute("fill") ?? "").toLowerCase();
+          if (fill === "#111" || fill === "#111827" || fill === "rgb(17, 24, 39)") {
+            node.setAttribute("fill", "#000000");
+            node.style.fill = "#000000";
+          }
+        });
+      }
+
+      const svgText = new XMLSerializer().serializeToString(printerSafe ? printableSvg : svg);
       const svgBlob = new Blob([svgText], { type: "image/svg+xml;charset=utf-8" });
       const url = URL.createObjectURL(svgBlob);
       const bg = new Image();
       bg.onload = () => {
-        const maxWidth = 1350;
-        const maxHeight = 950;
+        const maxWidth = 1650;
+        const maxHeight = 1150;
         const scale = Math.min(maxWidth / paint.width, maxHeight / paint.height);
         const drawWidth = paint.width * scale;
         const drawHeight = paint.height * scale;
         const x = (out.width - drawWidth) / 2;
-        const y = 12;
+        const y = 8;
 
         ctx.drawImage(paint, x, y, drawWidth, drawHeight);
         ctx.drawImage(bg, x, y, drawWidth, drawHeight);
-        ctx.fillStyle = "#64748b";
-        ctx.font = "18px Arial, sans-serif";
+        ctx.fillStyle = printerSafe ? "#000000" : "#64748b";
+        ctx.font = printerSafe ? "700 20px Arial, sans-serif" : "18px Arial, sans-serif";
         ctx.textAlign = "right";
         ctx.fillText("pisipouk.vercel.app", out.width - 24, out.height - 14);
         URL.revokeObjectURL(url);
@@ -915,7 +934,7 @@ function VirtualPreschool() {
     printWindow.document.write("<!doctype html><html><head><title>Πισιπούκ - Εκτύπωση</title></head><body style='font-family:Arial,sans-serif;text-align:center;padding:20px'>Προετοιμασία εκτύπωσης…</body></html>");
     printWindow.document.close();
 
-    composeDrawing()
+    composeDrawing(true)
       .then((out) => {
         const dataUrl = out.toDataURL("image/png");
         printWindow.document.open();
@@ -925,10 +944,26 @@ function VirtualPreschool() {
               <meta charset="utf-8" />
               <title>Πισιπούκ - Εκτύπωση ζωγραφιάς</title>
               <style>
-                @page { size: A4 landscape; margin: 4mm; }
-                html, body { margin: 0; padding: 0; width: 100%; height: 100%; background: #fff; }
-                body { display: grid; place-items: center; }
-                img { display: block; width: 100%; height: 100%; object-fit: contain; }
+                @page { size: A4 landscape; margin: 3mm; }
+                html, body {
+                  margin: 0;
+                  padding: 0;
+                  width: 291mm;
+                  height: 204mm;
+                  background: #fff !important;
+                  -webkit-print-color-adjust: exact;
+                  print-color-adjust: exact;
+                }
+                body { display: flex; align-items: center; justify-content: center; overflow: hidden; }
+                img {
+                  display: block;
+                  width: 291mm;
+                  height: 204mm;
+                  max-width: 291mm;
+                  max-height: 204mm;
+                  object-fit: contain;
+                  image-rendering: auto;
+                }
               </style>
             </head>
             <body>
