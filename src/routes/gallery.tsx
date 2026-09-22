@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Camera, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, Camera, Play, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import exterior from "@/assets/pisipouk-exterior.webp";
 import arrival from "@/assets/pisipouk-arrival.webp";
@@ -187,29 +187,21 @@ function GalleryPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(imageGallerySchema) }}
       />
 
-      <section className="hero-field py-16 sm:py-24">
+      <section className="hero-field py-10 sm:py-14">
         <div className="mx-auto max-w-7xl px-4 lg:px-8">
           <p className="section-kicker">
             {lang === "gr" ? "Η ζωή στον Πισιπούκ" : "Life at Pisipouk"}
           </p>
-          <h1 className="mt-3 max-w-4xl text-5xl font-black tracking-tight sm:text-7xl">
+          <h1 className="mt-2 max-w-4xl text-4xl font-black tracking-tight sm:text-6xl">
             {lang === "gr"
-              ? "Χώροι, παιχνίδι και δημιουργία — όπως τα ζουν τα παιδιά."
-              : "Spaces, play and creativity — through a child’s day."}
+              ? "Χώροι, παιχνίδι και δημιουργία"
+              : "Spaces, play and creativity"}
           </h1>
-          <p className="mt-6 max-w-3xl text-lg leading-8 text-muted-foreground">
+          <p className="mt-3 max-w-2xl text-base font-medium text-muted-foreground sm:text-lg">
             {lang === "gr"
-              ? "Μια επιλεγμένη συλλογή από την καθημερινότητα, τις δραστηριότητες και την ταυτότητα του Πισιπούκ στον Άγιο Δημήτριο. Οι λεζάντες περιγράφουν τι πραγματικά δείχνει κάθε εικόνα, ώστε η σελίδα να είναι χρήσιμη τόσο για τους γονείς όσο και για τις μηχανές αναζήτησης."
-              : "A curated collection from daily life, activities and the identity of Pisipouk in Agios Dimitrios. Captions describe what each image actually shows, helping both families and search engines understand the content."}
+              ? "Μικρές στιγμές από την καθημερινότητα στον Πισιπούκ."
+              : "Small moments from everyday life at Pisipouk."}
           </p>
-          <div className="mt-7 flex items-start gap-3 rounded-2xl border bg-white/70 p-4 text-sm leading-6">
-            <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-            <p>
-              {lang === "gr"
-                ? "Η ιδιωτικότητα των παιδιών προηγείται. Πραγματικές φωτογραφίες χρησιμοποιούνται μόνο με την κατάλληλη διαχείριση συναίνεσης και προστασίας ταυτότητας."
-                : "Children’s privacy comes first. Real photography is used only with appropriate consent and identity-protection practices."}
-            </p>
-          </div>
         </div>
       </section>
 
@@ -237,6 +229,45 @@ function GalleryPage() {
               </button>
             ))}
           </div>
+
+          <section
+            className="mt-8 overflow-hidden rounded-[2rem] border bg-gradient-to-br from-amber-50 via-white to-sky-50 shadow-sm"
+            aria-labelledby="pisipouk-reel-title"
+          >
+            <div className="grid items-center gap-6 p-4 sm:p-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:p-8">
+              <div className="order-2 lg:order-1">
+                <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-black uppercase tracking-wider text-primary">
+                  <Play className="h-3.5 w-3.5 fill-current" />
+                  {lang === "gr" ? "Video" : "Video"}
+                </div>
+                <h2 id="pisipouk-reel-title" className="mt-3 text-2xl font-black sm:text-3xl">
+                  {lang === "gr" ? "Μια στιγμή από τον Πισιπούκ" : "A moment from Pisipouk"}
+                </h2>
+                <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">
+                  {lang === "gr"
+                    ? "Δείτε ένα σύντομο reel από τη ζωή και τις δραστηριότητές μας."
+                    : "Watch a short reel from our everyday life and activities."}
+                </p>
+              </div>
+
+              <div className="order-1 flex justify-center lg:order-2">
+                <div className="w-[267px] overflow-hidden rounded-2xl bg-white shadow-lg ring-1 ring-black/5">
+                  <iframe
+                    src="https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Freel%2F1716104009476176%2F&show_text=true&width=267&t=0"
+                    width="267"
+                    height="591"
+                    className="block border-0"
+                    scrolling="no"
+                    frameBorder="0"
+                    allowFullScreen
+                    loading="lazy"
+                    title={lang === "gr" ? "Facebook Reel του Πισιπούκ" : "Pisipouk Facebook Reel"}
+                    allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                  />
+                </div>
+              </div>
+            </div>
+          </section>
 
           <div className="gallery-masonry mt-8">
             {visible.map((image, index) => (
