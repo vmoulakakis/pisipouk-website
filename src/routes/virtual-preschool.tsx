@@ -283,6 +283,10 @@ const DESIGNS: Design[] = [
   { id: "turtle", title: "Χελωνίτσα", emoji: "🐢", age: "2–3", level: "Εύκολο" },
   { id: "bear", title: "Αρκουδάκι", emoji: "🧸", age: "2–3", level: "Εύκολο" },
   { id: "pisipouk-easy", title: "Ο Πισιπούκ", emoji: "🐻", age: "2–3", level: "Εύκολο" },
+  { id: "ai-pumpkin", title: "Χαρούμενη κολοκύθα", emoji: "🎃", age: "2–3", level: "Εύκολο" },
+  { id: "ai-pear", title: "Μεγάλο αχλάδι", emoji: "🍐", age: "2–3", level: "Εύκολο" },
+  { id: "ai-snail", title: "Σαλιγκαράκι", emoji: "🐌", age: "2–3", level: "Εύκολο" },
+  { id: "ai-umbrella", title: "Ομπρέλα στη βροχή", emoji: "☂️", age: "2–3", level: "Εύκολο" },
 
   // 4–5: μικρές σκηνές και περισσότερα στοιχεία
   { id: "sept-backpack", title: "Η σχολική μου τσάντα", emoji: "🎒", age: "4–5", level: "Μεσαίο" },
@@ -302,6 +306,10 @@ const DESIGNS: Design[] = [
   { id: "boat", title: "Καραβάκι", emoji: "⛵", age: "4–5", level: "Μεσαίο" },
   { id: "pisipouk-balloon", title: "Πισιπούκ με μπαλόνι", emoji: "🐻", age: "4–5", level: "Μεσαίο" },
   { id: "pisipouk-garden", title: "Πισιπούκ στον κήπο", emoji: "🐻", age: "4–5", level: "Μεσαίο" },
+  { id: "ai-robot", title: "Φιλικό ρομπότ", emoji: "🤖", age: "4–5", level: "Μεσαίο" },
+  { id: "ai-panda", title: "Πάντα με μπαμπού", emoji: "🐼", age: "4–5", level: "Μεσαίο" },
+  { id: "ai-rover", title: "Όχημα στη Σελήνη", emoji: "🌙", age: "4–5", level: "Μεσαίο" },
+  { id: "ai-pirate-boat", title: "Καραβάκι εξερεύνησης", emoji: "⛵", age: "4–5", level: "Μεσαίο" },
 
   // 5–6: σύνθετες σκηνές / περισσότερες περιοχές
   { id: "sept-autumn-tree", title: "Το φθινοπωρινό μας δέντρο", emoji: "🍁", age: "5–6", level: "Πιο λεπτομερές" },
@@ -321,6 +329,10 @@ const DESIGNS: Design[] = [
   { id: "weather-scene", title: "Ο καιρός", emoji: "🌦️", age: "5–6", level: "Πιο λεπτομερές" },
   { id: "pisipouk-class", title: "Ο Πισιπούκ στην τάξη", emoji: "🐻", age: "5–6", level: "Πιο λεπτομερές" },
   { id: "pisipouk-adventure", title: "Η περιπέτεια του Πισιπούκ", emoji: "🐻", age: "5–6", level: "Πιο λεπτομερές" },
+  { id: "ai-waterfall-forest", title: "Δάσος με καταρράκτη", emoji: "🌲", age: "5–6", level: "Πιο λεπτομερές" },
+  { id: "ai-submarine", title: "Υποβρύχια εξερεύνηση", emoji: "🐠", age: "5–6", level: "Πιο λεπτομερές" },
+  { id: "ai-invention-lab", title: "Εργαστήριο εφευρέσεων", emoji: "⚙️", age: "5–6", level: "Πιο λεπτομερές" },
+  { id: "ai-space-station", title: "Σταθμός στο διάστημα", emoji: "🪐", age: "5–6", level: "Πιο λεπτομερές" },
 ];
 
 const outlineStyle = (id: string) => {
@@ -426,6 +438,120 @@ function Outline({ id }: { id: string }) {
     <circle {...common} cx="450" cy="135" r="42"/>
     <circle {...common} cx="285" cy="275" r="45"/><circle {...common} cx="615" cy="275" r="45"/>
     <circle {...common} cx="300" cy="445" r="35"/><circle {...common} cx="600" cy="445" r="35"/>
+  </>;
+
+  if (id === "ai-pumpkin") return <>
+    <path {...common} d="M450 170 Q350 120 290 220 Q210 345 285 485 Q355 585 450 540 Q545 585 615 485 Q690 345 610 220 Q550 120 450 170Z"/>
+    <path d="M450 175 Q445 115 485 85 M455 115 Q520 85 555 125" {...common} fill="none"/>
+    <circle cx="385" cy="330" r="12" fill="#111"/><circle cx="515" cy="330" r="12" fill="#111"/>
+    <path d="M395 405 Q450 450 505 405" {...common} fill="none" strokeWidth={6}/>
+  </>;
+
+  if (id === "ai-pear") return <>
+    <path {...common} d="M455 145 Q520 175 525 255 Q635 305 620 430 Q605 555 450 575 Q295 555 280 430 Q265 305 375 255 Q380 175 455 145Z"/>
+    <path d="M450 150 Q445 95 485 70" {...common} fill="none"/>
+    <path {...common} d="M490 90 Q555 60 590 110 Q540 145 490 125Z"/>
+    <circle cx="390" cy="360" r="10" fill="#111"/><circle cx="510" cy="360" r="10" fill="#111"/>
+    <path d="M405 420 Q450 455 495 420" {...common} fill="none" strokeWidth={6}/>
+  </>;
+
+  if (id === "ai-snail") return <>
+    <path {...common} d="M235 430 Q260 300 390 300 H610 Q690 300 710 385 Q720 470 625 500 H285 Q205 500 235 430Z"/>
+    <circle {...common} cx="430" cy="330" r="120"/>
+    <path d="M430 250 Q515 290 475 375 Q440 430 365 390 Q320 350 350 300 Q380 265 430 285" {...common} fill="none"/>
+    <path d="M620 300 Q620 215 665 185 M665 300 Q690 220 735 205" {...common} fill="none"/>
+    <circle cx="665" cy="180" r="10" fill="#111"/><circle cx="738" cy="200" r="10" fill="#111"/>
+    <path d="M610 410 Q650 445 690 410" {...common} fill="none" strokeWidth={6}/>
+  </>;
+
+  if (id === "ai-umbrella") return <>
+    <path {...common} d="M180 315 Q240 150 450 150 Q660 150 720 315 Q650 280 585 315 Q520 280 450 315 Q380 280 315 315 Q250 280 180 315Z"/>
+    <path d="M450 150 V485 Q450 565 375 550 Q330 540 340 495" {...common} fill="none"/>
+    <path d="M245 405 L220 475 M330 390 L305 460 M570 390 L545 460 M655 405 L630 475" {...common} fill="none"/>
+  </>;
+
+  if (id === "ai-robot") return <>
+    <rect {...common} x="290" y="170" width="320" height="230" rx="35"/>
+    <rect {...common} x="335" y="410" width="230" height="145" rx="25"/>
+    <circle cx="385" cy="270" r="18" fill="#111"/><circle cx="515" cy="270" r="18" fill="#111"/>
+    <path d="M390 335 H510 M450 170 V115 M420 115 H480" {...common} fill="none"/>
+    <path d="M335 440 L235 500 M565 440 L665 500 M380 555 L350 610 M520 555 L550 610" {...common} fill="none"/>
+    <circle {...common} cx="400" cy="485" r="18"/><circle {...common} cx="500" cy="485" r="18"/>
+  </>;
+
+  if (id === "ai-panda") return <>
+    <circle {...common} cx="330" cy="205" r="70"/><circle {...common} cx="570" cy="205" r="70"/>
+    <ellipse {...common} cx="450" cy="345" rx="190" ry="175"/>
+    <ellipse {...common} cx="385" cy="315" rx="48" ry="62"/><ellipse {...common} cx="515" cy="315" rx="48" ry="62"/>
+    <circle cx="385" cy="315" r="12" fill="#111"/><circle cx="515" cy="315" r="12" fill="#111"/>
+    <ellipse {...common} cx="450" cy="390" rx="58" ry="42"/>
+    <path d="M610 520 L700 180 M665 260 L735 225 M640 340 L710 320 M620 420 L690 405" {...common} fill="none"/>
+    <path {...common} d="M315 505 Q280 570 330 600 M585 505 Q620 570 570 600"/>
+  </>;
+
+  if (id === "ai-rover") return <>
+    <rect {...common} x="230" y="300" width="430" height="180" rx="30"/>
+    <path {...common} d="M320 300 L375 220 H515 L570 300Z"/>
+    <circle {...common} cx="320" cy="505" r="65"/><circle {...common} cx="570" cy="505" r="65"/>
+    <circle {...common} cx="390" cy="285" r="28"/><circle {...common} cx="500" cy="285" r="28"/>
+    <path d="M445 220 V145 M445 145 L505 115" {...common} fill="none"/>
+    <circle {...common} cx="525" cy="105" r="24"/>
+    <path d="M100 570 Q280 525 450 570 Q620 525 800 570" {...common} fill="none"/>
+    <circle {...common} cx="145" cy="165" r="55"/>
+  </>;
+
+  if (id === "ai-pirate-boat") return <>
+    <path {...common} d="M210 430 H690 Q645 545 450 570 Q255 545 210 430Z"/>
+    <path d="M450 430 V135" {...common} fill="none"/>
+    <path {...common} d="M460 165 L460 370 L650 370 Q585 245 460 165Z"/>
+    <path {...common} d="M440 190 L440 360 L295 360 Q335 250 440 190Z"/>
+    <circle {...common} cx="450" cy="260" r="36"/>
+    <path d="M105 595 Q230 545 355 595 Q480 545 605 595 Q730 545 825 595" {...common} fill="none"/>
+    <path d="M690 215 Q740 165 790 215 Q755 250 720 245Z" {...common}/>
+  </>;
+
+  if (id === "ai-waterfall-forest") return <>
+    <path {...common} d="M95 565 Q130 390 175 565Z M690 565 Q735 360 790 565Z"/>
+    <circle {...common} cx="175" cy="235" r="95"/><circle {...common} cx="735" cy="220" r="105"/>
+    <path {...common} d="M330 150 Q450 95 570 150 L550 370 Q500 430 450 430 Q400 430 350 370Z"/>
+    <path d="M420 155 Q390 245 420 335 Q450 410 480 335 Q510 245 480 155" {...common} fill="none"/>
+    <path d="M0 590 Q180 535 350 590 Q520 535 900 590" {...common} fill="none"/>
+    <path {...common} d="M245 510 Q285 445 325 510Z M585 510 Q625 445 665 510Z"/>
+    <circle {...common} cx="610" cy="300" r="32"/><path d="M585 300 H635" {...common} fill="none" strokeWidth={5}/>
+  </>;
+
+  if (id === "ai-submarine") return <>
+    <ellipse {...common} cx="450" cy="350" rx="250" ry="135"/>
+    <path {...common} d="M690 350 L790 270 L790 430Z"/>
+    <path {...common} d="M360 230 Q450 165 540 230 V300 H360Z"/>
+    <circle {...common} cx="350" cy="350" r="48"/><circle {...common} cx="450" cy="350" r="48"/><circle {...common} cx="550" cy="350" r="48"/>
+    <path d="M450 165 V115 H515 M515 115 V155" {...common} fill="none"/>
+    <path d="M120 550 Q150 470 190 550 M220 550 Q255 455 290 550 M690 550 Q730 455 770 550" {...common} fill="none"/>
+    <circle {...common} cx="150" cy="210" r="22"/><circle {...common} cx="110" cy="165" r="14"/>
+  </>;
+
+  if (id === "ai-invention-lab") return <>
+    <rect {...common} x="115" y="390" width="670" height="160" rx="20"/>
+    <circle {...common} cx="260" cy="300" r="85"/>
+    <circle {...common} cx="260" cy="300" r="32"/>
+    <path d="M260 190 V145 M260 455 V410 M150 300 H105 M415 300 H370 M182 222 L150 190 M338 378 L370 410 M338 222 L370 190 M182 378 L150 410" {...common} fill="none"/>
+    <rect {...common} x="470" y="190" width="210" height="150" rx="20"/>
+    <path d="M515 240 H635 M515 285 H600" {...common} fill="none"/>
+    <path {...common} d="M520 550 V610 M660 550 V610"/>
+    <circle {...common} cx="735" cy="180" r="45"/><path d="M735 225 V390" {...common} fill="none"/>
+    <path {...common} d="M700 390 H770 L750 455 H720Z"/>
+  </>;
+
+  if (id === "ai-space-station") return <>
+    <circle {...common} cx="450" cy="315" r="125"/>
+    <rect {...common} x="135" y="260" width="190" height="110" rx="20"/>
+    <rect {...common} x="575" y="260" width="190" height="110" rx="20"/>
+    <path d="M325 315 H575 M450 190 V110 M450 440 V530" {...common} fill="none"/>
+    <circle {...common} cx="450" cy="315" r="48"/>
+    <path {...common} d="M360 530 H540 L500 600 H400Z"/>
+    <circle {...common} cx="150" cy="150" r="55"/>
+    <circle {...common} cx="750" cy="145" r="38"/>
+    <path d="M120 470 L150 470 M135 455 L135 485 M740 470 L775 470 M758 452 L758 488 M285 120 L320 120 M302 102 L302 138" {...common} fill="none" strokeWidth={5}/>
   </>;
 
   if (id === "dino-scene") return <>
@@ -1018,7 +1144,7 @@ function VirtualPreschool() {
                 <div>
                   <p className="text-xs font-black uppercase tracking-[0.16em] text-primary">Online Preschool</p>
                   <h2 className="mt-1 text-2xl font-black text-[#0b3b82]">Ζωγραφική</h2>
-                  <p className="mt-1 text-sm text-muted-foreground">51 σχέδια + online studio · ανανέωση κάθε μήνα</p>
+                  <p className="mt-1 text-sm text-muted-foreground">63 σχέδια + online studio · ανανέωση κάθε μήνα</p>
                 </div>
               </div>
             </a>
@@ -1047,10 +1173,10 @@ function VirtualPreschool() {
                     Βιβλιοθήκη Ζωγραφικής
                   </h1>
                   <p className="mt-2 text-base font-bold text-[#0b3b82] sm:text-lg">
-                    51 πρωτότυπα σχέδια · 6 νέα για τον Σεπτέμβριο 2026
+                    63 πρωτότυπα σχέδια · 12 νέα AI-assisted ανά ηλικία
                   </p>
                   <div className="mt-3 inline-flex rounded-full bg-amber-100 px-4 py-2 text-xs font-black text-amber-800">
-                    ✨ Νέα μηνιαία συλλογή: Φθινόπωρο & επιστροφή στο σχολείο
+                    ✨ Νέα συλλογή: 12 AI-assisted σχέδια, προσαρμοσμένα ανά ηλικία
                   </div>
                 </div>
                 <div className="hidden text-center font-black italic text-[#0b3b82] lg:block">
