@@ -64,7 +64,7 @@ const VOICE_INSTRUCTIONS: Record<GameId, Record<Age, string>> = {
 };
 
 function usePisipoukVoice() {
-  const [enabled, setEnabled] = useState(true);
+  const [enabled, setEnabled] = useState(false);
   const [supported, setSupported] = useState(false);
   const [voice, setVoice] = useState<SpeechSynthesisVoice | null>(null);
 
@@ -78,39 +78,57 @@ function usePisipoukVoice() {
     const pickVoice = () => {
       const voices = window.speechSynthesis.getVoices();
       const greek = voices.filter((item) => item.lang.toLowerCase().startsWith("el"));
-      const selected = greek.find((item) => item.localService) ?? greek[0] ?? null;
-      setVoice(selected);
+      setVoice(greek.find((item) => item.localService) ?? greek[0] ?? null);
     };
 
     pickVoice();
-    window.speechSynthesis.addEventListener("voiceschanged", pickVoice);
+    const synth = window.speechSynthesis;
+    const previous = synth.onvoiceschanged;
+    synth.onvoiceschanged = pickVoice;
+
     return () => {
-      window.speechSynthesis.removeEventListener("voiceschanged", pickVoice);
-      window.speechSynthesis.cancel();
+      synth.onvoiceschanged = previous;
+      synth.cancel();
     };
   }, []);
 
-  const speak = useCallback<SpeakPisipouk>((text, mood = "instruction") => {
-    if (!enabled || typeof window === "undefined" || !("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") return;
+  const speakDirect = useCallback<SpeakPisipouk>((text, mood = "instruction") => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") return;
 
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "el-GR";
-    if (voice) utterance.voice = voice;
-    utterance.volume = 0.96;
-    utterance.rate = mood === "retry" ? 0.88 : mood === "success" ? 0.96 : 0.91;
-    utterance.pitch = mood === "success" ? 1.18 : mood === "retry" ? 1.08 : 1.12;
-    window.speechSynthesis.speak(utterance);
-  }, [enabled, voice]);
+    try {
+      const synth = window.speechSynthesis;
+      synth.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "el-GR";
+      if (voice) utterance.voice = voice;
+      utterance.volume = 1;
+      utterance.rate = mood === "retry" ? 0.87 : mood === "success" ? 0.96 : 0.9;
+      utterance.pitch = mood === "success" ? 1.16 : mood === "retry" ? 1.06 : 1.1;
+      synth.speak(utterance);
+    } catch {
+      // Keep the game fully usable even if a browser blocks speech output.
+    }
+  }, [voice]);
+
+  const speak = useCallback<SpeakPisipouk>((text, mood = "instruction") => {
+    if (!enabled) return;
+    speakDirect(text, mood);
+  }, [enabled, speakDirect]);
+
+  const activate = useCallback((text: string) => {
+    setEnabled(true);
+    speakDirect(text, "instruction");
+  }, [speakDirect]);
 
   const stop = useCallback(() => {
+    setEnabled(false);
     if (typeof window !== "undefined" && "speechSynthesis" in window) window.speechSynthesis.cancel();
   }, []);
 
-  return { enabled, setEnabled, supported, speak, stop };
+  return { enabled, supported, speak, speakDirect, activate, stop };
 }
 
-export const Route = createFileRoute("/learning-games/$gameId")({
+export const Route = createFileRoute("/learning-games_/$gameId")({
   validateSearch: (search: Record<string, unknown>) => ({
     age: isAge(search.age) ? search.age : ("2-3" as Age),
   }),
@@ -137,9 +155,10 @@ function LearningGamePage() {
   const meta = GAME_META[gameId as GameId];
   const {
     enabled: voiceEnabled,
-    setEnabled: setVoiceEnabled,
     supported: voiceSupported,
     speak,
+    speakDirect,
+    activate,
     stop,
   } = usePisipoukVoice();
   const voiceInstruction = meta ? VOICE_INSTRUCTIONS[gameId as GameId][age] : "";
@@ -147,14 +166,6 @@ function LearningGamePage() {
   useEffect(() => {
     if (meta) trackEvent("game_start", { game: "learning_" + gameId, age });
   }, [age, gameId, meta]);
-
-  useEffect(() => {
-    if (!meta || !voiceEnabled || !voiceInstruction) return;
-    const timer = window.setTimeout(() => {
-      speak("Γεια σου! Είμαι ο Πισιπούκ. " + voiceInstruction, "instruction");
-    }, 450);
-    return () => window.clearTimeout(timer);
-  }, [age, gameId, meta, speak, voiceEnabled, voiceInstruction]);
 
   if (!meta) {
     return (
@@ -209,34 +220,37 @@ function LearningGamePage() {
             ))}
           </div>
 
-          <div className="mx-auto mt-4 flex max-w-2xl flex-wrap items-center justify-center gap-2 rounded-2xl border bg-white p-3 shadow-sm">
-            <span className="mr-1 text-2xl" aria-hidden="true">🐻</span>
-            <Button
-              type="button"
-              variant={voiceEnabled && voiceSupported ? "secondary" : "outline"}
-              className="rounded-full"
-              disabled={!voiceSupported}
-              aria-pressed={voiceEnabled}
-              onClick={() => {
-                if (voiceEnabled) {
-                  stop();
-                  setVoiceEnabled(false);
-                } else {
-                  setVoiceEnabled(true);
-                }
-              }}
-            >
-              {voiceSupported ? (voiceEnabled ? "🔊 Φωνή Πισιπούκ: ON" : "🔇 Φωνή Πισιπούκ: OFF") : "🔇 Η φωνή δεν υποστηρίζεται"}
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              className="rounded-full"
-              disabled={!voiceSupported || !voiceEnabled}
-              onClick={() => speak("Είμαι ο Πισιπούκ! " + voiceInstruction, "instruction")}
-            >
-              🔁 Άκουσε την οδηγία
-            </Button>
+          <div className="mx-auto mt-4 max-w-2xl rounded-2xl border bg-white p-3 shadow-sm">
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              <span className="mr-1 text-2xl" aria-hidden="true">🐻</span>
+              {!voiceEnabled ? (
+                <Button
+                  type="button"
+                  className="rounded-full"
+                  disabled={!voiceSupported}
+                  onClick={() => activate("Γεια σου! Είμαι ο Πισιπούκ. " + voiceInstruction)}
+                >
+                  {voiceSupported ? "🔊 Ξεκίνα με τη φωνή του Πισιπούκ" : "🔇 Η φωνή δεν υποστηρίζεται στη συσκευή"}
+                </Button>
+              ) : (
+                <>
+                  <Button type="button" variant="secondary" className="rounded-full" aria-pressed="true" onClick={() => speakDirect("Είμαι εδώ! Πάμε να παίξουμε μαζί.", "success")}>
+                    🔊 Φωνή Πισιπούκ: ON
+                  </Button>
+                  <Button type="button" variant="outline" className="rounded-full" onClick={() => speakDirect("Είμαι ο Πισιπούκ! " + voiceInstruction, "instruction")}>
+                    🔁 Άκουσε την οδηγία
+                  </Button>
+                  <Button type="button" variant="ghost" className="rounded-full" onClick={stop}>
+                    🔇 Κλείσε τη φωνή
+                  </Button>
+                </>
+              )}
+            </div>
+            {!voiceEnabled && voiceSupported && (
+              <p className="mt-2 text-center text-xs leading-5 text-muted-foreground">
+                Πάτησε μία φορά για να επιτρέψει ο browser τον ήχο. Μετά ο Πισιπούκ θα μιλά στις σωστές και στις λάθος προσπάθειες.
+              </p>
+            )}
           </div>
 
           <div className="mt-5 rounded-[2rem] border bg-white p-4 shadow-sm sm:p-7">
