@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { Button } from "@/components/ui/button";
-import { Download, Eraser, Paintbrush, Printer, RotateCcw, Sparkles } from "lucide-react";
+import { Download, Eraser, FileDown, Paintbrush, Printer, RotateCcw, Sparkles } from "lucide-react";
 import { trackEvent } from "@/lib/pisipoukApi";
 import pisipoukLogo from "@/assets/pisipouk-logo.webp";
 
@@ -60,6 +60,186 @@ type Craft = {
   materials: string[];
   steps: string[];
 };
+
+
+function dataUrlBytes(dataUrl: string) {
+  const base64 = dataUrl.split(",")[1] ?? "";
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+  return bytes;
+}
+
+function downloadCanvasPdf(canvas: HTMLCanvasElement, filename: string) {
+  const jpeg = dataUrlBytes(canvas.toDataURL("image/jpeg", 0.98));
+  const landscape = canvas.width > canvas.height;
+  const pageWidth = landscape ? 841.89 : 595.28;
+  const pageHeight = landscape ? 595.28 : 841.89;
+  const margin = 10;
+  const maxWidth = pageWidth - margin * 2;
+  const maxHeight = pageHeight - margin * 2;
+  const scale = Math.min(maxWidth / canvas.width, maxHeight / canvas.height);
+  const drawWidth = canvas.width * scale;
+  const drawHeight = canvas.height * scale;
+  const x = (pageWidth - drawWidth) / 2;
+  const y = (pageHeight - drawHeight) / 2;
+  const encoder = new TextEncoder();
+  const chunks: Uint8Array[] = [];
+  const offsets: number[] = [0];
+  let length = 0;
+
+  const pushText = (value: string) => {
+    const bytes = encoder.encode(value);
+    chunks.push(bytes);
+    length += bytes.length;
+  };
+  const pushBytes = (bytes: Uint8Array) => {
+    chunks.push(bytes);
+    length += bytes.length;
+  };
+  const addObject = (id: number, body: string | Uint8Array, stream = false) => {
+    offsets[id] = length;
+    pushText(`${id} 0 obj\n`);
+    if (stream && body instanceof Uint8Array) {
+      pushText(`<< /Type /XObject /Subtype /Image /Width ${canvas.width} /Height ${canvas.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${body.length} >>\nstream\n`);
+      pushBytes(body);
+      pushText("\nendstream\n");
+    } else {
+      pushText(body as string);
+      pushText("\n");
+    }
+    pushText("endobj\n");
+  };
+
+  pushText("%PDF-1.4\n");
+  addObject(1, "<< /Type /Catalog /Pages 2 0 R >>");
+  addObject(2, "<< /Type /Pages /Kids [3 0 R] /Count 1 >>");
+  addObject(3, `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageWidth.toFixed(2)} ${pageHeight.toFixed(2)}] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>`);
+  addObject(4, jpeg, true);
+  const content = `q\n${drawWidth.toFixed(2)} 0 0 ${drawHeight.toFixed(2)} ${x.toFixed(2)} ${y.toFixed(2)} cm\n/Im0 Do\nQ`;
+  addObject(5, `<< /Length ${encoder.encode(content).length} >>\nstream\n${content}\nendstream`);
+
+  const xrefOffset = length;
+  pushText("xref\n0 6\n0000000000 65535 f \n");
+  for (let id = 1; id <= 5; id += 1) {
+    pushText(`${String(offsets[id]).padStart(10, "0")} 00000 n \n`);
+  }
+  pushText(`trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`);
+
+  const blob = new Blob(chunks, { type: "application/pdf" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function wrapCanvasText(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  x: number,
+  y: number,
+  maxWidth: number,
+  lineHeight: number,
+) {
+  const words = text.split(/\s+/);
+  let line = "";
+  let cursorY = y;
+  for (const word of words) {
+    const test = line ? `${line} ${word}` : word;
+    if (ctx.measureText(test).width > maxWidth && line) {
+      ctx.fillText(line, x, cursorY);
+      line = word;
+      cursorY += lineHeight;
+    } else {
+      line = test;
+    }
+  }
+  if (line) {
+    ctx.fillText(line, x, cursorY);
+    cursorY += lineHeight;
+  }
+  return cursorY;
+}
+
+function craftCanvas(craft: Craft) {
+  const canvas = document.createElement("canvas");
+  canvas.width = 1240;
+  canvas.height = 1754;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return canvas;
+
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "#0b3b82";
+  ctx.font = "700 34px Arial, sans-serif";
+  ctx.fillText("Ο Πισιπούκ • Κατασκευές", 70, 85);
+
+  ctx.font = "700 58px Arial, sans-serif";
+  let y = wrapCanvasText(ctx, `${craft.emoji} ${craft.title}`, 70, 180, 1100, 70);
+  ctx.font = "700 28px Arial, sans-serif";
+  ctx.fillStyle = "#475569";
+  ctx.fillText(`${craft.age} ετών • ${craft.season}`, 70, y + 4);
+  y += 58;
+
+  ctx.strokeStyle = "#dbe4f0";
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(70, y);
+  ctx.lineTo(1170, y);
+  ctx.stroke();
+  y += 58;
+
+  ctx.fillStyle = "#0b3b82";
+  ctx.font = "700 32px Arial, sans-serif";
+  ctx.fillText("ΥΛΙΚΑ", 70, y);
+  y += 52;
+  ctx.fillStyle = "#1f2937";
+  ctx.font = "28px Arial, sans-serif";
+  for (const material of craft.materials) {
+    y = wrapCanvasText(ctx, `• ${material}`, 95, y, 1060, 40);
+    y += 7;
+  }
+
+  y += 24;
+  ctx.fillStyle = "#0b3b82";
+  ctx.font = "700 32px Arial, sans-serif";
+  ctx.fillText("ΒΗΜΑΤΑ", 70, y);
+  y += 54;
+  ctx.fillStyle = "#1f2937";
+  ctx.font = "28px Arial, sans-serif";
+  craft.steps.forEach((step, index) => {
+    y = wrapCanvasText(ctx, `${index + 1}. ${step}`, 95, y, 1060, 40);
+    y += 14;
+  });
+
+  const safetyY = Math.min(Math.max(y + 40, 1360), 1490);
+  ctx.fillStyle = "#fff7ed";
+  ctx.fillRect(70, safetyY, 1100, 145);
+  ctx.fillStyle = "#9a3412";
+  ctx.font = "700 27px Arial, sans-serif";
+  ctx.fillText("Με ενήλικα δίπλα μας 👩‍👧‍👦", 100, safetyY + 44);
+  ctx.fillStyle = "#7c2d12";
+  ctx.font = "23px Arial, sans-serif";
+  wrapCanvasText(
+    ctx,
+    "Ψαλίδι, μικρά εξαρτήματα και οποιοδήποτε κόψιμο ή τρύπημα γίνονται πάντα με επίβλεψη και βοήθεια ενήλικα.",
+    100,
+    safetyY + 84,
+    1030,
+    32,
+  );
+
+  ctx.fillStyle = "#64748b";
+  ctx.font = "21px Arial, sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText("pisipouk.vercel.app", canvas.width / 2, 1718);
+  ctx.textAlign = "left";
+  return canvas;
+}
 
 const CRAFTS: Craft[] = [
   { id: "leaf-collage", title: "Κολάζ με φθινοπωρινά φύλλα", emoji: "🍂", age: "2–3", season: "Φθινόπωρο", materials: ["χαρτόνι", "φύλλα", "κόλλα"], steps: ["Μαζεύουμε φύλλα.", "Τα ακουμπάμε πάνω στο χαρτόνι.", "Κολλάμε ελεύθερα και δημιουργούμε ένα μεγάλο δέντρο."] },
@@ -664,43 +844,132 @@ function VirtualPreschool() {
     lastRef.current = null;
   };
 
-  const download = () => {
-    const paint = canvasRef.current;
-    const svg = svgRef.current;
-    if (!paint || !svg) return;
-    const out = document.createElement("canvas");
-    out.width = 1200;
-    out.height = 930;
-    const ctx = out.getContext("2d");
-    if (!ctx) return;
-    ctx.fillStyle = "#fff";
-    ctx.fillRect(0, 0, out.width, out.height);
+  const composeDrawing = () =>
+    new Promise<HTMLCanvasElement>((resolve, reject) => {
+      const paint = canvasRef.current;
+      const svg = svgRef.current;
+      if (!paint || !svg) {
+        reject(new Error("Drawing is not ready"));
+        return;
+      }
 
-    const svgText = new XMLSerializer().serializeToString(svg);
-    const svgBlob = new Blob([svgText], { type: "image/svg+xml;charset=utf-8" });
-    const url = URL.createObjectURL(svgBlob);
-    const bg = new Image();
+      // A4 landscape ratio, so printing/PDF fills the sheet instead of shrinking.
+      const out = document.createElement("canvas");
+      out.width = 1400;
+      out.height = 990;
+      const ctx = out.getContext("2d");
+      if (!ctx) {
+        reject(new Error("Canvas is not available"));
+        return;
+      }
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(0, 0, out.width, out.height);
 
-    bg.onload = () => {
-      ctx.drawImage(paint, 0, 0, 1200, 867);
-      ctx.drawImage(bg, 0, 0, 1200, 867);
-      ctx.fillStyle = "#333";
-      ctx.font = "26px sans-serif";
-      ctx.textAlign = "center";
-      ctx.fillText("Η ζωγραφιά μου στον Πισιπούκ - pisipouk.vercel.app", 600, 910);
-      const a = document.createElement("a");
-      a.href = out.toDataURL("image/png");
-      a.download = `pisipouk-${designId}.png`;
-      a.click();
-      URL.revokeObjectURL(url);
-      trackEvent("share_click", { game: "freehand_coloring", action: "download", drawing: designId });
-    };
-    bg.src = url;
+      const svgText = new XMLSerializer().serializeToString(svg);
+      const svgBlob = new Blob([svgText], { type: "image/svg+xml;charset=utf-8" });
+      const url = URL.createObjectURL(svgBlob);
+      const bg = new Image();
+      bg.onload = () => {
+        const maxWidth = 1350;
+        const maxHeight = 950;
+        const scale = Math.min(maxWidth / paint.width, maxHeight / paint.height);
+        const drawWidth = paint.width * scale;
+        const drawHeight = paint.height * scale;
+        const x = (out.width - drawWidth) / 2;
+        const y = 12;
+
+        ctx.drawImage(paint, x, y, drawWidth, drawHeight);
+        ctx.drawImage(bg, x, y, drawWidth, drawHeight);
+        ctx.fillStyle = "#64748b";
+        ctx.font = "18px Arial, sans-serif";
+        ctx.textAlign = "right";
+        ctx.fillText("pisipouk.vercel.app", out.width - 24, out.height - 14);
+        URL.revokeObjectURL(url);
+        resolve(out);
+      };
+      bg.onerror = () => {
+        URL.revokeObjectURL(url);
+        reject(new Error("Could not render drawing outline"));
+      };
+      bg.src = url;
+    });
+
+  const download = async () => {
+    const out = await composeDrawing();
+    const a = document.createElement("a");
+    a.href = out.toDataURL("image/png");
+    a.download = `pisipouk-${designId}.png`;
+    a.click();
+    trackEvent("share_click", { game: "freehand_coloring", action: "download", drawing: designId });
   };
 
-  const print = () => {
-    trackEvent("share_click", { game: "freehand_coloring", action: "print", drawing: designId });
-    window.print();
+  const downloadPdf = async () => {
+    const out = await composeDrawing();
+    downloadCanvasPdf(out, `pisipouk-${designId}.pdf`);
+    trackEvent("share_click", { game: "freehand_coloring", action: "download_pdf", drawing: designId });
+  };
+
+  const printDrawing = () => {
+    const printWindow = window.open("", "_blank", "width=1200,height=850");
+    if (!printWindow) return;
+    printWindow.document.write("<!doctype html><html><head><title>Πισιπούκ - Εκτύπωση</title></head><body style='font-family:Arial,sans-serif;text-align:center;padding:20px'>Προετοιμασία εκτύπωσης…</body></html>");
+    printWindow.document.close();
+
+    composeDrawing()
+      .then((out) => {
+        const dataUrl = out.toDataURL("image/png");
+        printWindow.document.open();
+        printWindow.document.write(`<!doctype html>
+          <html lang="el">
+            <head>
+              <meta charset="utf-8" />
+              <title>Πισιπούκ - Εκτύπωση ζωγραφιάς</title>
+              <style>
+                @page { size: A4 landscape; margin: 4mm; }
+                html, body { margin: 0; padding: 0; width: 100%; height: 100%; background: #fff; }
+                body { display: grid; place-items: center; }
+                img { display: block; width: 100%; height: 100%; object-fit: contain; }
+              </style>
+            </head>
+            <body>
+              <img src="${dataUrl}" alt="Ζωγραφιά Πισιπούκ" onload="setTimeout(() => window.print(), 150)" />
+            </body>
+          </html>`);
+        printWindow.document.close();
+        printWindow.onafterprint = () => printWindow.close();
+        trackEvent("share_click", { game: "freehand_coloring", action: "print", drawing: designId });
+      })
+      .catch(() => printWindow.close());
+  };
+
+  const downloadCraftPdf = (craft: Craft) => {
+    downloadCanvasPdf(craftCanvas(craft), `pisipouk-craft-${craft.id}.pdf`);
+    trackEvent("share_click", { game: "crafts", action: "download_pdf", craft: craft.id });
+  };
+
+  const printCraft = (craft: Craft) => {
+    const printWindow = window.open("", "_blank", "width=900,height=1100");
+    if (!printWindow) return;
+    const dataUrl = craftCanvas(craft).toDataURL("image/png");
+    printWindow.document.write(`<!doctype html>
+      <html lang="el">
+        <head>
+          <meta charset="utf-8" />
+          <title>Πισιπούκ - ${craft.title}</title>
+          <style>
+            @page { size: A4 portrait; margin: 4mm; }
+            html, body { margin: 0; padding: 0; width: 100%; height: 100%; background: #fff; }
+            body { display: grid; place-items: center; }
+            img { display: block; width: 100%; height: 100%; object-fit: contain; }
+          </style>
+        </head>
+        <body>
+          <img src="${dataUrl}" alt="${craft.title}" onload="setTimeout(() => window.print(), 150)" />
+        </body>
+      </html>`);
+    printWindow.document.close();
+    printWindow.onafterprint = () => printWindow.close();
+    trackEvent("share_click", { game: "crafts", action: "print", craft: craft.id });
   };
 
   return (
@@ -890,6 +1159,14 @@ function VirtualPreschool() {
                                 ))}
                               </ol>
                             </div>
+                            <div className="mt-4 grid grid-cols-2 gap-2">
+                              <Button type="button" variant="outline" className="h-9 rounded-full px-3 text-xs" onClick={() => printCraft(craft)}>
+                                <Printer className="h-3.5 w-3.5" />Εκτύπωση A4
+                              </Button>
+                              <Button type="button" className="h-9 rounded-full px-3 text-xs" onClick={() => downloadCraftPdf(craft)}>
+                                <FileDown className="h-3.5 w-3.5" />PDF A4
+                              </Button>
+                            </div>
                           </article>
                         ))}
                       </div>
@@ -994,8 +1271,11 @@ function VirtualPreschool() {
                   <Button type="button" className="rounded-full" onClick={download}>
                     <Download className="h-4 w-4" />Αποθήκευση PNG
                   </Button>
-                  <Button type="button" variant="secondary" className="rounded-full" onClick={print}>
-                    <Printer className="h-4 w-4" />Εκτύπωση
+                  <Button type="button" variant="outline" className="rounded-full" onClick={downloadPdf}>
+                    <FileDown className="h-4 w-4" />Αποθήκευση PDF A4
+                  </Button>
+                  <Button type="button" variant="secondary" className="rounded-full" onClick={printDrawing}>
+                    <Printer className="h-4 w-4" />Εκτύπωση A4
                   </Button>
                 </div>
 
@@ -1011,12 +1291,6 @@ function VirtualPreschool() {
         </div>
       </section>
 
-      <style>{`@media print {
-        body * { visibility:hidden !important; }
-        .print-area, .print-area * { visibility:visible !important; }
-        .print-area { position:absolute !important; inset:0 !important; width:100% !important; border:0 !important; box-shadow:none !important; }
-        header, footer { display:none !important; }
-      }`}</style>
     </SiteLayout>
   );
 }
