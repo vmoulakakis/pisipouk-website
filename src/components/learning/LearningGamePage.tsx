@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { Button } from "@/components/ui/button";
@@ -14,10 +14,12 @@ type Zone = { id: string; label: string; emoji: string };
 type Round = { title: string; instruction: string; zones: Zone[]; items: Item[]; skills: string[]; parentNote: string };
 
 const GAME_CSS =
-  "@keyframes pp-cheer{0%,100%{transform:translateY(0) rotate(0) scale(1)}28%{transform:translateY(-12px) rotate(-5deg) scale(1.05)}58%{transform:translateY(0) rotate(5deg) scale(1.02)}78%{transform:translateY(-5px) rotate(-2deg) scale(1.03)}} " +
-  "@keyframes pp-think{0%,100%{transform:rotate(0) translateX(0)}35%{transform:rotate(-3deg) translateX(-2px)}70%{transform:rotate(3deg) translateX(2px)}} " +
-  "@keyframes pp-idle{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}} " +
-  ".pp-success{animation:pp-cheer .82s ease}.pp-thinking{animation:pp-think .9s ease}.pp-idle{animation:pp-idle 2.5s ease-in-out infinite}";
+  "@keyframes pp-cheer{0%,100%{transform:translateY(0) rotate(0) scale(1)}18%{transform:translateY(-15px) rotate(-7deg) scale(1.08)}40%{transform:translateY(0) rotate(7deg) scale(1.03)}62%{transform:translateY(-8px) rotate(-3deg) scale(1.06)}82%{transform:translateY(0) rotate(2deg) scale(1.02)}} " +
+  "@keyframes pp-think{0%,100%{transform:rotate(0) translateX(0) scale(1)}25%{transform:rotate(-4deg) translateX(-3px) scale(.99)}55%{transform:rotate(2deg) translateX(2px) scale(1.01)}78%{transform:rotate(-2deg) translateX(-1px) scale(1)}} " +
+  "@keyframes pp-idle{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-5px) scale(1.015)}} " +
+  "@keyframes pp-spark{0%{opacity:0;transform:translateY(5px) scale(.6)}40%{opacity:1;transform:translateY(-5px) scale(1.15)}100%{opacity:0;transform:translateY(-14px) scale(.95)}} " +
+  ".pp-success{animation:pp-cheer 1.05s cubic-bezier(.2,.8,.25,1)}.pp-thinking{animation:pp-think 1.05s ease-in-out}.pp-idle{animation:pp-idle 2.7s ease-in-out infinite}.pp-spark{animation:pp-spark 1.05s ease-out both} " +
+  "@media (prefers-reduced-motion:reduce){.pp-success,.pp-thinking,.pp-idle,.pp-spark{animation:none!important}}";
 
 const GAME_META: Record<GameId, { title: string; emoji: string }> = {
   sort: { title: "Σωστή κατηγορία", emoji: "🧺" },
@@ -29,6 +31,85 @@ const GAME_META: Record<GameId, { title: string; emoji: string }> = {
   memory: { title: "Παιχνίδι Μνήμης", emoji: "🧠" },
   pattern: { title: "Βρες το Μοτίβο", emoji: "🔷" },
 };
+
+type VoiceMood = Mood;
+
+function usePisipoukVoice() {
+  const [enabled, setEnabled] = useState(false);
+  const [supported, setSupported] = useState(false);
+  const enabledRef = useRef(false);
+  const voiceRef = useRef<SpeechSynthesisVoice | null>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") {
+      setSupported(false);
+      return;
+    }
+
+    setSupported(true);
+    const synth = window.speechSynthesis;
+
+    const chooseVoice = () => {
+      const greekVoices = synth.getVoices().filter((voice) => voice.lang.toLowerCase().startsWith("el"));
+      const score = (voice: SpeechSynthesisVoice) => {
+        const name = voice.name.toLowerCase();
+        let value = 0;
+        if (voice.lang.toLowerCase() === "el-gr") value += 40;
+        if (voice.localService) value += 15;
+        if (/melina|athina|eleni|female/.test(name)) value += 60;
+        if (/google/.test(name) && /greek|ελλην/.test(name)) value += 35;
+        if (/microsoft/.test(name) && /eleni|greek|ελλην/.test(name)) value += 30;
+        return value;
+      };
+      voiceRef.current = [...greekVoices].sort((a, b) => score(b) - score(a))[0] ?? null;
+    };
+
+    chooseVoice();
+    const previous = synth.onvoiceschanged;
+    synth.onvoiceschanged = chooseVoice;
+
+    return () => {
+      synth.onvoiceschanged = previous;
+      synth.cancel();
+    };
+  }, []);
+
+  const speakDirect = useCallback((text: string, mood: VoiceMood = "idle") => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") return;
+    try {
+      const synth = window.speechSynthesis;
+      synth.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "el-GR";
+      if (voiceRef.current) utterance.voice = voiceRef.current;
+      utterance.volume = 1;
+      utterance.rate = mood === "thinking" ? 0.84 : mood === "success" ? 0.93 : 0.88;
+      utterance.pitch = mood === "success" ? 1.1 : mood === "thinking" ? 1.02 : 1.06;
+      synth.speak(utterance);
+    } catch {
+      // The game remains usable even if the browser blocks speech.
+    }
+  }, []);
+
+  const speak = useCallback((text: string, mood: VoiceMood = "idle") => {
+    if (!enabledRef.current) return;
+    speakDirect(text, mood);
+  }, [speakDirect]);
+
+  const activate = useCallback((text: string) => {
+    enabledRef.current = true;
+    setEnabled(true);
+    speakDirect(text, "idle");
+  }, [speakDirect]);
+
+  const disable = useCallback(() => {
+    enabledRef.current = false;
+    setEnabled(false);
+    if (typeof window !== "undefined" && "speechSynthesis" in window) window.speechSynthesis.cancel();
+  }, []);
+
+  return { enabled, supported, speak, speakDirect, activate, disable };
+}
 
 function isAge(value: unknown): value is Age {
   return value === "2-3" || value === "4-5" || value === "5-6";
@@ -177,6 +258,12 @@ function GameShell({
   skills: string[];
   parentNote: string;
 }) {
+  const { enabled: voiceEnabled, supported: voiceSupported, speak, speakDirect, activate, disable } = usePisipoukVoice();
+
+  useEffect(() => {
+    if (beat > 0) speak(message, mood);
+  }, [beat, message, mood, speak]);
+
   return (
     <SiteLayout>
       <style>{GAME_CSS}</style>
@@ -199,12 +286,47 @@ function GameShell({
                 key={mood + "-" + beat}
                 className={"relative mx-auto flex h-32 w-32 items-center justify-center rounded-full bg-gradient-to-br from-sky-50 to-amber-50 " + (mood === "success" ? "pp-success" : mood === "thinking" ? "pp-thinking" : "pp-idle")}
               >
-                <img src={pisipoukLogo} alt="Ο Πισιπούκ" className="h-28 w-28 object-contain" />
-                {mood === "success" && <span className="absolute -right-1 top-0 text-xl" aria-hidden="true">✨</span>}
-                {mood === "thinking" && <span className="absolute -right-1 top-0 text-xl" aria-hidden="true">💭</span>}
+                <img src={pisipoukLogo} alt="Ο Πισιπούκ" className="h-28 w-28 object-contain drop-shadow-sm" />
+                {mood === "success" && <span className="pp-spark absolute -right-2 -top-1 text-2xl" aria-hidden="true">✨⭐</span>}
+                {mood === "thinking" && <span className="absolute -right-1 top-0 text-2xl" aria-hidden="true">💭</span>}
               </div>
               <div className={"mt-3 rounded-2xl px-3 py-3 text-xs font-bold leading-5 " + (mood === "success" ? "bg-emerald-50 text-emerald-800" : mood === "thinking" ? "bg-amber-50 text-amber-900" : "bg-sky-50 text-[#0b3b82]")}>
                 {message}
+              </div>
+
+              <div className="mt-3 flex flex-col gap-2">
+                {!voiceEnabled ? (
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="w-full rounded-full"
+                    disabled={!voiceSupported}
+                    onClick={() => activate("Γεια σου! Είμαι ο Πισιπούκ. " + instruction + " " + message)}
+                  >
+                    {voiceSupported ? "🔊 Άκου τον Πισιπούκ" : "🔇 Χωρίς φωνή στη συσκευή"}
+                  </Button>
+                ) : (
+                  <>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="secondary"
+                      className="w-full rounded-full"
+                      onClick={() => speakDirect(instruction + " " + message, mood)}
+                    >
+                      🔁 Πες το ξανά
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      className="w-full rounded-full text-xs"
+                      onClick={disable}
+                    >
+                      🔇 Κλείσε τη φωνή
+                    </Button>
+                  </>
+                )}
               </div>
             </aside>
 
