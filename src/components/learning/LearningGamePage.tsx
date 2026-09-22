@@ -39,54 +39,52 @@ const GAME_META: Record<GameId, { title: string; emoji: string }> = {
 
 type VoiceMood = Mood;
 
-const AGE_VOICE = {
-  "2-3": {
-    rate: 0.86,
-    pitch: 0.96,
-    hello: "Γεια σου! Είμαι ο Πισιπούκ. Πάμε μαζί, σιγά σιγά.",
-  },
-  "4-5": {
-    rate: 0.9,
-    pitch: 0.93,
-    hello: "Γεια σου! Είμαι ο Πισιπούκ. Θα το βρούμε μαζί. Κοίτα καλά και δοκίμασε.",
-  },
-  "5-6": {
-    rate: 0.93,
-    pitch: 0.91,
-    hello: "Γεια σου! Είμαι ο Πισιπούκ. Σκέψου πρώτα, διάλεξε μετά, και αν κάτι δεν πετύχει, θα μάθουμε από αυτό.",
-  },
-} satisfies Record<Age, { rate: number; pitch: number; hello: string }>;
+const TEACHER_VOICE = {
+  "2-3": { rate: 0.90, pitch: 1.0 },
+  "4-5": { rate: 0.94, pitch: 1.0 },
+  "5-6": { rate: 0.97, pitch: 1.0 },
+} satisfies Record<Age, { rate: number; pitch: number }>;
 
-function cleanSpeech(text: string) {
+function cleanTeacherText(text: string) {
   return text
-    .replace(/[🐻🎒⭐🐍✨💭🎲🌀🧠🔷🧺🧢🍎🎉]/g, "")
-    .replace(/…/g, "...")
+    .replace(/[🐻🎒⭐🐍✨💭🎲🌀🧠🔷🧺🧢🍎🎉🧐📏🎨🔢]/g, "")
+    .replace(/…/g, ",")
+    .replace(/\.\.\./g, ",")
     .replace(/\s+/g, " ")
+    .replace(/\s+([,.!?])/g, "$1")
     .trim();
 }
 
-function ageSpeech(age: Age, mood: VoiceMood, text: string, childName = "") {
-  const cleaned = cleanSpeech(text);
-  const name = childName.trim();
-  const hello = name ? name + ", " : "";
-  const sentences = cleaned.split(/(?<=[.!?])\s+/).filter(Boolean);
-  const ageText = age === "2-3" ? sentences.slice(0, 2).join(" ") : age === "4-5" ? sentences.slice(0, 3).join(" ") : cleaned;
-  if (mood === "thinking") {
-    if (age === "2-3") return hello + "χμμ... δεν πειράζει. Είμαι εδώ μαζί σου. Κοίτα ξανά. " + ageText;
-    if (age === "4-5") return hello + "καλή προσπάθεια. Ας το σκεφτούμε μαζί λίγο ακόμη. " + ageText;
-    return hello + "ωραία προσπάθεια. Ας χρησιμοποιήσουμε αυτό που μόλις μάθαμε και ας δοκιμάσουμε ξανά. " + ageText;
-  }
-  if (mood === "success") {
-    if (age === "2-3") return hello + "ναι! Το βρήκες! Χαίρομαι πολύ μαζί σου. " + ageText;
-    if (age === "4-5") return hello + "μπράβο! Πρόσεξες πολύ καλά. " + ageText;
-    return hello + "πολύ ωραία σκέψη. Μου αρέσει που παρατήρησες πριν απαντήσεις. " + ageText;
-  }
-  if (age === "2-3") return hello + "έλα, πάμε μαζί σιγά σιγά. " + ageText;
-  if (age === "4-5") return hello + "πάμε να το δούμε μαζί. " + ageText;
-  return hello + ageText;
+function limitForAge(age: Age, text: string) {
+  const sentences = cleanTeacherText(text).split(/(?<=[.!?])\s+/).filter(Boolean);
+  if (age === "2-3") return sentences.slice(0, 2).join(" ");
+  if (age === "4-5") return sentences.slice(0, 3).join(" ");
+  return sentences.join(" ");
 }
 
-function usePisipoukVoice(age: Age, childName: string) {
+function addressChild(childName: string, text: string) {
+  const cleanName = childName.trim();
+  if (!cleanName) return text;
+  if (!text) return cleanName + ".";
+  return cleanName + ", " + text.charAt(0).toLocaleLowerCase("el-GR") + text.slice(1);
+}
+
+function teacherGreeting(age: Age, childName: string, instruction: string) {
+  const task = limitForAge(age, instruction);
+  const intro =
+    age === "2-3"
+      ? "Γεια σου! Πάμε να παίξουμε μαζί. Θα σου λέω ένα μικρό βήμα κάθε φορά."
+      : age === "4-5"
+        ? "Γεια σου! Πάμε να παίξουμε μαζί. Θα παρατηρούμε, θα σκεφτόμαστε και θα δοκιμάζουμε."
+        : "Γεια σου! Πάμε να παίξουμε μαζί. Σκέψου με την ησυχία σου και εγώ θα σε βοηθώ όταν το χρειάζεσαι.";
+  return addressChild(childName, intro + " " + task);
+}
+
+function teacherFeedback(age: Age, childName: string, message: string) {
+  return addressChild(childName, limitForAge(age, message));
+}
+
+function useTeacherVoice(age: Age, childName: string) {
   const [enabled, setEnabled] = useState(false);
   const [supported, setSupported] = useState(false);
   const enabledRef = useRef(false);
@@ -106,12 +104,13 @@ function usePisipoukVoice(age: Age, childName: string) {
       const score = (voice: SpeechSynthesisVoice) => {
         const name = voice.name.toLowerCase();
         let value = 0;
-        if (voice.lang.toLowerCase() === "el-gr") value += 50;
-        if (voice.localService) value += 16;
-        if (/melina|athina|eleni|female|woman|maria|sophia|sofia/.test(name)) value += 85;
-        if (/google/.test(name) && /greek|ελλην/.test(name)) value += 42;
-        if (/microsoft/.test(name) && /greek|ελλην|eleni|athina|melina/.test(name)) value += 38;
-        if (/nikos|stefanos|alexandros|male|man/.test(name)) value -= 25;
+        if (voice.lang.toLowerCase() === "el-gr") value += 60;
+        if (/melina|athina|eleni|maria|sofia|sophia|female|woman/.test(name)) value += 120;
+        if (/natural|neural|premium|enhanced/.test(name)) value += 55;
+        if (/google/.test(name) && /greek|ελλην/.test(name)) value += 45;
+        if (/microsoft/.test(name) && /greek|ελλην|athina|eleni/.test(name)) value += 45;
+        if (voice.localService) value += 8;
+        if (/nikos|stefanos|alexandros|male|man/.test(name)) value -= 100;
         return value;
       };
       voiceRef.current = [...greekVoices].sort((a, b) => score(b) - score(a))[0] ?? null;
@@ -127,34 +126,37 @@ function usePisipoukVoice(age: Age, childName: string) {
     };
   }, []);
 
-  const speakDirect = useCallback((text: string, mood: VoiceMood = "idle") => {
+  const speakRaw = useCallback((text: string) => {
     if (typeof window === "undefined" || !("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") return;
     try {
       const synth = window.speechSynthesis;
       synth.cancel();
-      const profile = AGE_VOICE[age];
-      const utterance = new SpeechSynthesisUtterance(ageSpeech(age, mood, text, childName));
+      const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = "el-GR";
       if (voiceRef.current) utterance.voice = voiceRef.current;
       utterance.volume = 1;
-      utterance.rate = profile.rate + (mood === "thinking" ? -0.03 : mood === "success" ? 0.02 : 0);
-      utterance.pitch = profile.pitch + (mood === "success" ? 0.04 : mood === "thinking" ? -0.01 : 0);
+      utterance.rate = TEACHER_VOICE[age].rate;
+      utterance.pitch = TEACHER_VOICE[age].pitch;
       synth.speak(utterance);
     } catch {
-      // The game remains usable even if the browser blocks speech.
+      // Η δραστηριότητα παραμένει πλήρως λειτουργική χωρίς ήχο.
     }
-  }, [age, childName]);
+  }, [age]);
 
-  const speak = useCallback((text: string, mood: VoiceMood = "idle") => {
+  const speakFeedback = useCallback((message: string, _mood: VoiceMood = "idle") => {
     if (!enabledRef.current) return;
-    speakDirect(text, mood);
-  }, [speakDirect]);
+    speakRaw(teacherFeedback(age, childName, message));
+  }, [age, childName, speakRaw]);
 
-  const activate = useCallback((text: string) => {
+  const repeatFeedback = useCallback((message: string) => {
+    speakRaw(teacherFeedback(age, childName, message));
+  }, [age, childName, speakRaw]);
+
+  const activate = useCallback((instruction: string) => {
     enabledRef.current = true;
     setEnabled(true);
-    speakDirect((childName ? childName + ", " : "") + AGE_VOICE[age].hello + " " + text, "idle");
-  }, [age, childName, speakDirect]);
+    speakRaw(teacherGreeting(age, childName, instruction));
+  }, [age, childName, speakRaw]);
 
   const disable = useCallback(() => {
     enabledRef.current = false;
@@ -162,7 +164,7 @@ function usePisipoukVoice(age: Age, childName: string) {
     if (typeof window !== "undefined" && "speechSynthesis" in window) window.speechSynthesis.cancel();
   }, []);
 
-  return { enabled, supported, speak, speakDirect, activate, disable };
+  return { enabled, supported, speakFeedback, repeatFeedback, activate, disable };
 }
 
 function isAge(value: unknown): value is Age {
@@ -354,7 +356,7 @@ function GameShell({
     } catch {}
   }, []);
 
-  const { enabled: voiceEnabled, supported: voiceSupported, speak, speakDirect, activate, disable } = usePisipoukVoice(age, childName);
+  const { enabled: voiceEnabled, supported: voiceSupported, speakFeedback, repeatFeedback, activate, disable } = useTeacherVoice(age, childName);
 
   useEffect(() => {
     void trackEvent("learning_game_start", { age, title });
@@ -362,10 +364,10 @@ function GameShell({
 
   useEffect(() => {
     if (beat > 0) {
-      speak(message, mood);
+      speakFeedback(message, mood);
       void trackEvent("learning_game_interaction", { age, title, mood });
     }
-  }, [age, beat, message, mood, speak, title]);
+  }, [age, beat, message, mood, speakFeedback, title]);
 
   const saveName = () => {
     const clean = nameDraft.trim().replace(/\s+/g, " ").slice(0, 24);
@@ -403,8 +405,11 @@ function GameShell({
                 {mood === "success" && <span className="pp-spark absolute -right-2 -top-1 text-2xl" aria-hidden="true">✨⭐</span>}
                 {mood === "thinking" && <span className="absolute -right-1 top-0 text-2xl" aria-hidden="true">💭</span>}
               </div>
-              <div className={"mt-3 rounded-2xl px-3 py-3 text-xs font-bold leading-5 " + (mood === "success" ? "bg-emerald-50 text-emerald-800" : mood === "thinking" ? "bg-amber-50 text-amber-900" : "bg-sky-50 text-[#0b3b82]")}>
-                {message}
+              <p className="mt-2 text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground">Ο Πισιπούκ σε παρακολουθεί</p>
+
+              <div className={"mt-4 rounded-2xl border px-3 py-3 text-left " + (mood === "success" ? "border-emerald-200 bg-emerald-50" : mood === "thinking" ? "border-amber-200 bg-amber-50" : "border-sky-200 bg-sky-50")}>
+                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-primary">👩‍🏫 Η δασκάλα λέει</p>
+                <p className="mt-1 text-xs font-bold leading-5 text-slate-700">{message}</p>
               </div>
 
               <div className="mt-3 rounded-2xl bg-slate-50 p-2.5 text-left">
@@ -432,9 +437,9 @@ function GameShell({
                     size="sm"
                     className="w-full rounded-full"
                     disabled={!voiceSupported}
-                    onClick={() => activate(instruction + " " + message)}
+                    onClick={() => activate(instruction)}
                   >
-                    {voiceSupported ? "🔊 Άκου τον Πισιπούκ" : "🔇 Χωρίς φωνή στη συσκευή"}
+                    {voiceSupported ? "🔊 Άκου τη δασκάλα" : "🔇 Δεν υπάρχει ελληνική φωνή στη συσκευή"}
                   </Button>
                 ) : (
                   <>
@@ -443,9 +448,9 @@ function GameShell({
                       size="sm"
                       variant="secondary"
                       className="w-full rounded-full"
-                      onClick={() => speakDirect(instruction + " " + message, mood)}
+                      onClick={() => repeatFeedback(message)}
                     >
-                      🔁 Πες το ξανά
+                      🔁 Άκου ξανά τη δασκάλα
                     </Button>
                     <Button
                       type="button"
