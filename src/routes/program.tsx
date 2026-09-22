@@ -42,7 +42,7 @@ const AREAS = [
   {
     title: { gr: "Συναισθηματική αγωγή", en: "Emotional education" },
     benefit: { gr: "Αναγνώριση και διαχείριση συναισθημάτων.", en: "Recognizing and managing feelings." },
-    example: { gr: "Κάρτες συναισθημάτων στον πρωινό κύκλο.", en: "Feelings cards in the morning circle." },
+    example: { gr: "Κάρτες συναισθημάτων στο πρωινό.", en: "Feelings cards in the morning circle." },
   },
   {
     title: { gr: "Κοινωνικές δεξιότητες", en: "Social skills" },
