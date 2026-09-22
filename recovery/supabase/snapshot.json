@@ -1,0 +1,95 @@
+{
+  "captured_at": "2026-09-22T22:20:00+03:00",
+  "project_id": "gqpbskssrvpfjtujwezc",
+  "project_name": "vmdb",
+  "region": "eu-central-1",
+  "project_url": "https://gqpbskssrvpfjtujwezc.supabase.co",
+  "publishable_key": "sb_publishable_Kcat2PHVjGn32ubiefotfA_iJjCU-B2",
+  "edge_functions": [
+    {
+      "slug": "pisipouk-api",
+      "version": 3,
+      "verify_jwt": false,
+      "sha256": "d0d74b7c52b4afaf87cf5e663a46e723ea2d0f3893a9341b56e1aff647afd779",
+      "env_names": [
+        "RESEND_API_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ]
+    },
+    {
+      "slug": "pisipouk-lead",
+      "version": 3,
+      "verify_jwt": false,
+      "sha256": "9889462c47e39e32403a95abf192e717d73cae706c9eef1841c2feaf468c9d24",
+      "env_names": [
+        "RESEND_API_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ]
+    },
+    {
+      "slug": "pisipouk-event",
+      "version": 2,
+      "verify_jwt": false,
+      "sha256": "a5c8d1f5d9c86c44433b0c01f61ddd0c72b5cc58d6f4524dc30e7674bbd9e9fa",
+      "env_names": [
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ]
+    },
+    {
+      "slug": "pisipouk-admin-data",
+      "version": 1,
+      "verify_jwt": true,
+      "sha256": "eb2b2e15701789898c21a5934f74f12b67a9aa69cdeac0745ae9e4e005ab64db",
+      "env_names": [
+        "SUPABASE_ANON_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ]
+    },
+    {
+      "slug": "pisipouk-subscribe",
+      "version": 2,
+      "verify_jwt": false,
+      "sha256": "7533d99d1f304bb1af80796e98927e02337aaaf50d8af6958d8e7f32f9dbeb37",
+      "env_names": [
+        "RESEND_API_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ]
+    }
+  ],
+  "migrations": [
+    {
+      "version": "20260918202336",
+      "name": "add_pisipouk_crm_admin_tables"
+    },
+    {
+      "version": "20260920134953",
+      "name": "create_pisipouk_growth_tables"
+    },
+    {
+      "version": "20260920191452",
+      "name": "pisipouk_daily_stats_athens_conversion_accuracy"
+    },
+    {
+      "version": "20260920192112",
+      "name": "pisipouk_internal_traffic_and_network_analytics"
+    },
+    {
+      "version": "20260920194851",
+      "name": "pisipouk_resend_key_vault_rpc"
+    },
+    {
+      "version": "20260920195237",
+      "name": "pisipouk_email_subscribers"
+    }
+  ],
+  "database_objects": [],
+  "notes": [
+    "No production rows, PII, admin credentials, service-role keys or secret values are stored in this public recovery kit.",
+    "Vault/Edge Function secret values must be restored from a secure secret store if the Supabase project itself is lost."
+  ]
+}

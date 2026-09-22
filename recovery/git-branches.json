@@ -1,0 +1,107 @@
+[
+  {
+    "name": "backup/full-site-ready-2026-09-21-before-coloring-upgrade",
+    "sha": "df17ba726ed9303e7559fea4d3006ca8c87e26c4",
+    "protected": false
+  },
+  {
+    "name": "backup/full-site-ready-2026-09-21-before-final-online-preschool",
+    "sha": "accf0cfd9c1dc7924dee8db4b4939d704b780e42",
+    "protected": false
+  },
+  {
+    "name": "backup/full-site-ready-2026-09-21-before-poster-preschool",
+    "sha": "1712f40fa98fdb61ba7d6014d9947dfd242aeae2",
+    "protected": false
+  },
+  {
+    "name": "backup/full-site-ready-2026-09-21",
+    "sha": "273f120fd92c1884db6bca8e3139afb571b7fa99",
+    "protected": false
+  },
+  {
+    "name": "backup-e2e-production-2026-09-22-2220",
+    "sha": "e2cee276956848fab558fe664949e0426b7e6682",
+    "protected": false
+  },
+  {
+    "name": "main",
+    "sha": "e2cee276956848fab558fe664949e0426b7e6682",
+    "protected": false
+  },
+  {
+    "name": "recovery-kit-2026-09-22-2220",
+    "sha": "e2cee276956848fab558fe664949e0426b7e6682",
+    "protected": false
+  },
+  {
+    "name": "restore-before-animated-craft-previews-2026-09-22",
+    "sha": "ff61f4d786b97d3689aad59f4ceaf65a7de920dc",
+    "protected": false
+  },
+  {
+    "name": "restore-before-learning-game-route-fix-2026-09-22",
+    "sha": "a4d5e7cdce626d561ce77e1057754b21ac0eb39b",
+    "protected": false
+  },
+  {
+    "name": "restore-before-learning-games-2026-09-22",
+    "sha": "cc9a466d6941036b63fc9d86a9adaffba0356af3",
+    "protected": false
+  },
+  {
+    "name": "restore-before-more-learning-games-2026-09-22",
+    "sha": "ff61f4d786b97d3689aad59f4ceaf65a7de920dc",
+    "protected": false
+  },
+  {
+    "name": "restore-before-natural-age-voice-2026-09-22",
+    "sha": "a801a439a70c129e820932e70ebfcb1132c24d2b",
+    "protected": false
+  },
+  {
+    "name": "restore-before-personalized-learning-suite-2026-09-22",
+    "sha": "31010c3d0fc6e7f2ffbfc115bc71f9d0d2784aec",
+    "protected": false
+  },
+  {
+    "name": "restore-before-pisipouk-coach-2026-09-22",
+    "sha": "65ef364e34ee80155a93c54a47ae5da58cad9e25",
+    "protected": false
+  },
+  {
+    "name": "restore-before-pisipouk-voice-2026-09-22",
+    "sha": "3ff560b146ca71ff0d9a9fdd8cca1d17e43ff49a",
+    "protected": false
+  },
+  {
+    "name": "restore-before-random-learning-games-2026-09-22",
+    "sha": "0825267270aac73a2080f40177ba3c987a603137",
+    "protected": false
+  },
+  {
+    "name": "restore-before-seasonal-learning-expansion-2026-09-22",
+    "sha": "0825267270aac73a2080f40177ba3c987a603137",
+    "protected": false
+  },
+  {
+    "name": "restore-before-static-game-route-fix-2026-09-22",
+    "sha": "b4cd57fe925e4c543cce6ac06d026948c25b5966",
+    "protected": false
+  },
+  {
+    "name": "restore-before-strict-female-teacher-voice-2026-09-22",
+    "sha": "8ce5ed7611f03403af62f81cb4488f750b098e76",
+    "protected": false
+  },
+  {
+    "name": "restore-before-teacher-voice-separation-2026-09-22",
+    "sha": "ab8257a431e9dae86cbcbe68260164eee6b445c0",
+    "protected": false
+  },
+  {
+    "name": "restore-before-voice-animation-reenable-2026-09-22",
+    "sha": "def9ca91a24dace0e001aa94da513d2b956f8b5e",
+    "protected": false
+  }
+]

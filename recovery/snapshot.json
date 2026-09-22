@@ -1,0 +1,55 @@
+{
+  "captured_at": "2026-09-22T22:20:00+03:00",
+  "production_source": {
+    "repository": "vmoulakakis/pisipouk-website",
+    "clone_url": "https://github.com/vmoulakakis/pisipouk-website.git",
+    "default_branch": "main",
+    "production_commit": "e2cee276956848fab558fe664949e0426b7e6682",
+    "production_tree": "5fb30c70c9365402dfe3af59647440001d568263",
+    "exact_snapshot_branch": "backup-e2e-production-2026-09-22-2220",
+    "recovery_branch": "recovery-kit-2026-09-22-2220",
+    "source_file_count": 134
+  },
+  "vercel": {
+    "team_id": "team_jt3jd1HJUB4sK1oZdl9MUYGs",
+    "team_slug": "vassilis-projects-3bf8541b",
+    "project_id": "prj_VXN6LQQZYgXRK9fDy4PEJ3V0PUhW",
+    "project_name": "pisipouk",
+    "framework": "vite",
+    "production_deployment_id": "dpl_BqYziUoZFmQNNC7G2EZqCUhusFTL",
+    "production_deployment_url": "pisipouk-infqqoa2u-vassilis-projects-3bf8541b.vercel.app",
+    "aliases": [
+      "pisipouk.vercel.app",
+      "pisipouk-vassilis-projects-3bf8541b.vercel.app",
+      "pisipouk-git-main-vassilis-projects-3bf8541b.vercel.app"
+    ],
+    "target": "production",
+    "region": "iad1",
+    "source": "git",
+    "build_command": "npm run build",
+    "output_directory": "dist",
+    "routing_config": "vercel.json"
+  },
+  "runtime_dependencies": {
+    "node_major": 22,
+    "package_manager": "npm",
+    "package_lock": "package-lock.json"
+  },
+  "environment_assessment": {
+    "frontend_runtime_env_references_found": false,
+    "searched_patterns": [
+      "import.meta.env",
+      "process.env",
+      "VITE_",
+      "VERCEL_"
+    ],
+    "note": "The current frontend build does not rely on Vercel runtime environment variables. Supabase public URL and publishable key are currently in src/lib/pisipoukApi.ts."
+  },
+  "external_backend": {
+    "provider": "Supabase",
+    "project_ref": "gqpbskssrvpfjtujwezc",
+    "project_url": "https://gqpbskssrvpfjtujwezc.supabase.co",
+    "recovery_copy": "recovery/supabase/",
+    "note": "Edge Function source and non-secret metadata are captured. Production rows, PII, service-role credentials and secret values are intentionally not committed to this public GitHub repository."
+  }
+}
