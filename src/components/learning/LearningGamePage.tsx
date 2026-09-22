@@ -1,12 +1,13 @@
-import { Link, createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";\nimport type { ReactNode } from "react";
+import { Link } from "@tanstack/react-router";
+import { useState } from "react";
+import type { ReactNode } from "react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { Button } from "@/components/ui/button";
 import pisipoukLogo from "@/assets/pisipouk-logo.webp";
 
-type Age = "2-3" | "4-5" | "5-6";
+export type Age = "2-3" | "4-5" | "5-6";
 type DragGameId = "sort" | "dress" | "school-bag" | "fruit-basket";
-type GameId = DragGameId | "snake" | "maze" | "memory" | "pattern";
+export type GameId = DragGameId | "snake" | "maze" | "memory" | "pattern";
 type Mood = "idle" | "success" | "thinking";
 type Item = { id: string; emoji: string; label: string; zone: string };
 type Zone = { id: string; label: string; emoji: string };
@@ -145,33 +146,11 @@ function makeRound(gameId: DragGameId, age: Age): Round {
   return { ...base, items: shuffle(base.pool).slice(0, Math.min(countFor(age), base.pool.length)) };
 }
 
-export const Route = createFileRoute("/learning-games_/$gameId")({
-  validateSearch: (search: Record<string, unknown>) => ({ age: isAge(search.age) ? search.age : ("2-3" as Age) }),
-  head: ({ params }) => ({
-    meta: [{ title: (GAME_META[params.gameId as GameId]?.title ?? "Μαθησιακό Παιχνίδι") + " | Ο Πισιπούκ" }],
-  }),
-  component: GamePage,
-});
-
-function GamePage() {
-  const { gameId: rawGameId } = Route.useParams();
-  const { age } = Route.useSearch();
-
-  if (!isGame(rawGameId)) {
-    return (
-      <SiteLayout>
-        <div className="mx-auto max-w-xl px-4 py-16 text-center">
-          <h1 className="text-3xl font-black">Το παιχνίδι δεν βρέθηκε</h1>
-          <Link to="/learning-games" className="mt-5 inline-flex rounded-full bg-primary px-5 py-3 font-black text-primary-foreground">Όλα τα παιχνίδια</Link>
-        </div>
-      </SiteLayout>
-    );
-  }
-
-  if (isDragGame(rawGameId)) return <DragGame key={rawGameId + "-" + age} gameId={rawGameId} age={age} />;
-  if (rawGameId === "snake") return <SnakeGame key={"snake-" + age} age={age} />;
-  if (rawGameId === "maze") return <MazeGame key={"maze-" + age} age={age} />;
-  if (rawGameId === "memory") return <MemoryGame key={"memory-" + age} age={age} />;
+export function LearningGamePage({ gameId, age }: { gameId: GameId; age: Age }) {
+  if (isDragGame(gameId)) return <DragGame key={gameId + "-" + age} gameId={gameId} age={age} />;
+  if (gameId === "snake") return <SnakeGame key={"snake-" + age} age={age} />;
+  if (gameId === "maze") return <MazeGame key={"maze-" + age} age={age} />;
+  if (gameId === "memory") return <MemoryGame key={"memory-" + age} age={age} />;
   return <PatternGame key={"pattern-" + age} age={age} />;
 }
 
