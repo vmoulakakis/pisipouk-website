@@ -1070,30 +1070,52 @@ function VirtualPreschool() {
               <meta charset="utf-8" />
               <title>Πισιπούκ - Εκτύπωση ζωγραφιάς</title>
               <style>
-                @page { size: A4 landscape; margin: 3mm; }
+                @page { size: A4 landscape; margin: 0; }
+                * { box-sizing: border-box; }
                 html, body {
-                  margin: 0;
-                  padding: 0;
-                  width: 291mm;
-                  height: 204mm;
+                  margin: 0 !important;
+                  padding: 0 !important;
+                  width: 297mm !important;
+                  height: 210mm !important;
+                  min-width: 0 !important;
+                  min-height: 0 !important;
+                  max-width: 297mm !important;
+                  max-height: 210mm !important;
+                  overflow: hidden !important;
                   background: #fff !important;
                   -webkit-print-color-adjust: exact;
                   print-color-adjust: exact;
                 }
-                body { display: flex; align-items: center; justify-content: center; overflow: hidden; }
+                body { position: relative !important; }
+                .print-sheet {
+                  position: fixed !important;
+                  inset: 0 !important;
+                  width: 297mm !important;
+                  height: 210mm !important;
+                  padding: 3mm !important;
+                  overflow: hidden !important;
+                  page-break-before: avoid !important;
+                  page-break-after: avoid !important;
+                  page-break-inside: avoid !important;
+                  break-before: avoid-page !important;
+                  break-after: avoid-page !important;
+                  break-inside: avoid-page !important;
+                }
                 img {
-                  display: block;
-                  width: 291mm;
-                  height: 204mm;
-                  max-width: 291mm;
-                  max-height: 204mm;
-                  object-fit: contain;
+                  display: block !important;
+                  width: 100% !important;
+                  height: 100% !important;
+                  max-width: 100% !important;
+                  max-height: 100% !important;
+                  object-fit: contain !important;
                   image-rendering: auto;
                 }
               </style>
             </head>
             <body>
-              <img src="${dataUrl}" alt="Ζωγραφιά Πισιπούκ" onload="setTimeout(() => window.print(), 150)" />
+              <div class="print-sheet">
+                <img src="${dataUrl}" alt="Ζωγραφιά Πισιπούκ" onload="if(!window.__pisipoukPrinted){window.__pisipoukPrinted=true;setTimeout(() => window.print(), 250)}" />
+              </div>
             </body>
           </html>`);
         printWindow.document.close();
@@ -1118,14 +1140,51 @@ function VirtualPreschool() {
           <meta charset="utf-8" />
           <title>Πισιπούκ - ${craft.title}</title>
           <style>
-            @page { size: A4 portrait; margin: 4mm; }
-            html, body { margin: 0; padding: 0; width: 100%; height: 100%; background: #fff; }
-            body { display: grid; place-items: center; }
-            img { display: block; width: 100%; height: 100%; object-fit: contain; }
+            @page { size: A4 portrait; margin: 0; }
+            * { box-sizing: border-box; }
+            html, body {
+              margin: 0 !important;
+              padding: 0 !important;
+              width: 210mm !important;
+              height: 297mm !important;
+              min-width: 0 !important;
+              min-height: 0 !important;
+              max-width: 210mm !important;
+              max-height: 297mm !important;
+              overflow: hidden !important;
+              background: #fff !important;
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
+            }
+            body { position: relative !important; }
+            .print-sheet {
+              position: fixed !important;
+              inset: 0 !important;
+              width: 210mm !important;
+              height: 297mm !important;
+              padding: 4mm !important;
+              overflow: hidden !important;
+              page-break-before: avoid !important;
+              page-break-after: avoid !important;
+              page-break-inside: avoid !important;
+              break-before: avoid-page !important;
+              break-after: avoid-page !important;
+              break-inside: avoid-page !important;
+            }
+            img {
+              display: block !important;
+              width: 100% !important;
+              height: 100% !important;
+              max-width: 100% !important;
+              max-height: 100% !important;
+              object-fit: contain !important;
+            }
           </style>
         </head>
         <body>
-          <img src="${dataUrl}" alt="${craft.title}" onload="setTimeout(() => window.print(), 150)" />
+          <div class="print-sheet">
+            <img src="${dataUrl}" alt="${craft.title}" onload="if(!window.__pisipoukPrinted){window.__pisipoukPrinted=true;setTimeout(() => window.print(), 250)}" />
+          </div>
         </body>
       </html>`);
     printWindow.document.close();
