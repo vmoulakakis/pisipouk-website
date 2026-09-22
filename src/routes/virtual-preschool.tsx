@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { Button } from "@/components/ui/button";
@@ -1255,7 +1255,7 @@ function VirtualPreschool() {
     <SiteLayout>
       <section className="bg-white py-8 sm:py-12">
         <div className="mx-auto max-w-[1500px] px-3 sm:px-5 lg:px-7">
-          <div className="mb-6 grid gap-3 sm:grid-cols-2">
+          <div className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <a href="#coloring-library" className="group rounded-[1.8rem] border bg-gradient-to-br from-pink-50 to-sky-50 p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
               <div className="flex items-center gap-4">
                 <span className="text-4xl">🎨</span>
@@ -1276,6 +1276,26 @@ function VirtualPreschool() {
                 </div>
               </div>
             </a>
+            <Link to="/learning-games" className="group rounded-[1.8rem] border bg-gradient-to-br from-violet-50 to-sky-50 p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
+              <div className="flex items-center gap-4">
+                <span className="text-4xl">🧩</span>
+                <div>
+                  <p className="text-xs font-black uppercase tracking-[0.16em] text-primary">Online Preschool</p>
+                  <h2 className="mt-1 text-2xl font-black text-[#0b3b82]">Μαθησιακά Παιχνίδια</h2>
+                  <p className="mt-1 text-sm text-muted-foreground">Τυχαίοι γύροι · drag & drop · δραστηριότητες ανά ηλικία</p>
+                </div>
+              </div>
+            </Link>
+            <Link to="/seasonal-packs" className="group rounded-[1.8rem] border bg-gradient-to-br from-orange-50 to-rose-50 p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
+              <div className="flex items-center gap-4">
+                <span className="text-4xl">🍂</span>
+                <div>
+                  <p className="text-xs font-black uppercase tracking-[0.16em] text-primary">Seasonal Packs</p>
+                  <h2 className="mt-1 text-2xl font-black text-[#0b3b82]">Εποχιακά Πακέτα</h2>
+                  <p className="mt-1 text-sm text-muted-foreground">Ζωγραφική · puzzle · κατασκευή · printable A4</p>
+                </div>
+              </div>
+            </Link>
           </div>
 
           <div id="coloring-library" className="scroll-mt-24 overflow-hidden rounded-[2rem] border bg-white shadow-sm">
