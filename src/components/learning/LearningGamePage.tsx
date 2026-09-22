@@ -4,10 +4,11 @@ import type { ReactNode } from "react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { Button } from "@/components/ui/button";
 import pisipoukLogo from "@/assets/pisipouk-logo.webp";
+import { trackEvent } from "@/lib/pisipoukApi";
 
 export type Age = "2-3" | "4-5" | "5-6";
 type DragGameId = "sort" | "dress" | "school-bag" | "fruit-basket";
-export type GameId = DragGameId | "snake" | "maze" | "memory" | "pattern";
+export type GameId = DragGameId | "snake" | "maze" | "memory" | "pattern" | "count" | "odd-one" | "size-order" | "colors-shapes";
 type Mood = "idle" | "success" | "thinking";
 type Item = { id: string; emoji: string; label: string; zone: string };
 type Zone = { id: string; label: string; emoji: string };
@@ -30,6 +31,10 @@ const GAME_META: Record<GameId, { title: string; emoji: string }> = {
   maze: { title: "Λαβύρινθος του Πισιπούκ", emoji: "🌀" },
   memory: { title: "Παιχνίδι Μνήμης", emoji: "🧠" },
   pattern: { title: "Βρες το Μοτίβο", emoji: "🔷" },
+  count: { title: "Μέτρα και Βρες", emoji: "🔢" },
+  "odd-one": { title: "Ποιο δεν ταιριάζει;", emoji: "🧐" },
+  "size-order": { title: "Από μικρό σε μεγάλο", emoji: "📏" },
+  "colors-shapes": { title: "Χρώματα & Σχήματα", emoji: "🎨" },
 };
 
 type VoiceMood = Mood;
@@ -60,24 +65,28 @@ function cleanSpeech(text: string) {
     .trim();
 }
 
-function ageSpeech(age: Age, mood: VoiceMood, text: string) {
+function ageSpeech(age: Age, mood: VoiceMood, text: string, childName = "") {
   const cleaned = cleanSpeech(text);
+  const name = childName.trim();
+  const hello = name ? name + ", " : "";
+  const sentences = cleaned.split(/(?<=[.!?])\s+/).filter(Boolean);
+  const ageText = age === "2-3" ? sentences.slice(0, 2).join(" ") : age === "4-5" ? sentences.slice(0, 3).join(" ") : cleaned;
   if (mood === "thinking") {
-    if (age === "2-3") return "Χμμ... για κοίτα ξανά. " + cleaned;
-    if (age === "4-5") return "Χμμ... σκέψου το λίγο ακόμη. " + cleaned;
-    return "Καλή προσπάθεια. Ας δούμε τι μας έδειξε αυτή η κίνηση. " + cleaned;
+    if (age === "2-3") return hello + "χμμ... δεν πειράζει. Είμαι εδώ μαζί σου. Κοίτα ξανά. " + ageText;
+    if (age === "4-5") return hello + "καλή προσπάθεια. Ας το σκεφτούμε μαζί λίγο ακόμη. " + ageText;
+    return hello + "ωραία προσπάθεια. Ας χρησιμοποιήσουμε αυτό που μόλις μάθαμε και ας δοκιμάσουμε ξανά. " + ageText;
   }
   if (mood === "success") {
-    if (age === "2-3") return "Ναι! Μπράβο! " + cleaned;
-    if (age === "4-5") return "Ωραία! Το βρήκες. " + cleaned;
-    return "Πολύ καλά. Η σκέψη σου σε οδήγησε σωστά. " + cleaned;
+    if (age === "2-3") return hello + "ναι! Το βρήκες! Χαίρομαι πολύ μαζί σου. " + ageText;
+    if (age === "4-5") return hello + "μπράβο! Πρόσεξες πολύ καλά. " + ageText;
+    return hello + "πολύ ωραία σκέψη. Μου αρέσει που παρατήρησες πριν απαντήσεις. " + ageText;
   }
-  if (age === "2-3") return "Πάμε μαζί. " + cleaned;
-  if (age === "4-5") return "Πάμε να το δούμε. " + cleaned;
-  return cleaned;
+  if (age === "2-3") return hello + "έλα, πάμε μαζί σιγά σιγά. " + ageText;
+  if (age === "4-5") return hello + "πάμε να το δούμε μαζί. " + ageText;
+  return hello + ageText;
 }
 
-function usePisipoukVoice(age: Age) {
+function usePisipoukVoice(age: Age, childName: string) {
   const [enabled, setEnabled] = useState(false);
   const [supported, setSupported] = useState(false);
   const enabledRef = useRef(false);
@@ -99,10 +108,10 @@ function usePisipoukVoice(age: Age) {
         let value = 0;
         if (voice.lang.toLowerCase() === "el-gr") value += 50;
         if (voice.localService) value += 16;
-        if (/nikos|stefanos|alexandros|male|man/.test(name)) value += 75;
-        if (/google/.test(name) && /greek|ελλην/.test(name)) value += 38;
-        if (/microsoft/.test(name) && /greek|ελλην|stefanos|nikos/.test(name)) value += 32;
-        if (/melina|athina|eleni/.test(name)) value += 12;
+        if (/melina|athina|eleni|female|woman|maria|sophia|sofia/.test(name)) value += 85;
+        if (/google/.test(name) && /greek|ελλην/.test(name)) value += 42;
+        if (/microsoft/.test(name) && /greek|ελλην|eleni|athina|melina/.test(name)) value += 38;
+        if (/nikos|stefanos|alexandros|male|man/.test(name)) value -= 25;
         return value;
       };
       voiceRef.current = [...greekVoices].sort((a, b) => score(b) - score(a))[0] ?? null;
@@ -124,7 +133,7 @@ function usePisipoukVoice(age: Age) {
       const synth = window.speechSynthesis;
       synth.cancel();
       const profile = AGE_VOICE[age];
-      const utterance = new SpeechSynthesisUtterance(ageSpeech(age, mood, text));
+      const utterance = new SpeechSynthesisUtterance(ageSpeech(age, mood, text, childName));
       utterance.lang = "el-GR";
       if (voiceRef.current) utterance.voice = voiceRef.current;
       utterance.volume = 1;
@@ -134,7 +143,7 @@ function usePisipoukVoice(age: Age) {
     } catch {
       // The game remains usable even if the browser blocks speech.
     }
-  }, [age]);
+  }, [age, childName]);
 
   const speak = useCallback((text: string, mood: VoiceMood = "idle") => {
     if (!enabledRef.current) return;
@@ -144,8 +153,8 @@ function usePisipoukVoice(age: Age) {
   const activate = useCallback((text: string) => {
     enabledRef.current = true;
     setEnabled(true);
-    speakDirect(AGE_VOICE[age].hello + " " + text, "idle");
-  }, [age, speakDirect]);
+    speakDirect((childName ? childName + ", " : "") + AGE_VOICE[age].hello + " " + text, "idle");
+  }, [age, childName, speakDirect]);
 
   const disable = useCallback(() => {
     enabledRef.current = false;
@@ -175,6 +184,29 @@ function shuffle<T>(values: T[]) {
     [result[index], result[swapWith]] = [result[swapWith], result[index]];
   }
   return result;
+}
+
+function freshRound<T>(key: string, factory: () => T, signature: (value: T) => string): T {
+  let candidate = factory();
+  if (typeof window === "undefined") return candidate;
+
+  const storageKey = "pisipouk_round_history_" + key;
+  let history: string[] = [];
+  try {
+    history = JSON.parse(localStorage.getItem(storageKey) || "[]");
+    if (!Array.isArray(history)) history = [];
+  } catch {
+    history = [];
+  }
+
+  for (let attempt = 0; attempt < 40 && history.includes(signature(candidate)); attempt += 1) {
+    candidate = factory();
+  }
+
+  const sig = signature(candidate);
+  const nextHistory = [...history.filter((item) => item !== sig), sig].slice(-24);
+  try { localStorage.setItem(storageKey, JSON.stringify(nextHistory)); } catch {}
+  return candidate;
 }
 
 function countFor(age: Age) {
@@ -269,7 +301,11 @@ const DATA: Record<DragGameId, { title: string; instruction: string; zones: Zone
 
 function makeRound(gameId: DragGameId, age: Age): Round {
   const base = DATA[gameId];
-  return { ...base, items: shuffle(base.pool).slice(0, Math.min(countFor(age), base.pool.length)) };
+  return freshRound(
+    "drag-" + gameId + "-" + age,
+    () => ({ ...base, items: shuffle(base.pool).slice(0, Math.min(countFor(age), base.pool.length)) }),
+    (round) => round.items.map((item) => item.id).join("|"),
+  );
 }
 
 export function LearningGamePage({ gameId, age }: { gameId: GameId; age: Age }) {
@@ -277,7 +313,11 @@ export function LearningGamePage({ gameId, age }: { gameId: GameId; age: Age }) 
   if (gameId === "snake") return <SnakeGame key={"snake-" + age} age={age} />;
   if (gameId === "maze") return <MazeGame key={"maze-" + age} age={age} />;
   if (gameId === "memory") return <MemoryGame key={"memory-" + age} age={age} />;
-  return <PatternGame key={"pattern-" + age} age={age} />;
+  if (gameId === "pattern") return <PatternGame key={"pattern-" + age} age={age} />;
+  if (gameId === "count") return <CountGame key={"count-" + age} age={age} />;
+  if (gameId === "odd-one") return <OddOneGame key={"odd-one-" + age} age={age} />;
+  if (gameId === "size-order") return <SizeOrderGame key={"size-order-" + age} age={age} />;
+  return <ColorsShapesGame key={"colors-shapes-" + age} age={age} />;
 }
 
 function GameShell({
@@ -303,11 +343,39 @@ function GameShell({
   skills: string[];
   parentNote: string;
 }) {
-  const { enabled: voiceEnabled, supported: voiceSupported, speak, speakDirect, activate, disable } = usePisipoukVoice(age);
+  const [childName, setChildName] = useState("");
+  const [nameDraft, setNameDraft] = useState("");
 
   useEffect(() => {
-    if (beat > 0) speak(message, mood);
-  }, [beat, message, mood, speak]);
+    try {
+      const stored = localStorage.getItem("pisipouk_child_first_name") ?? "";
+      setChildName(stored);
+      setNameDraft(stored);
+    } catch {}
+  }, []);
+
+  const { enabled: voiceEnabled, supported: voiceSupported, speak, speakDirect, activate, disable } = usePisipoukVoice(age, childName);
+
+  useEffect(() => {
+    void trackEvent("learning_game_start", { age, title });
+  }, [age, title]);
+
+  useEffect(() => {
+    if (beat > 0) {
+      speak(message, mood);
+      void trackEvent("learning_game_interaction", { age, title, mood });
+    }
+  }, [age, beat, message, mood, speak, title]);
+
+  const saveName = () => {
+    const clean = nameDraft.trim().replace(/\s+/g, " ").slice(0, 24);
+    setChildName(clean);
+    setNameDraft(clean);
+    try {
+      if (clean) localStorage.setItem("pisipouk_child_first_name", clean);
+      else localStorage.removeItem("pisipouk_child_first_name");
+    } catch {}
+  };
 
   return (
     <SiteLayout>
@@ -337,6 +405,24 @@ function GameShell({
               </div>
               <div className={"mt-3 rounded-2xl px-3 py-3 text-xs font-bold leading-5 " + (mood === "success" ? "bg-emerald-50 text-emerald-800" : mood === "thinking" ? "bg-amber-50 text-amber-900" : "bg-sky-50 text-[#0b3b82]")}>
                 {message}
+              </div>
+
+              <div className="mt-3 rounded-2xl bg-slate-50 p-2.5 text-left">
+                <label htmlFor={"pisipouk-name-" + title} className="text-[11px] font-black text-[#0b3b82]">Μικρό όνομα παιδιού</label>
+                <div className="mt-1 flex gap-1.5">
+                  <input
+                    id={"pisipouk-name-" + title}
+                    value={nameDraft}
+                    onChange={(event) => setNameDraft(event.target.value)}
+                    onKeyDown={(event) => { if (event.key === "Enter") saveName(); }}
+                    maxLength={24}
+                    placeholder="π.χ. Μαρία"
+                    autoComplete="off"
+                    className="min-w-0 flex-1 rounded-lg border bg-white px-2 py-1.5 text-xs outline-none focus:ring-2 focus:ring-primary"
+                  />
+                  <button type="button" onClick={saveName} className="rounded-lg bg-white px-2 text-[10px] font-black text-primary shadow-sm">ΟΚ</button>
+                </div>
+                <p className="mt-1 text-[9px] leading-4 text-muted-foreground">Μένει μόνο σε αυτή τη συσκευή.</p>
               </div>
 
               <div className="mt-3 flex flex-col gap-2">
@@ -509,18 +595,23 @@ function snakeLength(age: Age) {
 function makeSnakeSpecials(age: Age) {
   const length = snakeLength(age);
   const count = age === "2-3" ? 1 : age === "4-5" ? 2 : 3;
-  const candidates = shuffle(Array.from({ length: length - 4 }, (_, index) => index + 3));
-  const specials: Record<number, SnakeSpecial> = {};
-
-  for (let index = 0; index < count; index += 1) {
-    const position = candidates[index];
-    specials[position] = { kind: "snake", destination: Math.max(1, position - (2 + index)) };
-  }
-  for (let index = 0; index < count; index += 1) {
-    const position = candidates[count + index];
-    specials[position] = { kind: "star", destination: Math.min(length, position + (2 + index)) };
-  }
-  return specials;
+  return freshRound(
+    "snake-" + age,
+    () => {
+      const candidates = shuffle(Array.from({ length: length - 4 }, (_, index) => index + 3));
+      const specials: Record<number, SnakeSpecial> = {};
+      for (let index = 0; index < count; index += 1) {
+        const position = candidates[index];
+        specials[position] = { kind: "snake", destination: Math.max(1, position - (2 + index)) };
+      }
+      for (let index = 0; index < count; index += 1) {
+        const position = candidates[count + index];
+        specials[position] = { kind: "star", destination: Math.min(length, position + (2 + index)) };
+      }
+      return specials;
+    },
+    (specials) => JSON.stringify(specials),
+  );
 }
 
 function SnakeGame({ age }: { age: Age }) {
@@ -617,41 +708,46 @@ function mazeSize(age: Age) {
 }
 
 function makeMaze(size: number): MazeCell[] {
-  const cells = Array.from({ length: size * size }, () => ({ open: [false, false, false, false] }));
-  const visited = new Set<number>([0]);
-  const stack = [0];
-  const directions = [
-    { dr: -1, dc: 0, dir: 0, opposite: 2 },
-    { dr: 0, dc: 1, dir: 1, opposite: 3 },
-    { dr: 1, dc: 0, dir: 2, opposite: 0 },
-    { dr: 0, dc: -1, dir: 3, opposite: 1 },
-  ];
+  return freshRound(
+    "maze-" + size,
+    () => {
+      const cells = Array.from({ length: size * size }, () => ({ open: [false, false, false, false] }));
+      const visited = new Set<number>([0]);
+      const stack = [0];
+      const directions = [
+        { dr: -1, dc: 0, dir: 0, opposite: 2 },
+        { dr: 0, dc: 1, dir: 1, opposite: 3 },
+        { dr: 1, dc: 0, dir: 2, opposite: 0 },
+        { dr: 0, dc: -1, dir: 3, opposite: 1 },
+      ];
 
-  while (stack.length) {
-    const current = stack[stack.length - 1];
-    const row = Math.floor(current / size);
-    const col = current % size;
-    const options = shuffle(directions.filter(({ dr, dc }) => {
-      const nextRow = row + dr;
-      const nextCol = col + dc;
-      if (nextRow < 0 || nextCol < 0 || nextRow >= size || nextCol >= size) return false;
-      return !visited.has(nextRow * size + nextCol);
-    }));
+      while (stack.length) {
+        const current = stack[stack.length - 1];
+        const row = Math.floor(current / size);
+        const col = current % size;
+        const options = shuffle(directions.filter(({ dr, dc }) => {
+          const nextRow = row + dr;
+          const nextCol = col + dc;
+          if (nextRow < 0 || nextCol < 0 || nextRow >= size || nextCol >= size) return false;
+          return !visited.has(nextRow * size + nextCol);
+        }));
 
-    if (!options.length) {
-      stack.pop();
-      continue;
-    }
+        if (!options.length) {
+          stack.pop();
+          continue;
+        }
 
-    const choice = options[0];
-    const next = (row + choice.dr) * size + (col + choice.dc);
-    cells[current].open[choice.dir] = true;
-    cells[next].open[choice.opposite] = true;
-    visited.add(next);
-    stack.push(next);
-  }
-
-  return cells;
+        const choice = options[0];
+        const next = (row + choice.dr) * size + (col + choice.dc);
+        cells[current].open[choice.dir] = true;
+        cells[next].open[choice.opposite] = true;
+        visited.add(next);
+        stack.push(next);
+      }
+      return cells;
+    },
+    (cells) => cells.map((cell) => cell.open.map((value) => value ? "1" : "0").join("")).join("|"),
+  );
 }
 
 function MazeGame({ age }: { age: Age }) {
@@ -750,11 +846,17 @@ function memoryPairs(age: Age) {
 }
 
 function makeMemoryDeck(age: Age): MemoryCard[] {
-  const chosen = shuffle(MEMORY_EMOJIS).slice(0, memoryPairs(age));
-  return shuffle(chosen.flatMap((emoji, pair) => [
-    { id: pair + "-a", pair, emoji },
-    { id: pair + "-b", pair, emoji },
-  ]));
+  return freshRound(
+    "memory-" + age,
+    () => {
+      const chosen = shuffle(MEMORY_EMOJIS).slice(0, memoryPairs(age));
+      return shuffle(chosen.flatMap((emoji, pair) => [
+        { id: pair + "-a", pair, emoji },
+        { id: pair + "-b", pair, emoji },
+      ]));
+    },
+    (deck) => deck.map((card) => card.emoji + card.id).join("|"),
+  );
 }
 
 function MemoryGame({ age }: { age: Age }) {
@@ -846,26 +948,30 @@ type PatternRound = { sequence: string[]; missing: number; answer: string; optio
 const PATTERN_SYMBOLS = ["🔴", "🔵", "🟡", "🟢", "🟣", "🟠", "⭐", "❤️"];
 
 function makePattern(age: Age): PatternRound {
-  const choices = shuffle(PATTERN_SYMBOLS);
-  let sequence: string[];
-
-  if (age === "2-3") {
-    const [a, b] = choices;
-    sequence = [a, b, a, b, a, b];
-  } else if (age === "4-5") {
-    const [a, b, c] = choices;
-    sequence = [a, b, c, a, b, c];
-  } else {
-    const [a, b, c] = choices;
-    sequence = Math.random() > 0.5 ? [a, a, b, b, c, c, a, a] : [a, b, c, a, b, c, a, b];
-  }
-
-  const start = age === "2-3" ? 3 : Math.floor(sequence.length / 2);
-  const missing = start + Math.floor(Math.random() * (sequence.length - start));
-  const answer = sequence[missing];
-  const optionCount = age === "2-3" ? 3 : 4;
-  const options = shuffle([answer, ...choices.filter((item) => item !== answer).slice(0, optionCount - 1)]);
-  return { sequence, missing, answer, options };
+  return freshRound(
+    "pattern-" + age,
+    () => {
+      const choices = shuffle(PATTERN_SYMBOLS);
+      let sequence: string[];
+      if (age === "2-3") {
+        const [a, b] = choices;
+        sequence = [a, b, a, b, a, b];
+      } else if (age === "4-5") {
+        const [a, b, c] = choices;
+        sequence = [a, b, c, a, b, c];
+      } else {
+        const [a, b, c] = choices;
+        sequence = Math.random() > 0.5 ? [a, a, b, b, c, c, a, a] : [a, b, c, a, b, c, a, b];
+      }
+      const start = age === "2-3" ? 3 : Math.floor(sequence.length / 2);
+      const missing = start + Math.floor(Math.random() * (sequence.length - start));
+      const answer = sequence[missing];
+      const optionCount = age === "2-3" ? 3 : 4;
+      const options = shuffle([answer, ...choices.filter((item) => item !== answer).slice(0, optionCount - 1)]);
+      return { sequence, missing, answer, options };
+    },
+    (round) => round.sequence.join("") + ":" + round.missing + ":" + round.options.join(""),
+  );
 }
 
 function PatternGame({ age }: { age: Age }) {
@@ -926,6 +1032,337 @@ function PatternGame({ age }: { age: Age }) {
             className="flex h-16 w-20 items-center justify-center rounded-2xl border bg-white text-3xl shadow-sm transition hover:-translate-y-0.5 hover:ring-2 hover:ring-primary disabled:opacity-60"
           >
             {option}
+          </button>
+        ))}
+      </div>
+    </GameShell>
+  );
+}
+
+
+type CountRound = { emoji: string; label: string; count: number; options: number[] };
+
+const COUNT_ITEMS = [
+  { emoji: "🍎", label: "μήλα" },
+  { emoji: "⭐", label: "αστεράκια" },
+  { emoji: "🐟", label: "ψαράκια" },
+  { emoji: "🌼", label: "λουλούδια" },
+  { emoji: "🚗", label: "αυτοκινητάκια" },
+  { emoji: "🎈", label: "μπαλόνια" },
+];
+
+function makeCountRound(age: Age): CountRound {
+  const max = age === "2-3" ? 3 : age === "4-5" ? 6 : 10;
+  const optionCount = age === "2-3" ? 3 : 4;
+  return freshRound(
+    "count-" + age,
+    () => {
+      const item = shuffle(COUNT_ITEMS)[0];
+      const count = 1 + Math.floor(Math.random() * max);
+      const distractors = shuffle(Array.from({ length: max }, (_, index) => index + 1).filter((value) => value !== count)).slice(0, optionCount - 1);
+      return { ...item, count, options: shuffle([count, ...distractors]) };
+    },
+    (round) => round.emoji + ":" + round.count + ":" + round.options.join(","),
+  );
+}
+
+function CountGame({ age }: { age: Age }) {
+  const [round, setRound] = useState(() => makeCountRound(age));
+  const [mood, setMood] = useState<Mood>("idle");
+  const [message, setMessage] = useState("Μέτρα ένα ένα, δείχνοντας κάθε εικόνα με το δαχτυλάκι σου.");
+  const [beat, setBeat] = useState(0);
+  const [solved, setSolved] = useState(false);
+
+  const choose = (value: number) => {
+    setBeat((current) => current + 1);
+    if (value === round.count) {
+      setSolved(true);
+      setMood("success");
+      setMessage("Σωστά! Είναι " + round.count + " " + round.label + ". Τα μέτρησες ένα ένα.");
+    } else {
+      setMood("thinking");
+      setMessage("Πάμε ξανά ήρεμα. Άγγιξε κάθε εικόνα μία φορά και μέτρα από το ένα.");
+    }
+  };
+
+  const newRound = () => {
+    setRound(makeCountRound(age));
+    setSolved(false);
+    setMood("idle");
+    setMessage("Νέα ποσότητα! Πρώτα μέτρα και μετά διάλεξε τον αριθμό.");
+    setBeat((current) => current + 1);
+  };
+
+  return (
+    <GameShell
+      age={age}
+      title="Μέτρα και Βρες"
+      instruction="Μέτρα τις εικόνες και διάλεξε τον σωστό αριθμό."
+      mood={mood}
+      message={message}
+      beat={beat}
+      onNewRound={newRound}
+      skills={["Αρίθμηση", "Ποσότητες", "Αντιστοίχιση", "Συγκέντρωση"]}
+      parentNote="Ενθαρρύνετε το παιδί να αντιστοιχεί μία λέξη-αριθμό σε κάθε αντικείμενο, χωρίς να βιάζεται."
+    >
+      <div className="flex min-h-44 flex-wrap items-center justify-center gap-3 rounded-2xl bg-slate-50 p-5">
+        {Array.from({ length: round.count }, (_, index) => <span key={index} className="text-5xl" aria-hidden="true">{round.emoji}</span>)}
+      </div>
+      <p className="mt-5 text-center text-sm font-black text-[#0b3b82]">Πόσα {round.label} βλέπεις;</p>
+      <div className="mt-3 flex flex-wrap justify-center gap-3">
+        {round.options.map((option) => (
+          <button key={option} type="button" disabled={solved} onClick={() => choose(option)}
+            className="flex h-16 w-20 items-center justify-center rounded-2xl border bg-white text-2xl font-black shadow-sm transition hover:-translate-y-0.5 hover:ring-2 hover:ring-primary disabled:opacity-60">
+            {option}
+          </button>
+        ))}
+      </div>
+    </GameShell>
+  );
+}
+
+type OddItem = { id: string; emoji: string; label: string; category: string };
+type OddRound = { items: OddItem[]; answerId: string; categoryLabel: string };
+
+const ODD_GROUPS = [
+  { id: "animals", label: "ζώα", items: [{ id: "dog", emoji: "🐶", label: "σκύλος" }, { id: "cat", emoji: "🐱", label: "γάτα" }, { id: "rabbit", emoji: "🐰", label: "κουνέλι" }, { id: "fox", emoji: "🦊", label: "αλεπού" }, { id: "frog", emoji: "🐸", label: "βάτραχος" }] },
+  { id: "fruit", label: "φρούτα", items: [{ id: "apple", emoji: "🍎", label: "μήλο" }, { id: "banana", emoji: "🍌", label: "μπανάνα" }, { id: "pear", emoji: "🍐", label: "αχλάδι" }, { id: "grapes", emoji: "🍇", label: "σταφύλι" }, { id: "orange", emoji: "🍊", label: "πορτοκάλι" }] },
+  { id: "vehicles", label: "οχήματα", items: [{ id: "car", emoji: "🚗", label: "αυτοκίνητο" }, { id: "bus", emoji: "🚌", label: "λεωφορείο" }, { id: "bike", emoji: "🚲", label: "ποδήλατο" }, { id: "train", emoji: "🚂", label: "τρένο" }, { id: "taxi", emoji: "🚕", label: "ταξί" }] },
+  { id: "clothes", label: "ρούχα", items: [{ id: "shirt", emoji: "👕", label: "μπλούζα" }, { id: "sock", emoji: "🧦", label: "κάλτσα" }, { id: "shoe", emoji: "👟", label: "παπούτσι" }, { id: "cap", emoji: "🧢", label: "καπέλο" }, { id: "coat", emoji: "🧥", label: "μπουφάν" }] },
+];
+
+function makeOddRound(age: Age): OddRound {
+  const sameCount = age === "2-3" ? 3 : age === "4-5" ? 4 : 5;
+  return freshRound(
+    "odd-one-" + age,
+    () => {
+      const groups = shuffle(ODD_GROUPS);
+      const base = groups[0];
+      const other = groups[1];
+      const matching = shuffle(base.items).slice(0, sameCount).map((item) => ({ ...item, category: base.id }));
+      const outsiderBase = shuffle(other.items)[0];
+      const outsider = { ...outsiderBase, id: other.id + "-" + outsiderBase.id, category: other.id };
+      return { items: shuffle([...matching, outsider]), answerId: outsider.id, categoryLabel: base.label };
+    },
+    (round) => round.items.map((item) => item.id).join("|"),
+  );
+}
+
+function OddOneGame({ age }: { age: Age }) {
+  const [round, setRound] = useState(() => makeOddRound(age));
+  const [mood, setMood] = useState<Mood>("idle");
+  const [message, setMessage] = useState("Κοίτα τι κοινό έχουν οι περισσότερες εικόνες.");
+  const [beat, setBeat] = useState(0);
+  const [solved, setSolved] = useState(false);
+
+  const choose = (item: OddItem) => {
+    setBeat((current) => current + 1);
+    if (item.id === round.answerId) {
+      setSolved(true);
+      setMood("success");
+      setMessage("Το βρήκες! Το «" + item.label + "» δεν ανήκει στην ομάδα με τα " + round.categoryLabel + ".");
+    } else {
+      setMood("thinking");
+      setMessage("Αυτό ταιριάζει με την ομάδα. Κοίτα τι κοινό έχει με τις περισσότερες εικόνες και ψάξε ποια είναι διαφορετική.");
+    }
+  };
+
+  const newRound = () => {
+    setRound(makeOddRound(age));
+    setSolved(false);
+    setMood("idle");
+    setMessage("Νέες εικόνες! Πρώτα βρες τι κοινό έχουν οι περισσότερες.");
+    setBeat((current) => current + 1);
+  };
+
+  return (
+    <GameShell
+      age={age}
+      title="Ποιο δεν ταιριάζει;"
+      instruction="Βρες την εικόνα που δεν ανήκει στην ίδια ομάδα με τις άλλες."
+      mood={mood}
+      message={message}
+      beat={beat}
+      onNewRound={newRound}
+      skills={["Κατηγοριοποίηση", "Λογική", "Γλώσσα", "Παρατήρηση"]}
+      parentNote="Μετά την επιλογή, ζητήστε από το παιδί να εξηγήσει με δικά του λόγια τι κοινό έχουν οι υπόλοιπες εικόνες."
+    >
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        {round.items.map((item) => (
+          <button key={item.id} type="button" disabled={solved} onClick={() => choose(item)}
+            className="rounded-2xl border bg-white p-4 text-center shadow-sm transition hover:-translate-y-0.5 hover:ring-2 hover:ring-primary disabled:opacity-60">
+            <div className="text-5xl">{item.emoji}</div>
+            <div className="mt-2 text-xs font-black">{item.label}</div>
+          </button>
+        ))}
+      </div>
+    </GameShell>
+  );
+}
+
+type SizeItem = { id: string; rank: number; emoji: string };
+type SizeRound = { items: SizeItem[]; count: number; emoji: string };
+
+const SIZE_EMOJIS = ["🎈", "⭐", "🍎", "🌼", "🐟"];
+
+function makeSizeRound(age: Age): SizeRound {
+  const count = age === "2-3" ? 3 : age === "4-5" ? 4 : 5;
+  return freshRound(
+    "size-order-" + age,
+    () => {
+      const emoji = shuffle(SIZE_EMOJIS)[0];
+      const items = shuffle(Array.from({ length: count }, (_, index) => ({ id: emoji + "-" + index + "-" + Math.random().toString(36).slice(2, 6), rank: index + 1, emoji })));
+      return { items, count, emoji };
+    },
+    (round) => round.items.map((item) => item.rank).join("") + ":" + round.emoji,
+  );
+}
+
+function SizeOrderGame({ age }: { age: Age }) {
+  const [round, setRound] = useState(() => makeSizeRound(age));
+  const [nextRank, setNextRank] = useState(1);
+  const [chosen, setChosen] = useState<number[]>([]);
+  const [mood, setMood] = useState<Mood>("idle");
+  const [message, setMessage] = useState("Βρες πρώτα το πιο μικρό. Μετά προχώρα ένα μέγεθος τη φορά.");
+  const [beat, setBeat] = useState(0);
+
+  const choose = (item: SizeItem) => {
+    setBeat((current) => current + 1);
+    if (item.rank === nextRank) {
+      const nextChosen = [...chosen, item.rank];
+      setChosen(nextChosen);
+      setNextRank(nextRank + 1);
+      setMood("success");
+      setMessage(nextChosen.length === round.count ? "Έτοιμη η σειρά! Από το πιο μικρό φτάσαμε στο πιο μεγάλο." : "Σωστά. Τώρα βρες το αμέσως μεγαλύτερο.");
+    } else {
+      setMood("thinking");
+      setMessage("Κοίτα μόνο όσα δεν έχουμε διαλέξει ακόμη. Ποιο είναι το πιο μικρό από αυτά;");
+    }
+  };
+
+  const newRound = () => {
+    setRound(makeSizeRound(age));
+    setNextRank(1);
+    setChosen([]);
+    setMood("idle");
+    setMessage("Νέα σειρά μεγεθών! Ξεκίνα από το πιο μικρό.");
+    setBeat((current) => current + 1);
+  };
+
+  return (
+    <GameShell
+      age={age}
+      title="Από μικρό σε μεγάλο"
+      instruction="Πάτησε τις εικόνες με σειρά, ξεκινώντας από τη μικρότερη."
+      mood={mood}
+      message={message}
+      beat={beat}
+      onNewRound={newRound}
+      skills={["Σειροθέτηση", "Σύγκριση", "Συγκέντρωση", "Οπτική διάκριση"]}
+      parentNote="Χρησιμοποιήστε λέξεις όπως μικρότερο, μεγαλύτερο, πριν και μετά. Αυτές οι συγκρίσεις χτίζουν πρώιμη μαθηματική σκέψη."
+    >
+      <div className="flex min-h-56 flex-wrap items-end justify-center gap-4 rounded-2xl bg-slate-50 p-5">
+        {round.items.map((item) => {
+          const done = chosen.includes(item.rank);
+          const size = 34 + item.rank * (age === "2-3" ? 13 : 10);
+          return (
+            <button key={item.id} type="button" disabled={done} onClick={() => choose(item)}
+              className={"flex items-center justify-center rounded-2xl border bg-white p-2 shadow-sm transition hover:-translate-y-0.5 " + (done ? "opacity-30" : "")}
+              style={{ width: size + 28, height: size + 28, fontSize: size }}>
+              {item.emoji}
+            </button>
+          );
+        })}
+      </div>
+      <p className="mt-4 text-center text-sm font-black text-[#0b3b82]">Βήματα: {chosen.length} / {round.count}</p>
+    </GameShell>
+  );
+}
+
+type ShapeOption = { id: string; symbol: string; shape: string; color: string; hex: string };
+type ShapeRound = { target: ShapeOption; options: ShapeOption[] };
+
+const SHAPES = [
+  { symbol: "●", name: "κύκλο" },
+  { symbol: "■", name: "τετράγωνο" },
+  { symbol: "▲", name: "τρίγωνο" },
+  { symbol: "★", name: "αστέρι" },
+];
+const COLORS = [
+  { name: "κόκκινο", hex: "#ef4444" },
+  { name: "μπλε", hex: "#2563eb" },
+  { name: "κίτρινο", hex: "#eab308" },
+  { name: "πράσινο", hex: "#16a34a" },
+  { name: "μοβ", hex: "#9333ea" },
+  { name: "πορτοκαλί", hex: "#f97316" },
+];
+
+function makeShapeRound(age: Age): ShapeRound {
+  const optionCount = age === "2-3" ? 4 : age === "4-5" ? 6 : 8;
+  return freshRound(
+    "colors-shapes-" + age,
+    () => {
+      const all = shuffle(COLORS.flatMap((color) => SHAPES.map((shape) => ({
+        id: color.name + "-" + shape.name,
+        symbol: shape.symbol,
+        shape: shape.name,
+        color: color.name,
+        hex: color.hex,
+      }))));
+      const target = all[0];
+      const distractors = all.filter((item) => item.id !== target.id).slice(0, optionCount - 1);
+      return { target, options: shuffle([target, ...distractors]) };
+    },
+    (round) => round.target.id + ":" + round.options.map((item) => item.id).join("|"),
+  );
+}
+
+function ColorsShapesGame({ age }: { age: Age }) {
+  const [round, setRound] = useState(() => makeShapeRound(age));
+  const [mood, setMood] = useState<Mood>("idle");
+  const [message, setMessage] = useState("Κοίτα πρώτα το χρώμα και μετά το σχήμα.");
+  const [beat, setBeat] = useState(0);
+  const [solved, setSolved] = useState(false);
+
+  const choose = (item: ShapeOption) => {
+    setBeat((current) => current + 1);
+    if (item.id === round.target.id) {
+      setSolved(true);
+      setMood("success");
+      setMessage("Το βρήκες! Διάλεξες το " + round.target.color + " " + round.target.shape + ".");
+    } else {
+      setMood("thinking");
+      const hint = item.color !== round.target.color ? "Κοίτα πρώτα το χρώμα." : "Το χρώμα ταιριάζει. Τώρα κοίτα το σχήμα.";
+      setMessage(hint + " Ύστερα δοκίμασε ξανά.");
+    }
+  };
+
+  const newRound = () => {
+    setRound(makeShapeRound(age));
+    setSolved(false);
+    setMood("idle");
+    setMessage("Νέος στόχος! Κοίτα πρώτα το χρώμα και μετά το σχήμα.");
+    setBeat((current) => current + 1);
+  };
+
+  return (
+    <GameShell
+      age={age}
+      title="Χρώματα & Σχήματα"
+      instruction={"Βρες το " + round.target.color + " " + round.target.shape + "."}
+      mood={mood}
+      message={message}
+      beat={beat}
+      onNewRound={newRound}
+      skills={["Χρώματα", "Σχήματα", "Οπτική διάκριση", "Συγκέντρωση"]}
+      parentNote="Ζητήστε από το παιδί να λέει πρώτα το χρώμα και μετά το σχήμα. Στα μεγαλύτερα παιδιά, ζητήστε και δεύτερο χαρακτηριστικό πριν επιλέξουν."
+    >
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {round.options.map((item) => (
+          <button key={item.id} type="button" disabled={solved} onClick={() => choose(item)}
+            className="flex min-h-28 items-center justify-center rounded-2xl border bg-white p-3 shadow-sm transition hover:-translate-y-0.5 hover:ring-2 hover:ring-primary disabled:opacity-60"
+            aria-label={item.color + " " + item.shape}>
+            <span className="text-6xl leading-none" style={{ color: item.hex }}>{item.symbol}</span>
           </button>
         ))}
       </div>

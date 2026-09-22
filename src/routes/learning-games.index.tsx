@@ -1,5 +1,5 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import pisipoukLogo from "@/assets/pisipouk-logo.webp";
 
@@ -20,6 +20,10 @@ const GAMES = [
   { id: "maze", emoji: "🌀", title: "Λαβύρινθος του Πισιπούκ", skill: "Χωρικός προσανατολισμός · σχεδιασμός · συγκέντρωση", badge: "ΝΕΟΣ ΛΑΒΥΡΙΝΘΟΣ" },
   { id: "memory", emoji: "🧠", title: "Παιχνίδι Μνήμης", skill: "Οπτική μνήμη · προσοχή · αντιστοίχιση", badge: "ΤΥΧΑΙΑ ΖΕΥΓΑΡΙΑ" },
   { id: "pattern", emoji: "🔷", title: "Βρες το Μοτίβο", skill: "Λογική · πρόβλεψη · παρατήρηση", badge: "ΝΕΟ ΜΟΤΙΒΟ" },
+  { id: "count", emoji: "🔢", title: "Μέτρα και Βρες", skill: "Αρίθμηση · ποσότητες · αντιστοίχιση", badge: "ΝΕΑ ΠΟΣΟΤΗΤΑ" },
+  { id: "odd-one", emoji: "🧐", title: "Ποιο δεν ταιριάζει;", skill: "Κατηγοριοποίηση · λογική · λεξιλόγιο", badge: "ΝΕΟΣ ΓΥΡΟΣ" },
+  { id: "size-order", emoji: "📏", title: "Από μικρό σε μεγάλο", skill: "Σειροθέτηση · σύγκριση · συγκέντρωση", badge: "ΝΕΑ ΣΕΙΡΑ" },
+  { id: "colors-shapes", emoji: "🎨", title: "Χρώματα & Σχήματα", skill: "Οπτική διάκριση · χρώματα · σχήματα", badge: "ΝΕΟΣ ΣΤΟΧΟΣ" },
 ] as const;
 
 export const Route = createFileRoute("/learning-games/")({
@@ -34,7 +38,27 @@ export const Route = createFileRoute("/learning-games/")({
 
 function LearningGames() {
   const [age, setAge] = useState<Age>("2-3");
+  const [childName, setChildName] = useState("");
+  const [savedName, setSavedName] = useState("");
   const selected = AGES.find((item) => item.id === age) ?? AGES[0];
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("pisipouk_child_first_name") ?? "";
+      setChildName(stored);
+      setSavedName(stored);
+    } catch {}
+  }, []);
+
+  const saveChildName = () => {
+    const clean = childName.trim().replace(/\s+/g, " ").slice(0, 24);
+    setChildName(clean);
+    setSavedName(clean);
+    try {
+      if (clean) localStorage.setItem("pisipouk_child_first_name", clean);
+      else localStorage.removeItem("pisipouk_child_first_name");
+    } catch {}
+  };
 
   return (
     <SiteLayout>
@@ -48,7 +72,7 @@ function LearningGames() {
               <p className="text-xs font-black uppercase tracking-[0.18em] text-primary">Μαθαίνω παίζοντας</p>
               <h1 className="mt-2 text-4xl font-black tracking-tight text-[#0b3b82] sm:text-6xl">Μαθησιακά Παιχνίδια</h1>
               <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-base">
-                8 παιχνίδια που προσαρμόζονται στην ηλικία. Κάθε νέος γύρος αλλάζει επιλογές, σειρά, διαδρομή ή ζευγάρια ώστε το παιδί να σκέφτεται ξανά.
+                12 παιχνίδια που προσαρμόζονται στην ηλικία. Κάθε νέος γύρος αλλάζει επιλογές, σειρά, διαδρομή, ποσότητες ή ζευγάρια ώστε το παιδί να σκέφτεται ξανά.
               </p>
             </div>
           </div>
@@ -67,6 +91,26 @@ function LearningGames() {
             ))}
           </div>
           <p className="mx-auto mt-3 max-w-2xl text-center text-xs leading-5 text-muted-foreground">{selected.note}</p>
+
+          <div className="mx-auto mt-5 max-w-xl rounded-2xl border bg-white p-4 shadow-sm">
+            <label htmlFor="child-first-name" className="text-sm font-black text-[#0b3b82]">Πώς θέλεις να σε φωνάζει ο Πισιπούκ;</label>
+            <div className="mt-2 flex gap-2">
+              <input
+                id="child-first-name"
+                value={childName}
+                onChange={(event) => setChildName(event.target.value)}
+                onKeyDown={(event) => { if (event.key === "Enter") saveChildName(); }}
+                placeholder="Μικρό όνομα"
+                autoComplete="off"
+                maxLength={24}
+                className="min-w-0 flex-1 rounded-xl border bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary"
+              />
+              <button type="button" onClick={saveChildName} className="rounded-xl bg-primary px-4 py-2 text-sm font-black text-primary-foreground">Αποθήκευση</button>
+            </div>
+            <p className="mt-2 text-xs leading-5 text-muted-foreground">
+              {savedName ? "Ο Πισιπούκ θα μιλά προσωπικά στον/στη " + savedName + "." : "Προαιρετικό. Το όνομα μένει μόνο σε αυτή τη συσκευή και δεν αποστέλλεται στα στατιστικά."}
+            </p>
+          </div>
 
           <div className="mt-9 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {GAMES.map((game) => (
