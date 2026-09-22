@@ -44,7 +44,7 @@ function LearningGames() {
             <p className="text-xs font-black uppercase tracking-[0.18em] text-primary">Εικονικός Παιδικός Σταθμός</p>
             <h1 className="mt-3 text-4xl font-black tracking-tight text-[#0b3b82] sm:text-6xl">Μαθησιακά Παιχνίδια 🧩</h1>
             <p className="mx-auto mt-4 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
-              Κάθε παιχνίδι ανοίγει σε δική του ελαφριά σελίδα, ώστε η ζωγραφική και οι κατασκευές να παραμένουν γρήγορες.
+              Κάθε παιχνίδι ανοίγει σε δική του ελαφριά σελίδα, με ζεστές φωνητικές οδηγίες και ενθάρρυνση από τον Πισιπούκ, ώστε η ζωγραφική και οι κατασκευές να παραμένουν γρήγορες.
               Διάλεξε ηλικία και ξεκίνα.
             </p>
           </div>

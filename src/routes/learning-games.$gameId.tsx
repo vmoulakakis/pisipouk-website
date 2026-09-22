@@ -1,5 +1,5 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { Button } from "@/components/ui/button";
 import { trackEvent } from "@/lib/pisipoukApi";
@@ -27,6 +27,89 @@ function isAge(value: unknown): value is Age {
   return value === "2-3" || value === "4-5" || value === "5-6";
 }
 
+type VoiceMood = "instruction" | "success" | "retry";
+type SpeakPisipouk = (text: string, mood?: VoiceMood) => void;
+
+const VOICE_INSTRUCTIONS: Record<GameId, Record<Age, string>> = {
+  puzzle: {
+    "2-3": "Κοίτα τη σειρά επάνω. Πάτησε δύο μεγάλα κομμάτια για να αλλάξουν θέση και να γίνουν ίδια με τον στόχο.",
+    "4-5": "Κοίτα προσεκτικά τον στόχο. Διάλεξε δύο κομμάτια κάθε φορά και βάλε όλη τη σειρά στη σωστή θέση.",
+    "5-6": "Παρατήρησε όλα τα σύμβολα του στόχου και οργάνωσε τα εννέα κομμάτια στη σωστή σειρά.",
+  },
+  memory: {
+    "2-3": "Άνοιξε δύο καρτούλες και ψάξε τα ίδια ζευγάρια. Θυμήσου πού κρύβεται κάθε εικόνα.",
+    "4-5": "Γύρισε δύο κάρτες κάθε φορά. Αν είναι ίδιες, μένουν ανοιχτές. Αν όχι, θυμήσου τις θέσεις τους.",
+    "5-6": "Βρες όλα τα ζευγάρια με όσο λιγότερες κινήσεις μπορείς. Κοίτα, θυμήσου και δοκίμασε ξανά.",
+  },
+  maze: {
+    "2-3": "Οδήγησέ με μέχρι την τσάντα. Πάτησε τα βελάκια και βρες τον ανοιχτό δρόμο.",
+    "4-5": "Βοήθησέ με να φτάσω στην τσάντα. Αν βρεις τοίχο, διάλεξε άλλη κατεύθυνση.",
+    "5-6": "Σχεδίασε τη διαδρομή σου και οδήγησέ με βήμα βήμα μέχρι τον στόχο χωρίς να πέσουμε σε τοίχο.",
+  },
+  dots: {
+    "2-3": "Ξεκίνα από το ένα και πάτησε τους αριθμούς με τη σειρά μέχρι το έξι.",
+    "4-5": "Βρες τους αριθμούς από το ένα μέχρι το δέκα και ένωσέ τους με τη σωστή σειρά.",
+    "5-6": "Ακολούθησε προσεκτικά τους αριθμούς από το ένα μέχρι το δεκαπέντε για να ολοκληρώσεις το σχέδιο.",
+  },
+  matching: {
+    "2-3": "Διάλεξε μία εικόνα και μετά πάτησε την ομάδα που της ταιριάζει.",
+    "4-5": "Παρατήρησε την εικόνα και σκέψου σε ποια κατηγορία ανήκει πριν διαλέξεις.",
+    "5-6": "Σκέψου το περιβάλλον κάθε ζώου και αντιστοίχισέ το με τη σωστή κατηγορία.",
+  },
+  scene: {
+    "2-3": "Διάλεξε ένα χαρούμενο αυτοκόλλητο και πάτησε ένα τετράγωνο για να το βάλεις στη σκηνή σου.",
+    "4-5": "Φτιάξε τη δική σου ιστορία με αυτοκόλλητα. Διάλεξε, τοποθέτησε και άλλαξε ό,τι θέλεις.",
+    "5-6": "Σχεδίασε μια ολόκληρη σκηνή. Συνδύασε πρόσωπα, φύση και αντικείμενα για να φτιάξεις τη δική σου ιστορία.",
+  },
+};
+
+function usePisipoukVoice() {
+  const [enabled, setEnabled] = useState(true);
+  const [supported, setSupported] = useState(false);
+  const [voice, setVoice] = useState<SpeechSynthesisVoice | null>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") {
+      setSupported(false);
+      return;
+    }
+
+    setSupported(true);
+    const pickVoice = () => {
+      const voices = window.speechSynthesis.getVoices();
+      const greek = voices.filter((item) => item.lang.toLowerCase().startsWith("el"));
+      const selected = greek.find((item) => item.localService) ?? greek[0] ?? null;
+      setVoice(selected);
+    };
+
+    pickVoice();
+    window.speechSynthesis.addEventListener("voiceschanged", pickVoice);
+    return () => {
+      window.speechSynthesis.removeEventListener("voiceschanged", pickVoice);
+      window.speechSynthesis.cancel();
+    };
+  }, []);
+
+  const speak = useCallback<SpeakPisipouk>((text, mood = "instruction") => {
+    if (!enabled || typeof window === "undefined" || !("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") return;
+
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "el-GR";
+    if (voice) utterance.voice = voice;
+    utterance.volume = 0.96;
+    utterance.rate = mood === "retry" ? 0.88 : mood === "success" ? 0.96 : 0.91;
+    utterance.pitch = mood === "success" ? 1.18 : mood === "retry" ? 1.08 : 1.12;
+    window.speechSynthesis.speak(utterance);
+  }, [enabled, voice]);
+
+  const stop = useCallback(() => {
+    if (typeof window !== "undefined" && "speechSynthesis" in window) window.speechSynthesis.cancel();
+  }, []);
+
+  return { enabled, setEnabled, supported, speak, stop };
+}
+
 export const Route = createFileRoute("/learning-games/$gameId")({
   validateSearch: (search: Record<string, unknown>) => ({
     age: isAge(search.age) ? search.age : ("2-3" as Age),
@@ -52,10 +135,26 @@ function LearningGamePage() {
   const { gameId } = Route.useParams();
   const { age } = Route.useSearch();
   const meta = GAME_META[gameId as GameId];
+  const {
+    enabled: voiceEnabled,
+    setEnabled: setVoiceEnabled,
+    supported: voiceSupported,
+    speak,
+    stop,
+  } = usePisipoukVoice();
+  const voiceInstruction = meta ? VOICE_INSTRUCTIONS[gameId as GameId][age] : "";
 
   useEffect(() => {
     if (meta) trackEvent("game_start", { game: "learning_" + gameId, age });
   }, [age, gameId, meta]);
+
+  useEffect(() => {
+    if (!meta || !voiceEnabled || !voiceInstruction) return;
+    const timer = window.setTimeout(() => {
+      speak("Γεια σου! Είμαι ο Πισιπούκ. " + voiceInstruction, "instruction");
+    }, 450);
+    return () => window.clearTimeout(timer);
+  }, [age, gameId, meta, speak, voiceEnabled, voiceInstruction]);
 
   if (!meta) {
     return (
@@ -110,8 +209,38 @@ function LearningGamePage() {
             ))}
           </div>
 
-          <div className="mt-7 rounded-[2rem] border bg-white p-4 shadow-sm sm:p-7">
-            <GameRenderer key={gameId + "-" + age} gameId={gameId as GameId} age={age} />
+          <div className="mx-auto mt-4 flex max-w-2xl flex-wrap items-center justify-center gap-2 rounded-2xl border bg-white p-3 shadow-sm">
+            <span className="mr-1 text-2xl" aria-hidden="true">🐻</span>
+            <Button
+              type="button"
+              variant={voiceEnabled && voiceSupported ? "secondary" : "outline"}
+              className="rounded-full"
+              disabled={!voiceSupported}
+              aria-pressed={voiceEnabled}
+              onClick={() => {
+                if (voiceEnabled) {
+                  stop();
+                  setVoiceEnabled(false);
+                } else {
+                  setVoiceEnabled(true);
+                }
+              }}
+            >
+              {voiceSupported ? (voiceEnabled ? "🔊 Φωνή Πισιπούκ: ON" : "🔇 Φωνή Πισιπούκ: OFF") : "🔇 Η φωνή δεν υποστηρίζεται"}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="rounded-full"
+              disabled={!voiceSupported || !voiceEnabled}
+              onClick={() => speak("Είμαι ο Πισιπούκ! " + voiceInstruction, "instruction")}
+            >
+              🔁 Άκουσε την οδηγία
+            </Button>
+          </div>
+
+          <div className="mt-5 rounded-[2rem] border bg-white p-4 shadow-sm sm:p-7">
+            <GameRenderer key={gameId + "-" + age} gameId={gameId as GameId} age={age} speak={speak} />
           </div>
         </div>
       </section>
@@ -119,13 +248,13 @@ function LearningGamePage() {
   );
 }
 
-function GameRenderer({ gameId, age }: { gameId: GameId; age: Age }) {
-  if (gameId === "puzzle") return <PuzzleGame age={age} />;
-  if (gameId === "memory") return <MemoryGame age={age} />;
-  if (gameId === "maze") return <MazeGame age={age} />;
-  if (gameId === "dots") return <DotsGame age={age} />;
-  if (gameId === "matching") return <MatchingGame age={age} />;
-  return <SceneGame age={age} />;
+function GameRenderer({ gameId, age, speak }: { gameId: GameId; age: Age; speak: SpeakPisipouk }) {
+  if (gameId === "puzzle") return <PuzzleGame age={age} speak={speak} />;
+  if (gameId === "memory") return <MemoryGame age={age} speak={speak} />;
+  if (gameId === "maze") return <MazeGame age={age} speak={speak} />;
+  if (gameId === "dots") return <DotsGame age={age} speak={speak} />;
+  if (gameId === "matching") return <MatchingGame age={age} speak={speak} />;
+  return <SceneGame age={age} speak={speak} />;
 }
 
 const PUZZLE_DATA: Record<Age, { target: string[]; start: string[] }> = {
@@ -143,7 +272,7 @@ const PUZZLE_DATA: Record<Age, { target: string[]; start: string[] }> = {
   },
 };
 
-function PuzzleGame({ age }: { age: Age }) {
+function PuzzleGame({ age, speak }: { age: Age; speak: SpeakPisipouk }) {
   const config = PUZZLE_DATA[age];
   const [tiles, setTiles] = useState(config.start);
   const [selected, setSelected] = useState<number | null>(null);
@@ -159,12 +288,17 @@ function PuzzleGame({ age }: { age: Age }) {
       setSelected(null);
       return;
     }
-    setTiles((current) => {
-      const next = [...current];
-      [next[selected], next[index]] = [next[index], next[selected]];
-      return next;
-    });
+    const nextTiles = [...tiles];
+    [nextTiles[selected], nextTiles[index]] = [nextTiles[index], nextTiles[selected]];
+    setTiles(nextTiles);
     setSelected(null);
+    const nextSolved = nextTiles.every((tile, tileIndex) => tile === config.target[tileIndex]);
+    speak(
+      nextSolved
+        ? "Τα κατάφερες! Μπράβο σου! Το puzzle είναι έτοιμο."
+        : "Καλή προσπάθεια! Κοίτα ξανά τον στόχο και δοκίμασε άλλο ζευγάρι.",
+      nextSolved ? "success" : "retry",
+    );
   };
 
   return (
@@ -195,7 +329,11 @@ function PuzzleGame({ age }: { age: Age }) {
       <GameFooter
         complete={solved}
         message={solved ? "Μπράβο! Το puzzle μπήκε στη σωστή σειρά. 🎉" : "Βρες τη σειρά που βλέπεις στον στόχο."}
-        onReset={() => { setTiles(config.start); setSelected(null); }}
+        onReset={() => {
+          setTiles(config.start);
+          setSelected(null);
+          speak(VOICE_INSTRUCTIONS.puzzle[age], "instruction");
+        }}
       />
     </div>
   );
@@ -216,7 +354,7 @@ const MEMORY_VALUES: Record<Age, string[]> = {
   "5-6": ["🐻", "🍎", "☀️", "🚗", "🦋", "🚀"],
 };
 
-function MemoryGame({ age }: { age: Age }) {
+function MemoryGame({ age, speak }: { age: Age; speak: SpeakPisipouk }) {
   const values = MEMORY_VALUES[age];
   const deck = useMemo(() => deterministicDeck(values), [age]);
   const [flipped, setFlipped] = useState<number[]>([]);
@@ -228,12 +366,23 @@ function MemoryGame({ age }: { age: Age }) {
     const [first, second] = flipped;
     const timer = window.setTimeout(() => {
       if (deck[first] === deck[second]) {
-        setMatched((current) => Array.from(new Set([...current, first, second])));
+        setMatched((current) => {
+          const nextMatched = Array.from(new Set([...current, first, second]));
+          speak(
+            nextMatched.length === deck.length
+              ? "Τα βρήκες όλα! Μπράβο σου, έχεις φοβερή μνήμη!"
+              : "Μπράβο! Βρήκες ένα ίδιο ζευγάρι.",
+            "success",
+          );
+          return nextMatched;
+        });
+      } else {
+        speak("Ωπ, αυτές οι δύο κάρτες δεν είναι ίδιες. Δεν πειράζει! Θυμήσου τις θέσεις τους και ξαναδοκίμασε.", "retry");
       }
       setFlipped([]);
     }, 650);
     return () => window.clearTimeout(timer);
-  }, [deck, flipped]);
+  }, [deck, flipped, speak]);
 
   const reveal = (index: number) => {
     if (flipped.length >= 2 || flipped.includes(index) || matched.includes(index)) return;
@@ -274,7 +423,12 @@ function MemoryGame({ age }: { age: Age }) {
       <GameFooter
         complete={complete}
         message={complete ? "Τα βρήκες όλα! Εξαιρετική μνήμη. ⭐" : "Θυμήσου πού κρύβεται κάθε εικόνα."}
-        onReset={() => { setFlipped([]); setMatched([]); setMoves(0); }}
+        onReset={() => {
+          setFlipped([]);
+          setMatched([]);
+          setMoves(0);
+          speak(VOICE_INSTRUCTIONS.memory[age], "instruction");
+        }}
       />
     </div>
   );
@@ -318,7 +472,7 @@ const MATCHING: Record<Age, { categories: string[]; items: MatchItem[] }> = {
   },
 };
 
-function MatchingGame({ age }: { age: Age }) {
+function MatchingGame({ age, speak }: { age: Age; speak: SpeakPisipouk }) {
   const config = MATCHING[age];
   const [selected, setSelected] = useState<string | null>(null);
   const [done, setDone] = useState<string[]>([]);
@@ -327,16 +481,25 @@ function MatchingGame({ age }: { age: Age }) {
   const chooseCategory = (category: string) => {
     if (!selected) {
       setMessage("Πρώτα διάλεξε μία εικόνα.");
+      speak("Πρώτα διάλεξε μία εικόνα και μετά θα βρούμε μαζί την ομάδα της.", "retry");
       return;
     }
     const item = config.items.find((entry) => entry.id === selected);
     if (!item) return;
     if (item.category === category) {
+      const finishing = done.length + 1 === config.items.length;
       setDone((current) => [...current, item.id]);
       setMessage("Σωστά! " + item.label + " → " + category + " ✅");
       setSelected(null);
+      speak(
+        finishing
+          ? "Τέλεια! Έκανες όλες τις αντιστοιχίσεις σωστά!"
+          : "Μπράβο! Το " + item.label + " ταιριάζει στην ομάδα " + category + ".",
+        "success",
+      );
     } else {
       setMessage("Δοκίμασε ξανά. Σε ποια ομάδα ανήκει το " + item.label + ";");
+      speak("Σχεδόν! Το " + item.label + " δεν ανήκει εκεί. Σκέψου λίγο και δοκίμασε ξανά.", "retry");
     }
   };
 
@@ -375,7 +538,12 @@ function MatchingGame({ age }: { age: Age }) {
       <GameFooter
         complete={complete}
         message={complete ? "Όλες οι αντιστοιχίσεις είναι σωστές! 🎉" : message}
-        onReset={() => { setSelected(null); setDone([]); setMessage("Διάλεξε μία εικόνα και μετά την κατηγορία της."); }}
+        onReset={() => {
+          setSelected(null);
+          setDone([]);
+          setMessage("Διάλεξε μία εικόνα και μετά την κατηγορία της.");
+          speak(VOICE_INSTRUCTIONS.matching[age], "instruction");
+        }}
       />
     </div>
   );
@@ -399,7 +567,7 @@ const DOTS: Record<Age, Point[]> = {
   ],
 };
 
-function DotsGame({ age }: { age: Age }) {
+function DotsGame({ age, speak }: { age: Age; speak: SpeakPisipouk }) {
   const points = DOTS[age];
   const [next, setNext] = useState(0);
   const [hint, setHint] = useState("Ξεκίνα από το 1.");
@@ -407,10 +575,16 @@ function DotsGame({ age }: { age: Age }) {
   const choose = (index: number) => {
     if (index !== next) {
       setHint("Ψάξε το " + (next + 1) + ".");
+      speak("Ωπ, όχι ακόμα αυτόν τον αριθμό. Ψάξε το " + (next + 1) + " και πάτησέ τον.", "retry");
       return;
     }
     setNext((value) => value + 1);
-    setHint(index === points.length - 1 ? "Ολοκληρώθηκε!" : "Τώρα βρες το " + (index + 2) + ".");
+    const finished = index === points.length - 1;
+    setHint(finished ? "Ολοκληρώθηκε!" : "Τώρα βρες το " + (index + 2) + ".");
+    speak(
+      finished ? "Τα κατάφερες! Ένωσες όλες τις τελείες. Μπράβο σου!" : "Μπράβο! Τώρα βρες το " + (index + 2) + ".",
+      "success",
+    );
   };
 
   const complete = next === points.length;
@@ -450,7 +624,15 @@ function DotsGame({ age }: { age: Age }) {
           })}
         </svg>
       </div>
-      <GameFooter complete={complete} message={complete ? "Μπράβο! Ένωσες όλες τις τελείες. ⭐" : hint} onReset={() => { setNext(0); setHint("Ξεκίνα από το 1."); }} />
+      <GameFooter
+        complete={complete}
+        message={complete ? "Μπράβο! Ένωσες όλες τις τελείες. ⭐" : hint}
+        onReset={() => {
+          setNext(0);
+          setHint("Ξεκίνα από το 1.");
+          speak(VOICE_INSTRUCTIONS.dots[age], "instruction");
+        }}
+      />
     </div>
   );
 }
@@ -472,7 +654,7 @@ const MAZES: Record<Age, { size: number; path: Cell[] }> = {
   },
 };
 
-function MazeGame({ age }: { age: Age }) {
+function MazeGame({ age, speak }: { age: Age; speak: SpeakPisipouk }) {
   const config = MAZES[age];
   const [position, setPosition] = useState<Cell>(config.path[0]);
   const [message, setMessage] = useState("Οδήγησε τον Πισιπούκ μέχρι την τσάντα 🎒.");
@@ -485,11 +667,16 @@ function MazeGame({ age }: { age: Age }) {
     const next: Cell = [position[0] + dr, position[1] + dc];
     if (!allowed.has(next[0] + "-" + next[1])) {
       setMessage("Εκεί έχει τοίχο. Δοκίμασε άλλη κατεύθυνση.");
+      speak("Ωπ, εκεί έχει τοίχο. Δεν πειράζει! Δοκίμασε άλλη κατεύθυνση.", "retry");
       return;
     }
     setPosition(next);
-    if (next[0] === goal[0] && next[1] === goal[1]) setMessage("Έφτασες! Μπράβο! 🎉");
-    else setMessage("Συνέχισε — είσαι στον σωστό δρόμο.");
+    if (next[0] === goal[0] && next[1] === goal[1]) {
+      setMessage("Έφτασες! Μπράβο! 🎉");
+      speak("Ναι! Φτάσαμε στην τσάντα. Τα κατάφερες υπέροχα!", "success");
+    } else {
+      setMessage("Συνέχισε — είσαι στον σωστό δρόμο.");
+    }
   };
 
   return (
@@ -527,7 +714,15 @@ function MazeGame({ age }: { age: Age }) {
         <Button type="button" variant="outline" className="h-12 text-xl" onClick={() => move(1, 0)} aria-label="Κάτω">↓</Button>
         <Button type="button" variant="outline" className="h-12 text-xl" onClick={() => move(0, 1)} aria-label="Δεξιά">→</Button>
       </div>
-      <GameFooter complete={complete} message={complete ? "Ο Πισιπούκ βρήκε την τσάντα του! 🎒⭐" : message} onReset={() => { setPosition(config.path[0]); setMessage("Οδήγησε τον Πισιπούκ μέχρι την τσάντα 🎒."); }} />
+      <GameFooter
+        complete={complete}
+        message={complete ? "Ο Πισιπούκ βρήκε την τσάντα του! 🎒⭐" : message}
+        onReset={() => {
+          setPosition(config.path[0]);
+          setMessage("Οδήγησε τον Πισιπούκ μέχρι την τσάντα 🎒.");
+          speak(VOICE_INSTRUCTIONS.maze[age], "instruction");
+        }}
+      />
     </div>
   );
 }
@@ -538,17 +733,21 @@ const SCENE_STICKERS: Record<Age, string[]> = {
   "5-6": ["☀️", "🌳", "🐻", "🌼", "☁️", "🦋", "🏠", "🚲", "🐦", "🌈"],
 };
 
-function SceneGame({ age }: { age: Age }) {
+function SceneGame({ age, speak }: { age: Age; speak: SpeakPisipouk }) {
   const stickers = SCENE_STICKERS[age];
   const [selected, setSelected] = useState(stickers[0]);
   const [cells, setCells] = useState<Array<string | null>>(Array(12).fill(null));
 
   const place = (index: number) => {
-    setCells((current) => {
-      const next = [...current];
-      next[index] = selected === "🧽" ? null : selected;
-      return next;
-    });
+    const next = [...cells];
+    const beforeCount = cells.filter(Boolean).length;
+    next[index] = selected === "🧽" ? null : selected;
+    const afterCount = next.filter(Boolean).length;
+    setCells(next);
+    const target = Math.min(6, stickers.length);
+    if (beforeCount < target && afterCount >= target) {
+      speak("Τι όμορφη σκηνή! Μπράβο σου. Μπορείς να συνεχίσεις και να φτιάξεις τη δική σου ιστορία.", "success");
+    }
   };
 
   return (
@@ -587,7 +786,11 @@ function SceneGame({ age }: { age: Age }) {
       <GameFooter
         complete={cells.filter(Boolean).length >= Math.min(6, stickers.length)}
         message={cells.filter(Boolean).length >= Math.min(6, stickers.length) ? "Υπέροχη σκηνή! Μπορείς να συνεχίσεις να τη διακοσμείς. 🌈" : "Γέμισε τη σκηνή με ό,τι φαντάζεσαι."}
-        onReset={() => { setCells(Array(12).fill(null)); setSelected(stickers[0]); }}
+        onReset={() => {
+          setCells(Array(12).fill(null));
+          setSelected(stickers[0]);
+          speak(VOICE_INSTRUCTIONS.scene[age], "instruction");
+        }}
       />
     </div>
   );
