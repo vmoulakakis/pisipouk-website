@@ -87,6 +87,7 @@ function teacherFeedback(age: Age, childName: string, message: string) {
 function useTeacherVoice(age: Age, childName: string) {
   const [enabled, setEnabled] = useState(false);
   const [supported, setSupported] = useState(false);
+  const [femaleAvailable, setFemaleAvailable] = useState(false);
   const enabledRef = useRef(false);
   const voiceRef = useRef<SpeechSynthesisVoice | null>(null);
 
@@ -101,19 +102,23 @@ function useTeacherVoice(age: Age, childName: string) {
 
     const chooseVoice = () => {
       const greekVoices = synth.getVoices().filter((voice) => voice.lang.toLowerCase().startsWith("el"));
+      const femalePattern = /melina|athina|eleni|maria|sofia|sophia|katerina|female|woman/;
+      const femaleVoices = greekVoices.filter((voice) => femalePattern.test((voice.name + " " + voice.voiceURI).toLowerCase()));
+
       const score = (voice: SpeechSynthesisVoice) => {
-        const name = voice.name.toLowerCase();
+        const name = (voice.name + " " + voice.voiceURI).toLowerCase();
         let value = 0;
         if (voice.lang.toLowerCase() === "el-gr") value += 60;
-        if (/melina|athina|eleni|maria|sofia|sophia|female|woman/.test(name)) value += 120;
-        if (/natural|neural|premium|enhanced/.test(name)) value += 55;
-        if (/google/.test(name) && /greek|ελλην/.test(name)) value += 45;
-        if (/microsoft/.test(name) && /greek|ελλην|athina|eleni/.test(name)) value += 45;
+        if (/melina|athina|eleni|maria|sofia|sophia|katerina/.test(name)) value += 140;
+        if (/natural|neural|premium|enhanced/.test(name)) value += 60;
+        if (/microsoft/.test(name)) value += 20;
+        if (/google/.test(name)) value += 15;
         if (voice.localService) value += 8;
-        if (/nikos|stefanos|alexandros|male|man/.test(name)) value -= 100;
         return value;
       };
-      voiceRef.current = [...greekVoices].sort((a, b) => score(b) - score(a))[0] ?? null;
+
+      voiceRef.current = [...femaleVoices].sort((a, b) => score(b) - score(a))[0] ?? null;
+      setFemaleAvailable(Boolean(voiceRef.current));
     };
 
     chooseVoice();
@@ -128,12 +133,13 @@ function useTeacherVoice(age: Age, childName: string) {
 
   const speakRaw = useCallback((text: string) => {
     if (typeof window === "undefined" || !("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") return;
+    if (!voiceRef.current) return;
     try {
       const synth = window.speechSynthesis;
       synth.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = "el-GR";
-      if (voiceRef.current) utterance.voice = voiceRef.current;
+      utterance.voice = voiceRef.current;
       utterance.volume = 1;
       utterance.rate = TEACHER_VOICE[age].rate;
       utterance.pitch = TEACHER_VOICE[age].pitch;
@@ -164,7 +170,7 @@ function useTeacherVoice(age: Age, childName: string) {
     if (typeof window !== "undefined" && "speechSynthesis" in window) window.speechSynthesis.cancel();
   }, []);
 
-  return { enabled, supported, speakFeedback, repeatFeedback, activate, disable };
+  return { enabled, supported, femaleAvailable, speakFeedback, repeatFeedback, activate, disable };
 }
 
 function isAge(value: unknown): value is Age {
@@ -356,7 +362,7 @@ function GameShell({
     } catch {}
   }, []);
 
-  const { enabled: voiceEnabled, supported: voiceSupported, speakFeedback, repeatFeedback, activate, disable } = useTeacherVoice(age, childName);
+  const { enabled: voiceEnabled, supported: voiceSupported, femaleAvailable, speakFeedback, repeatFeedback, activate, disable } = useTeacherVoice(age, childName);
 
   useEffect(() => {
     void trackEvent("learning_game_start", { age, title });
@@ -436,10 +442,14 @@ function GameShell({
                     type="button"
                     size="sm"
                     className="w-full rounded-full"
-                    disabled={!voiceSupported}
+                    disabled={!voiceSupported || !femaleAvailable}
                     onClick={() => activate(instruction)}
                   >
-                    {voiceSupported ? "🔊 Άκου τη δασκάλα" : "🔇 Δεν υπάρχει ελληνική φωνή στη συσκευή"}
+                    {!voiceSupported
+                      ? "🔇 Δεν υποστηρίζεται φωνή"
+                      : femaleAvailable
+                        ? "🔊 Άκου τη δασκάλα"
+                        : "🔇 Δεν βρέθηκε γυναικεία ελληνική φωνή"}
                   </Button>
                 ) : (
                   <>
