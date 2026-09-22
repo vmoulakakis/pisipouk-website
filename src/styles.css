@@ -448,3 +448,61 @@
     animation: pisipouk-route-enter 220ms cubic-bezier(0.2, 0.7, 0.2, 1);
   }
 }
+
+
+@keyframes pisipouk-coach-cheer {
+  0% { transform: translateY(0) rotate(0deg) scale(1); }
+  28% { transform: translateY(-10px) rotate(-5deg) scale(1.05); }
+  55% { transform: translateY(0) rotate(5deg) scale(1.02); }
+  78% { transform: translateY(-5px) rotate(-2deg) scale(1.04); }
+  100% { transform: translateY(0) rotate(0deg) scale(1); }
+}
+
+@keyframes pisipouk-coach-think {
+  0%, 100% { transform: rotate(0deg) translateX(0); }
+  30% { transform: rotate(-3deg) translateX(-2px); }
+  65% { transform: rotate(3deg) translateX(2px); }
+}
+
+@keyframes pisipouk-coach-listen {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+@keyframes pisipouk-coach-stars {
+  0% { opacity: 0; transform: translate(-50%, 8px) scale(0.7); }
+  45% { opacity: 1; transform: translate(-50%, -6px) scale(1.1); }
+  100% { opacity: 0; transform: translate(-50%, -18px) scale(1); }
+}
+
+@layer utilities {
+  .pisipouk-coach {
+    transform-origin: 50% 80%;
+    overflow: visible;
+  }
+  .pisipouk-coach-success {
+    animation: pisipouk-coach-cheer 760ms cubic-bezier(0.2, 0.8, 0.25, 1);
+  }
+  .pisipouk-coach-retry {
+    animation: pisipouk-coach-think 900ms ease-in-out;
+  }
+  .pisipouk-coach-listen {
+    animation: pisipouk-coach-listen 2.4s ease-in-out infinite;
+  }
+  .pisipouk-coach-sparkles {
+    position: absolute;
+    left: 50%;
+    top: -0.5rem;
+    white-space: nowrap;
+    font-size: 1.15rem;
+    pointer-events: none;
+    animation: pisipouk-coach-stars 900ms ease-out both;
+  }
+  .pisipouk-coach-think {
+    position: absolute;
+    right: -0.25rem;
+    top: 0.2rem;
+    font-size: 1.4rem;
+    pointer-events: none;
+  }
+}

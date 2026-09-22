@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { Button } from "@/components/ui/button";
 import { trackEvent } from "@/lib/pisipoukApi";
+import pisipoukLogo from "@/assets/pisipouk-logo.webp";
 
 type Age = "2-3" | "4-5" | "5-6";
 
@@ -78,7 +79,19 @@ function usePisipoukVoice() {
     const pickVoice = () => {
       const voices = window.speechSynthesis.getVoices();
       const greek = voices.filter((item) => item.lang.toLowerCase().startsWith("el"));
-      setVoice(greek.find((item) => item.localService) ?? greek[0] ?? null);
+      const scoreVoice = (item: SpeechSynthesisVoice) => {
+        const name = item.name.toLowerCase();
+        let score = 0;
+        if (item.lang.toLowerCase() === "el-gr") score += 40;
+        if (item.localService) score += 18;
+        if (item.default) score += 4;
+        if (/melina|athina|eleni|female/.test(name)) score += 70;
+        if (/google/.test(name) && /greek|ελλην/.test(name)) score += 45;
+        if (/microsoft/.test(name) && /eleni|greek|ελλην/.test(name)) score += 35;
+        return score;
+      };
+      const selected = [...greek].sort((a, b) => scoreVoice(b) - scoreVoice(a))[0] ?? null;
+      setVoice(selected);
     };
 
     pickVoice();
@@ -102,8 +115,8 @@ function usePisipoukVoice() {
       utterance.lang = "el-GR";
       if (voice) utterance.voice = voice;
       utterance.volume = 1;
-      utterance.rate = mood === "retry" ? 0.87 : mood === "success" ? 0.96 : 0.9;
-      utterance.pitch = mood === "success" ? 1.16 : mood === "retry" ? 1.06 : 1.1;
+      utterance.rate = mood === "retry" ? 0.84 : mood === "success" ? 0.93 : 0.87;
+      utterance.pitch = mood === "success" ? 1.1 : mood === "retry" ? 1.02 : 1.06;
       synth.speak(utterance);
     } catch {
       // Keep the game fully usable even if a browser blocks speech output.
@@ -162,6 +175,30 @@ function LearningGamePage() {
     stop,
   } = usePisipoukVoice();
   const voiceInstruction = meta ? VOICE_INSTRUCTIONS[gameId as GameId][age] : "";
+  const [coachMood, setCoachMood] = useState<VoiceMood>("instruction");
+  const [coachMessage, setCoachMessage] = useState("Είμαι εδώ για να παίξουμε, να παρατηρούμε και να μαθαίνουμε μαζί.");
+  const [coachBeat, setCoachBeat] = useState(0);
+
+  const showCoach = useCallback((text: string, mood: VoiceMood = "instruction") => {
+    setCoachMood(mood);
+    setCoachMessage(text);
+    setCoachBeat((value) => value + 1);
+  }, []);
+
+  const coachSpeak = useCallback<SpeakPisipouk>((text, mood = "instruction") => {
+    showCoach(text, mood);
+    speak(text, mood);
+  }, [showCoach, speak]);
+
+  const coachSpeakDirect = useCallback<SpeakPisipouk>((text, mood = "instruction") => {
+    showCoach(text, mood);
+    speakDirect(text, mood);
+  }, [showCoach, speakDirect]);
+
+  const activateCoach = useCallback((text: string) => {
+    showCoach(text, "instruction");
+    activate(text);
+  }, [activate, showCoach]);
 
   useEffect(() => {
     if (meta) trackEvent("game_start", { game: "learning_" + gameId, age });
@@ -220,41 +257,75 @@ function LearningGamePage() {
             ))}
           </div>
 
-          <div className="mx-auto mt-4 max-w-2xl rounded-2xl border bg-white p-3 shadow-sm">
-            <div className="flex flex-wrap items-center justify-center gap-2">
-              <span className="mr-1 text-2xl" aria-hidden="true">🐻</span>
-              {!voiceEnabled ? (
-                <Button
-                  type="button"
-                  className="rounded-full"
-                  disabled={!voiceSupported}
-                  onClick={() => activate("Γεια σου! Είμαι ο Πισιπούκ. " + voiceInstruction)}
+          <div className="mx-auto mt-4 max-w-3xl rounded-[1.75rem] border bg-white p-3 shadow-sm sm:p-4">
+            <div className="grid items-center gap-3 sm:grid-cols-[120px_1fr]">
+              <div
+                key={coachMood + "-" + coachBeat}
+                className={
+                  "pisipouk-coach relative mx-auto flex h-28 w-28 items-center justify-center rounded-full bg-gradient-to-br from-sky-50 to-amber-50 " +
+                  (coachMood === "success"
+                    ? "pisipouk-coach-success"
+                    : coachMood === "retry"
+                      ? "pisipouk-coach-retry"
+                      : "pisipouk-coach-listen")
+                }
+                aria-hidden="true"
+              >
+                <img src={pisipoukLogo} alt="" className="h-24 w-24 object-contain drop-shadow-sm" />
+                {coachMood === "success" && <span className="pisipouk-coach-sparkles">✨⭐✨</span>}
+                {coachMood === "retry" && <span className="pisipouk-coach-think">💭</span>}
+              </div>
+
+              <div>
+                <div
+                  className={
+                    "rounded-2xl border px-4 py-3 text-sm font-bold leading-6 " +
+                    (coachMood === "success"
+                      ? "border-emerald-200 bg-emerald-50 text-emerald-900"
+                      : coachMood === "retry"
+                        ? "border-amber-200 bg-amber-50 text-amber-950"
+                        : "border-sky-200 bg-sky-50 text-[#0b3b82]")
+                  }
+                  aria-live="polite"
                 >
-                  {voiceSupported ? "🔊 Ξεκίνα με τη φωνή του Πισιπούκ" : "🔇 Η φωνή δεν υποστηρίζεται στη συσκευή"}
-                </Button>
-              ) : (
-                <>
-                  <Button type="button" variant="secondary" className="rounded-full" aria-pressed="true" onClick={() => speakDirect("Είμαι εδώ! Πάμε να παίξουμε μαζί.", "success")}>
-                    🔊 Φωνή Πισιπούκ: ON
-                  </Button>
-                  <Button type="button" variant="outline" className="rounded-full" onClick={() => speakDirect("Είμαι ο Πισιπούκ! " + voiceInstruction, "instruction")}>
-                    🔁 Άκουσε την οδηγία
-                  </Button>
-                  <Button type="button" variant="ghost" className="rounded-full" onClick={stop}>
-                    🔇 Κλείσε τη φωνή
-                  </Button>
-                </>
-              )}
+                  {coachMessage}
+                </div>
+
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {!voiceEnabled ? (
+                    <Button
+                      type="button"
+                      className="rounded-full"
+                      disabled={!voiceSupported}
+                      onClick={() => activateCoach("Γεια σου! Είμαι ο Πισιπούκ. " + voiceInstruction)}
+                    >
+                      {voiceSupported ? "🔊 Άκου τον Πισιπούκ" : "🔇 Η φωνή δεν υποστηρίζεται στη συσκευή"}
+                    </Button>
+                  ) : (
+                    <>
+                      <Button type="button" variant="secondary" className="rounded-full" aria-pressed="true" onClick={() => coachSpeakDirect("Είμαι εδώ. Πάμε ήρεμα, ένα βήμα τη φορά!", "success")}>
+                        🔊 Φωνή ON
+                      </Button>
+                      <Button type="button" variant="outline" className="rounded-full" onClick={() => coachSpeakDirect(voiceInstruction, "instruction")}>
+                        🔁 Άκουσε την οδηγία
+                      </Button>
+                      <Button type="button" variant="ghost" className="rounded-full" onClick={stop}>
+                        🔇 Κλείσε τη φωνή
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </div>
             </div>
             {!voiceEnabled && voiceSupported && (
               <p className="mt-2 text-center text-xs leading-5 text-muted-foreground">
-                Πάτησε μία φορά για να επιτρέψει ο browser τον ήχο. Μετά ο Πισιπούκ θα μιλά στις σωστές και στις λάθος προσπάθειες.
+                Πάτησε μία φορά το «Άκου τον Πισιπούκ». Μετά θα δίνει ήρεμες υποδείξεις, θα χαίρεται στο σωστό και θα σε βοηθά να παρατηρείς το λάθος χωρίς πίεση.
               </p>
             )}
           </div>
 
           <div className="mt-5 rounded-[2rem] border bg-white p-4 shadow-sm sm:p-7">
-            <GameRenderer key={gameId + "-" + age} gameId={gameId as GameId} age={age} speak={speak} />
+            <GameRenderer key={gameId + "-" + age} gameId={gameId as GameId} age={age} speak={coachSpeak} />
           </div>
         </div>
       </section>
@@ -302,17 +373,20 @@ function PuzzleGame({ age, speak }: { age: Age; speak: SpeakPisipouk }) {
       setSelected(null);
       return;
     }
+    const beforeCorrect = tiles.filter((tile, tileIndex) => tile === config.target[tileIndex]).length;
     const nextTiles = [...tiles];
     [nextTiles[selected], nextTiles[index]] = [nextTiles[index], nextTiles[selected]];
     setTiles(nextTiles);
     setSelected(null);
-    const nextSolved = nextTiles.every((tile, tileIndex) => tile === config.target[tileIndex]);
-    speak(
-      nextSolved
-        ? "Τα κατάφερες! Μπράβο σου! Το puzzle είναι έτοιμο."
-        : "Καλή προσπάθεια! Κοίτα ξανά τον στόχο και δοκίμασε άλλο ζευγάρι.",
-      nextSolved ? "success" : "retry",
-    );
+    const afterCorrect = nextTiles.filter((tile, tileIndex) => tile === config.target[tileIndex]).length;
+    const nextSolved = afterCorrect === config.target.length;
+    if (nextSolved) {
+      speak("Τα κατάφερες! Παρατήρησες τη σειρά και έβαλες όλα τα κομμάτια στη θέση τους. Μπράβο!", "success");
+    } else if (afterCorrect > beforeCorrect) {
+      speak("Ωραία παρατήρηση! Τώρα έχουμε περισσότερα κομμάτια στη σωστή θέση. Συνέχισε έτσι.", "success");
+    } else {
+      speak("Χμ… ας το κοιτάξουμε ξανά. Σύγκρινε ένα ένα τα σύμβολα με τη σειρά επάνω και διάλεξε ποια δύο χρειάζεται να αλλάξουν θέση.", "retry");
+    }
   };
 
   return (
@@ -391,7 +465,7 @@ function MemoryGame({ age, speak }: { age: Age; speak: SpeakPisipouk }) {
           return nextMatched;
         });
       } else {
-        speak("Ωπ, αυτές οι δύο κάρτες δεν είναι ίδιες. Δεν πειράζει! Θυμήσου τις θέσεις τους και ξαναδοκίμασε.", "retry");
+        speak("Αυτές οι δύο κάρτες δεν ταιριάζουν αυτή τη φορά. Κοίτα τες για λίγο, κράτησε τις θέσεις τους στη μνήμη σου και στην επόμενη προσπάθεια θα ξέρεις περισσότερα.", "retry");
       }
       setFlipped([]);
     }, 650);
@@ -449,6 +523,17 @@ function MemoryGame({ age, speak }: { age: Age; speak: SpeakPisipouk }) {
 }
 
 type MatchItem = { id: string; emoji: string; label: string; category: string };
+
+const CATEGORY_HINTS: Record<string, string> = {
+  "Φρούτα": "Σκέψου: αυτό τρώγεται και μεγαλώνει σε δέντρο ή φυτό.",
+  "Ζώα": "Σκέψου: είναι ένα ζωντανό πλασματάκι που κινείται και αναπνέει.",
+  "Οχήματα": "Σκέψου: αυτό μας βοηθά να μετακινούμαστε από μέρος σε μέρος.",
+  "Ουρανός": "Σκέψου: κοίτα ψηλά. Πού θα το έβλεπες;",
+  "Θάλασσα": "Σκέψου: ζει ή βρίσκεται μέσα στο νερό της θάλασσας.",
+  "Κήπος": "Σκέψου: θα μπορούσες να το συναντήσεις ανάμεσα σε λουλούδια και φυτά.",
+  "Δάσος": "Σκέψου: του ταιριάζουν τα δέντρα και η ζωή στο δάσος.",
+  "Πάγος": "Σκέψου: του ταιριάζει ένα πολύ κρύο, παγωμένο μέρος.",
+};
 
 const MATCHING: Record<Age, { categories: string[]; items: MatchItem[] }> = {
   "2-3": {
@@ -513,7 +598,7 @@ function MatchingGame({ age, speak }: { age: Age; speak: SpeakPisipouk }) {
       );
     } else {
       setMessage("Δοκίμασε ξανά. Σε ποια ομάδα ανήκει το " + item.label + ";");
-      speak("Σχεδόν! Το " + item.label + " δεν ανήκει εκεί. Σκέψου λίγο και δοκίμασε ξανά.", "retry");
+      speak("Ας το σκεφτούμε λίγο ακόμη. Το " + item.label + " δεν ταιριάζει σε αυτή την ομάδα. " + (CATEGORY_HINTS[item.category] ?? "Παρατήρησε τι κοινό έχει με τις άλλες εικόνες.") + " Δοκίμασε ξανά.", "retry");
     }
   };
 
@@ -589,7 +674,7 @@ function DotsGame({ age, speak }: { age: Age; speak: SpeakPisipouk }) {
   const choose = (index: number) => {
     if (index !== next) {
       setHint("Ψάξε το " + (next + 1) + ".");
-      speak("Ωπ, όχι ακόμα αυτόν τον αριθμό. Ψάξε το " + (next + 1) + " και πάτησέ τον.", "retry");
+      speak("Κοντά είμαστε. Πριν συνεχίσουμε, κοίτα ποιος αριθμός έρχεται αμέσως μετά. Τώρα ψάξε το " + (next + 1) + " και πάτησέ τον.", "retry");
       return;
     }
     setNext((value) => value + 1);
@@ -681,7 +766,7 @@ function MazeGame({ age, speak }: { age: Age; speak: SpeakPisipouk }) {
     const next: Cell = [position[0] + dr, position[1] + dc];
     if (!allowed.has(next[0] + "-" + next[1])) {
       setMessage("Εκεί έχει τοίχο. Δοκίμασε άλλη κατεύθυνση.");
-      speak("Ωπ, εκεί έχει τοίχο. Δεν πειράζει! Δοκίμασε άλλη κατεύθυνση.", "retry");
+      speak("Αυτός ο δρόμος κλείνει εδώ. Κοίτα τα ανοιχτόχρωμα τετράγωνα γύρω από τον Πισιπούκ και διάλεξε ένα βέλος που συνεχίζει τη διαδρομή.", "retry");
       return;
     }
     setPosition(next);
@@ -760,7 +845,7 @@ function SceneGame({ age, speak }: { age: Age; speak: SpeakPisipouk }) {
     setCells(next);
     const target = Math.min(6, stickers.length);
     if (beforeCount < target && afterCount >= target) {
-      speak("Τι όμορφη σκηνή! Μπράβο σου. Μπορείς να συνεχίσεις και να φτιάξεις τη δική σου ιστορία.", "success");
+      speak("Τι όμορφη σκηνή! Έκανες επιλογές και έφτιαξες τη δική σου σύνθεση. Τώρα μπορείς να προσθέσεις κάτι που να μας δείχνει τι συμβαίνει στην ιστορία σου.", "success");
     }
   };
 
