@@ -1,3 +1,4 @@
+// Stable production router — redeploy marker 2026-09-22
 import { createRouter, useRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 
