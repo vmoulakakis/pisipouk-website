@@ -1,0 +1,38 @@
+name: Import optimized gallery JPG assets
+on:
+  push:
+    branches:
+      - gallery-27-jpg-hd-2026-09-23
+
+permissions:
+  contents: write
+
+jobs:
+  import-gallery:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout gallery branch
+        uses: actions/checkout@v4
+        with:
+          ref: gallery-27-jpg-hd-2026-09-23
+
+      - name: Download and unpack 27 optimized JPGs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p src/assets/gallery-jpg
+          curl --fail --location --retry 3 'https://sdmntprpolandcentral.oaiusercontent.com/files/00000000-c590-820a-ac9c-9f299e42d86a/raw?se=2026-09-23T07%3A07%3A59Z&sp=r&sv=2026-02-06&sr=b&scid=5b039541-23fa-548b-af62-e77669a36234&skoid=b5d2651b-fef3-4bb0-a03b-ca59cc22929b&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-23T03%3A12%3A18Z&ske=2026-09-24T03%3A12%3A18Z&sks=b&skv=2026-02-06&sig=icAmD6j51giZ0eo86BK1633Ip4Jidjm5Txef0IyNhqM%3D' -o /tmp/pisipouk-gallery.zip
+          unzip -o /tmp/pisipouk-gallery.zip -d src/assets/gallery-jpg
+          test "$(find src/assets/gallery-jpg -maxdepth 1 -type f -name '*.jpg' | wc -l)" -eq 27
+
+      - name: Commit gallery assets and remove importer
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/assets/gallery-jpg
+          git rm .github/workflows/import-gallery-assets.yml
+          git commit -m "Add 27 optimized cinematic gallery JPGs"
+          git push origin HEAD:gallery-27-jpg-hd-2026-09-23
