@@ -3,26 +3,37 @@ import { useState } from "react";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Camera, Play, Sparkles } from "lucide-react";
+import { ArrowRight, Camera, Play } from "lucide-react";
 import { cn } from "@/lib/utils";
-import exterior from "@/assets/pisipouk-exterior.webp";
-import arrival from "@/assets/pisipouk-arrival.webp";
-import welcome from "@/assets/parent-welcome.webp";
-import classroom from "@/assets/pisipouk-classroom.webp";
-import creative from "@/assets/real-creative-table.webp";
-import artTable from "@/assets/real-art-table.webp";
-import circle from "@/assets/real-circle-play.webp";
-import greece from "@/assets/real-greece-circle.webp";
-import story from "@/assets/pisipouk-story.webp";
-import logo from "@/assets/pisipouk-logo.webp";
-import imgLearningPoster from "@/assets/gallery/learning-poster";
-import { img_celebrations_poster } from "@/assets/gallery/group-a";
-import { img_outdoor_poster, img_family_sports_yard } from "@/assets/gallery/pack-a";
-import { img_summer_water_play, img_pool_playground } from "@/assets/gallery/pack-b";
-import { img_birthday_class, img_costume_celebration } from "@/assets/gallery/pack-c";
-import { img_birthday_cake, img_shapes_learning } from "@/assets/gallery/pack-d";
+import img01 from "@/assets/gallery-jpg/FB_IMG_1789560439522.jpg";
+import img02 from "@/assets/gallery-jpg/FB_IMG_1789560446662.jpg";
+import img03 from "@/assets/gallery-jpg/FB_IMG_1789560486550.jpg";
+import img04 from "@/assets/gallery-jpg/FB_IMG_1789560511188.jpg";
+import img05 from "@/assets/gallery-jpg/FB_IMG_1789560563190.jpg";
+import img06 from "@/assets/gallery-jpg/FB_IMG_1789560635114.jpg";
+import img07 from "@/assets/gallery-jpg/FB_IMG_1789560646865.jpg";
+import img08 from "@/assets/gallery-jpg/FB_IMG_1789560673224.jpg";
+import img09 from "@/assets/gallery-jpg/FB_IMG_1789560687810.jpg";
+import img10 from "@/assets/gallery-jpg/FB_IMG_1789560707745.jpg";
+import img11 from "@/assets/gallery-jpg/FB_IMG_1789560720338.jpg";
+import img12 from "@/assets/gallery-jpg/FB_IMG_1789560734042.jpg";
+import img13 from "@/assets/gallery-jpg/FB_IMG_1789560756470.jpg";
+import img14 from "@/assets/gallery-jpg/FB_IMG_1789560790690.jpg";
+import img15 from "@/assets/gallery-jpg/FB_IMG_1789560806512.jpg";
+import img16 from "@/assets/gallery-jpg/FB_IMG_1789560835032.jpg";
+import img17 from "@/assets/gallery-jpg/FB_IMG_1789560847486.jpg";
+import img18 from "@/assets/gallery-jpg/FB_IMG_1789560858994.jpg";
+import img19 from "@/assets/gallery-jpg/FB_IMG_1789560906708.jpg";
+import img20 from "@/assets/gallery-jpg/FB_IMG_1789560940639.jpg";
+import img21 from "@/assets/gallery-jpg/FB_IMG_1789560997132.jpg";
+import img22 from "@/assets/gallery-jpg/FB_IMG_1789561050066.jpg";
+import img23 from "@/assets/gallery-jpg/FB_IMG_1789561105222.jpg";
+import img24 from "@/assets/gallery-jpg/FB_IMG_1789561116308.jpg";
+import img25 from "@/assets/gallery-jpg/FB_IMG_1789561129623.jpg";
+import img26 from "@/assets/gallery-jpg/FB_IMG_1789561193322.jpg";
+import img27 from "@/assets/gallery-jpg/FB_IMG_1789561245227.jpg";
 
-type Category = "all" | "space" | "learning" | "celebrations" | "outdoors" | "brand";
+type Category = "all" | "space" | "learning" | "celebrations" | "outdoors";
 
 const labels: Record<Category, { gr: string; en: string }> = {
   all: { gr: "Όλες", en: "All" },
@@ -30,228 +41,273 @@ const labels: Record<Category, { gr: string; en: string }> = {
   learning: { gr: "Δημιουργία & μάθηση", en: "Learning & creativity" },
   celebrations: { gr: "Γιορτές & στιγμές", en: "Celebrations & moments" },
   outdoors: { gr: "Αυλή & παιχνίδι", en: "Outdoors & play" },
-  brand: { gr: "Ο Πισιπούκ", en: "Pisipouk" },
 };
 
 const images = [
   {
-    src: imgLearningPoster,
+    src: img01,
+    cat: "space" as const,
+    gr: "Μια αυθεντική στιγμή από τον χώρο του Πισιπούκ.",
+    en: "A real moment from the Pisipouk school environment.",
+    altGr: "Αυθεντική φωτογραφία από τον Πισιπούκ στον Άγιο Δημήτριο — εικόνα 1",
+    altEn: "Authentic photo from Pisipouk preschool in Agios Dimitrios — image 1",
+    featured: false,
+  },
+  {
+    src: img02,
+    cat: "space" as const,
+    gr: "Καθημερινές εικόνες από το σχολικό περιβάλλον και την ομάδα μας.",
+    en: "Everyday life in our school space with the group.",
+    altGr: "Αυθεντική φωτογραφία από τον Πισιπούκ στον Άγιο Δημήτριο — εικόνα 2",
+    altEn: "Authentic photo from Pisipouk preschool in Agios Dimitrios — image 2",
+    featured: false,
+  },
+  {
+    src: img03,
     cat: "learning" as const,
-    gr: "Μάθηση & δημιουργία στον Πισιπούκ: συνεργασία, λογική σκέψη, δημιουργικότητα και ομαδικές δραστηριότητες μέσα στην τάξη.",
-    en: "Learning and creativity at Pisipouk: cooperation, early logic, creativity and group classroom activities.",
-    altGr: "Μάθηση και δημιουργικές δραστηριότητες στον παιδικό σταθμό Πισιπούκ στον Άγιο Δημήτριο",
-    altEn: "Learning and creative activities at Pisipouk preschool in Agios Dimitrios",
-    type: "real",
-    protected: true,
+    gr: "Ζωγραφική και δημιουργική έκφραση μέσα από το παιχνίδι.",
+    en: "Painting and creative expression through play.",
+    altGr: "Αυθεντική φωτογραφία από τον Πισιπούκ στον Άγιο Δημήτριο — εικόνα 3",
+    altEn: "Authentic photo from Pisipouk preschool in Agios Dimitrios — image 3",
     featured: true,
   },
   {
-    src: img_celebrations_poster,
+    src: img04,
+    cat: "outdoors" as const,
+    gr: "Ομαδική δραστηριότητα και κίνηση με τους φίλους μας.",
+    en: "A group activity with movement and friends.",
+    altGr: "Αυθεντική φωτογραφία από τον Πισιπούκ στον Άγιο Δημήτριο — εικόνα 4",
+    altEn: "Authentic photo from Pisipouk preschool in Agios Dimitrios — image 4",
+    featured: false,
+  },
+  {
+    src: img05,
+    cat: "learning" as const,
+    gr: "Μάθηση μέσα από χρώμα, υλικά και δημιουργική εξερεύνηση.",
+    en: "Learning through colour, materials and creative exploration.",
+    altGr: "Αυθεντική φωτογραφία από τον Πισιπούκ στον Άγιο Δημήτριο — εικόνα 5",
+    altEn: "Authentic photo from Pisipouk preschool in Agios Dimitrios — image 5",
+    featured: false,
+  },
+  {
+    src: img06,
     cat: "celebrations" as const,
-    gr: "Γιορτές & σημαντικές στιγμές: γενέθλια, θεματικές γιορτές και κοινές αναμνήσεις που γεμίζουν την καθημερινότητα χαρά.",
-    en: "Celebrations and special moments: birthdays, themed events and shared memories that bring joy to everyday school life.",
-    altGr: "Γιορτές γενέθλια και σημαντικές στιγμές παιδιών στον Πισιπούκ Άγιος Δημήτριος",
-    altEn: "Celebrations birthdays and special moments at Pisipouk preschool Agios Dimitrios",
-    type: "real",
-    protected: true,
+    gr: "Γιορτινή στιγμή από την καθημερινότητα του Πισιπούκ.",
+    en: "A celebratory moment from everyday life at Pisipouk.",
+    altGr: "Αυθεντική φωτογραφία από τον Πισιπούκ στον Άγιο Δημήτριο — εικόνα 6",
+    altEn: "Authentic photo from Pisipouk preschool in Agios Dimitrios — image 6",
+    featured: false,
+  },
+  {
+    src: img07,
+    cat: "celebrations" as const,
+    gr: "Χαμόγελα και κοινές αναμνήσεις από μια ξεχωριστή ημέρα.",
+    en: "Smiles and shared memories from a special day.",
+    altGr: "Αυθεντική φωτογραφία από τον Πισιπούκ στον Άγιο Δημήτριο — εικόνα 7",
+    altEn: "Authentic photo from Pisipouk preschool in Agios Dimitrios — image 7",
+    featured: false,
+  },
+  {
+    src: img08,
+    cat: "space" as const,
+    gr: "Γωνιές του σχολείου σχεδιασμένες για τα παιδιά.",
+    en: "Child-centred corners of our school environment.",
+    altGr: "Αυθεντική φωτογραφία από τον Πισιπούκ στον Άγιο Δημήτριο — εικόνα 8",
+    altEn: "Authentic photo from Pisipouk preschool in Agios Dimitrios — image 8",
+    featured: false,
+  },
+  {
+    src: img09,
+    cat: "space" as const,
+    gr: "Ο χώρος του Πισιπούκ μέσα από μια πραγματική σχολική στιγμή.",
+    en: "A real school-day view of the Pisipouk space.",
+    altGr: "Αυθεντική φωτογραφία από τον Πισιπούκ στον Άγιο Δημήτριο — εικόνα 9",
+    altEn: "Authentic photo from Pisipouk preschool in Agios Dimitrios — image 9",
+    featured: false,
+  },
+  {
+    src: img10,
+    cat: "learning" as const,
+    gr: "Δημιουργικό παιχνίδι και συμμετοχή σε οργανωμένη δραστηριότητα.",
+    en: "Creative play and active participation in a guided activity.",
+    altGr: "Αυθεντική φωτογραφία από τον Πισιπούκ στον Άγιο Δημήτριο — εικόνα 10",
+    altEn: "Authentic photo from Pisipouk preschool in Agios Dimitrios — image 10",
+    featured: false,
+  },
+  {
+    src: img11,
+    cat: "outdoors" as const,
+    gr: "Παιχνίδι και συνεργασία στην αυλή του Πισιπούκ.",
+    en: "Outdoor play and cooperation in the Pisipouk yard.",
+    altGr: "Αυθεντική φωτογραφία από τον Πισιπούκ στον Άγιο Δημήτριο — εικόνα 11",
+    altEn: "Authentic photo from Pisipouk preschool in Agios Dimitrios — image 11",
     featured: true,
   },
   {
-    src: img_outdoor_poster,
-    cat: "outdoors" as const,
-    gr: "Εξωτερικός χώρος & παιχνίδι: κίνηση, συνεργασία και βιωματικές δραστηριότητες στην αυλή του Πισιπούκ.",
-    en: "Outdoor space and play: movement, cooperation and hands-on activities in the Pisipouk yard.",
-    altGr: "Εξωτερικός χώρος αυλή και παιχνίδι στον παιδικό σταθμό Πισιπούκ Άγιος Δημήτριος",
-    altEn: "Outdoor yard and play at Pisipouk preschool in Agios Dimitrios",
-    type: "real",
-    protected: true,
+    src: img12,
+    cat: "learning" as const,
+    gr: "Μάθηση και εξερεύνηση με βιωματικό τρόπο.",
+    en: "Hands-on learning and exploration.",
+    altGr: "Αυθεντική φωτογραφία από τον Πισιπούκ στον Άγιο Δημήτριο — εικόνα 12",
+    altEn: "Authentic photo from Pisipouk preschool in Agios Dimitrios — image 12",
+    featured: false,
+  },
+  {
+    src: img13,
+    cat: "celebrations" as const,
+    gr: "Μια ξεχωριστή στιγμή γιορτής με την ομάδα.",
+    en: "A special celebration shared with the group.",
+    altGr: "Αυθεντική φωτογραφία από τον Πισιπούκ στον Άγιο Δημήτριο — εικόνα 13",
+    altEn: "Authentic photo from Pisipouk preschool in Agios Dimitrios — image 13",
+    featured: false,
+  },
+  {
+    src: img14,
+    cat: "learning" as const,
+    gr: "Δημιουργική δραστηριότητα μέσα στην τάξη.",
+    en: "A creative classroom activity.",
+    altGr: "Αυθεντική φωτογραφία από τον Πισιπούκ στον Άγιο Δημήτριο — εικόνα 14",
+    altEn: "Authentic photo from Pisipouk preschool in Agios Dimitrios — image 14",
+    featured: false,
+  },
+  {
+    src: img15,
+    cat: "learning" as const,
+    gr: "Ομαδική εργασία και παιχνίδι στο τραπέζι της τάξης.",
+    en: "Group work and play around the classroom table.",
+    altGr: "Αυθεντική φωτογραφία από τον Πισιπούκ στον Άγιο Δημήτριο — εικόνα 15",
+    altEn: "Authentic photo from Pisipouk preschool in Agios Dimitrios — image 15",
     featured: true,
   },
   {
-    src: img_family_sports_yard,
-    cat: "outdoors" as const,
-    gr: "Ομαδικό παιχνίδι στην αυλή με στεφάνια, κίνηση και συμμετοχή οικογενειών και παιδιών.",
-    en: "Group outdoor play with hoops, movement and family participation.",
-    altGr: "Ομαδικό παιχνίδι με στεφάνια στην αυλή του Πισιπούκ στον Άγιο Δημήτριο",
-    altEn: "Group hoop activity in the Pisipouk preschool yard",
-    type: "real",
-    privacyBlur: true,
-  },
-  {
-    src: img_summer_water_play,
-    cat: "outdoors" as const,
-    gr: "Καλοκαιρινό παιχνίδι με νερό, παιδική πισίνα και δροσερές ομαδικές δραστηριότητες στην αυλή.",
-    en: "Summer water play with a children's pool and refreshing group activities outdoors.",
-    altGr: "Καλοκαιρινό παιχνίδι με νερό και παιδική πισίνα στον Πισιπούκ",
-    altEn: "Summer water play and children's pool at Pisipouk preschool",
-    type: "real",
-    privacyBlur: true,
-  },
-  {
-    src: img_pool_playground,
-    cat: "outdoors" as const,
-    gr: "Η γωνιά καλοκαιρινού παιχνιδιού με παιδική πισίνα και πολύχρωμο εξοπλισμό αυλής.",
-    en: "The summer play corner with a children's pool and colourful outdoor play equipment.",
-    altGr: "Παιδική πισίνα και εξοπλισμός αυλής στον παιδικό σταθμό Πισιπούκ",
-    altEn: "Children's pool and outdoor equipment at Pisipouk preschool",
-    type: "real",
-  },
-  {
-    src: img_birthday_class,
-    cat: "celebrations" as const,
-    gr: "Γενέθλια στην τάξη με παιδική παρέα, στολισμό και μια ξεχωριστή κοινή στιγμή.",
-    en: "A classroom birthday with friends, decorations and a special shared moment.",
-    altGr: "Παιδικά γενέθλια στην τάξη του Πισιπούκ στον Άγιο Δημήτριο",
-    altEn: "Children's birthday celebration in a Pisipouk classroom",
-    type: "real",
-    privacyBlur: true,
-  },
-  {
-    src: img_costume_celebration,
-    cat: "celebrations" as const,
-    gr: "Θεματική γιορτή με στολές, παιχνίδι και κοινές αναμνήσεις στην τάξη.",
-    en: "A themed costume celebration with play and shared classroom memories.",
-    altGr: "Θεματική γιορτή με παιδικές στολές στον Πισιπούκ",
-    altEn: "Themed children's costume celebration at Pisipouk preschool",
-    type: "real",
-    privacyBlur: true,
-  },
-  {
-    src: img_birthday_cake,
-    cat: "celebrations" as const,
-    gr: "Γλυκιά στιγμή γενεθλίων με τούρτα και παιδική παρέα στον χώρο του σχολείου.",
-    en: "A sweet birthday moment with cake and friends at school.",
-    altGr: "Παιδική τούρτα γενεθλίων και παρέα στον Πισιπούκ",
-    altEn: "Children's birthday cake and friends at Pisipouk preschool",
-    type: "real",
-    privacyBlur: true,
-  },
-  {
-    src: img_shapes_learning,
+    src: img16,
     cat: "learning" as const,
-    gr: "Μαθαίνουμε με πολύχρωμα γεωμετρικά σχήματα και κάρτες λογικής μέσα από το παιχνίδι.",
-    en: "Learning through colourful geometric shapes and early logic cards.",
-    altGr: "Δραστηριότητα με γεωμετρικά σχήματα και λογική στον παιδικό σταθμό Πισιπούκ",
-    altEn: "Geometric shapes and early logic activity at Pisipouk preschool",
-    type: "real",
+    gr: "Δραστηριότητα με την παιδαγωγική ομάδα και ενεργή συμμετοχή των παιδιών.",
+    en: "An activity with the teaching team and active child participation.",
+    altGr: "Αυθεντική φωτογραφία από τον Πισιπούκ στον Άγιο Δημήτριο — εικόνα 16",
+    altEn: "Authentic photo from Pisipouk preschool in Agios Dimitrios — image 16",
+    featured: false,
   },
   {
-    src: exterior,
+    src: img17,
     cat: "space" as const,
-    gr: "Η είσοδος του Πισιπούκ — ένας φωτεινός, φιλόξενος χώρος για παιδιά προσχολικής ηλικίας στον Άγιο Δημήτριο.",
-    en: "The entrance to Pisipouk — a bright, welcoming preschool environment in Agios Dimitrios, Athens.",
-    altGr: "Είσοδος παιδικού σταθμού και νηπιαγωγείου Ο Πισιπούκ στον Άγιο Δημήτριο",
-    altEn: "Entrance of O Pisipouk preschool and kindergarten in Agios Dimitrios, Athens",
-    type: "ai",
+    gr: "Μια ακόμη εικόνα από τους χώρους όπου παίζουμε και μαθαίνουμε.",
+    en: "Another real view of the spaces where children play and learn.",
+    altGr: "Αυθεντική φωτογραφία από τον Πισιπούκ στον Άγιο Δημήτριο — εικόνα 17",
+    altEn: "Authentic photo from Pisipouk preschool in Agios Dimitrios — image 17",
+    featured: false,
   },
   {
-    src: arrival,
-    cat: "space" as const,
-    gr: "Η άφιξη στο σχολείο γίνεται με χαμόγελο, οικειότητα και μια ήρεμη μετάβαση από το σπίτι στην ομάδα.",
-    en: "School arrival is designed around warmth, familiarity and a calm transition from home to the group.",
-    altGr: "Παιδί κατά την άφιξη στον παιδικό σταθμό Πισιπούκ",
-    altEn: "Child arriving at Pisipouk preschool",
-    type: "ai",
-  },
-  {
-    src: welcome,
-    cat: "space" as const,
-    gr: "Η πρώτη επαφή γονέα, παιδιού και παιδαγωγικής ομάδας χτίζει εμπιστοσύνη από την πρώτη ημέρα.",
-    en: "The first connection between child, parent and teaching team builds trust from day one.",
-    altGr: "Υποδοχή οικογένειας στον παιδικό σταθμό Πισιπούκ",
-    altEn: "Family welcome at Pisipouk preschool",
-    type: "ai",
-  },
-  {
-    src: creative,
-    cat: "learning" as const,
-    gr: "Δημιουργική απασχόληση με χρώματα και κατασκευές: τα παιδιά συνεργάζονται, πειραματίζονται και εκφράζονται.",
-    en: "Creative art and craft time: children cooperate, experiment and express themselves through colour and making.",
-    altGr: "Δημιουργική απασχόληση και χειροτεχνίες παιδιών στον Πισιπούκ",
-    altEn: "Children doing creative arts and crafts at Pisipouk preschool",
-    type: "real",
-  },
-  {
-    src: artTable,
-    cat: "learning" as const,
-    gr: "Ζωγραφική και χειροτεχνία στο τραπέζι της τάξης, με έμφαση στη λεπτή κινητικότητα, τη φαντασία και τη συνεργασία.",
-    en: "Painting and craft work at the classroom table, supporting fine motor skills, imagination and cooperation.",
-    altGr: "Ζωγραφική και χειροτεχνίες στον παιδικό σταθμό Πισιπούκ",
-    altEn: "Painting and crafts at Pisipouk preschool",
-    type: "real",
-  },
-  {
-    src: classroom,
-    cat: "learning" as const,
-    gr: "Μάθηση μέσα από παιχνίδι, κατασκευές και κοινές εμπειρίες σε ένα περιβάλλον σχεδιασμένο για μικρά παιδιά.",
-    en: "Learning through play, construction and shared experiences in a child-centred classroom.",
-    altGr: "Παιδιά παίζουν και μαθαίνουν στην τάξη του Πισιπούκ",
-    altEn: "Children learning through play in a Pisipouk classroom",
-    type: "ai",
-  },
-  {
-    src: circle,
+    src: img18,
     cat: "outdoors" as const,
-    gr: "Ομαδικό παιχνίδι και κίνηση στην αυλή, με χώρο για εξερεύνηση, κοινωνική αλληλεπίδραση και χαρά.",
-    en: "Group play and movement outdoors, with space for exploration, social interaction and fun.",
-    altGr: "Ομαδικό παιχνίδι παιδιών στην αυλή του Πισιπούκ",
-    altEn: "Children enjoying group play in the Pisipouk outdoor area",
-    type: "real",
+    gr: "Θεματική δραστηριότητα και παιχνίδι στον εξωτερικό χώρο.",
+    en: "A themed activity and play outdoors.",
+    altGr: "Αυθεντική φωτογραφία από τον Πισιπούκ στον Άγιο Δημήτριο — εικόνα 18",
+    altEn: "Authentic photo from Pisipouk preschool in Agios Dimitrios — image 18",
+    featured: false,
   },
   {
-    src: greece,
+    src: img19,
+    cat: "learning" as const,
+    gr: "Μικρές ανακαλύψεις μέσα από καθημερινές δραστηριότητες.",
+    en: "Small discoveries through everyday activities.",
+    altGr: "Αυθεντική φωτογραφία από τον Πισιπούκ στον Άγιο Δημήτριο — εικόνα 19",
+    altEn: "Authentic photo from Pisipouk preschool in Agios Dimitrios — image 19",
+    featured: false,
+  },
+  {
+    src: img20,
+    cat: "learning" as const,
+    gr: "Κατασκευή και συνεργασία — δημιουργούμε όλοι μαζί.",
+    en: "Making and cooperating — creating together.",
+    altGr: "Αυθεντική φωτογραφία από τον Πισιπούκ στον Άγιο Δημήτριο — εικόνα 20",
+    altEn: "Authentic photo from Pisipouk preschool in Agios Dimitrios — image 20",
+    featured: false,
+  },
+  {
+    src: img21,
+    cat: "learning" as const,
+    gr: "Εικαστική δημιουργία και λεπτομέρειες από τα έργα των παιδιών.",
+    en: "Art-making and details from the children's creations.",
+    altGr: "Αυθεντική φωτογραφία από τον Πισιπούκ στον Άγιο Δημήτριο — εικόνα 21",
+    altEn: "Authentic photo from Pisipouk preschool in Agios Dimitrios — image 21",
+    featured: false,
+  },
+  {
+    src: img22,
+    cat: "learning" as const,
+    gr: "Εκπαιδευτικό παιχνίδι που καλλιεργεί σκέψη και παρατήρηση.",
+    en: "Educational play that encourages thinking and observation.",
+    altGr: "Αυθεντική φωτογραφία από τον Πισιπούκ στον Άγιο Δημήτριο — εικόνα 22",
+    altEn: "Authentic photo from Pisipouk preschool in Agios Dimitrios — image 22",
+    featured: true,
+  },
+  {
+    src: img23,
+    cat: "celebrations" as const,
+    gr: "Μια γιορτινή ανάμνηση γεμάτη χρώμα.",
+    en: "A colourful celebration memory.",
+    altGr: "Αυθεντική φωτογραφία από τον Πισιπούκ στον Άγιο Δημήτριο — εικόνα 23",
+    altEn: "Authentic photo from Pisipouk preschool in Agios Dimitrios — image 23",
+    featured: false,
+  },
+  {
+    src: img24,
+    cat: "celebrations" as const,
+    gr: "Στιγμή χαράς και γιορτής με την παρέα.",
+    en: "A joyful celebration moment with friends.",
+    altGr: "Αυθεντική φωτογραφία από τον Πισιπούκ στον Άγιο Δημήτριο — εικόνα 24",
+    altEn: "Authentic photo from Pisipouk preschool in Agios Dimitrios — image 24",
+    featured: false,
+  },
+  {
+    src: img25,
     cat: "outdoors" as const,
-    gr: "Κοινές δραστηριότητες και γιορτές που βοηθούν τα παιδιά να νιώθουν ότι ανήκουν σε μια ζεστή σχολική κοινότητα.",
-    en: "Shared activities and celebrations that help children feel part of a warm school community.",
-    altGr: "Ομαδική δραστηριότητα παιδιών στον παιδικό σταθμό Πισιπούκ",
-    altEn: "Group activity at Pisipouk preschool",
-    type: "real",
+    gr: "Κίνηση και παιχνίδι έξω, με χώρο για εξερεύνηση.",
+    en: "Movement and outdoor play with room to explore.",
+    altGr: "Αυθεντική φωτογραφία από τον Πισιπούκ στον Άγιο Δημήτριο — εικόνα 25",
+    altEn: "Authentic photo from Pisipouk preschool in Agios Dimitrios — image 25",
+    featured: false,
   },
   {
-    src: story,
-    cat: "brand" as const,
-    gr: "Το αρκουδάκι Πισιπούκ συνοδεύει την ταυτότητα του σχολείου και τον κόσμο φαντασίας που συναντούν τα παιδιά.",
-    en: "The Pisipouk bear is part of the school identity and the imaginative world children meet every day.",
-    altGr: "Μασκότ αρκουδάκι Πισιπούκ και παιδική δημιουργική ταυτότητα",
-    altEn: "Pisipouk bear mascot and preschool creative identity",
-    type: "ai",
+    src: img26,
+    cat: "outdoors" as const,
+    gr: "Καλοκαιρινό παιχνίδι με νερό στην αυλή.",
+    en: "Summer water play in the yard.",
+    altGr: "Αυθεντική φωτογραφία από τον Πισιπούκ στον Άγιο Δημήτριο — εικόνα 26",
+    altEn: "Authentic photo from Pisipouk preschool in Agios Dimitrios — image 26",
+    featured: false,
   },
   {
-    src: logo,
-    cat: "brand" as const,
-    gr: "Ο Πισιπούκ — παιδικός σταθμός και νηπιαγωγείο στον Άγιο Δημήτριο, με επίκεντρο τη φροντίδα, το παιχνίδι και τη μάθηση.",
-    en: "O Pisipouk — preschool and kindergarten in Agios Dimitrios, focused on care, play and learning.",
-    altGr: "Λογότυπο Ο Πισιπούκ παιδικός σταθμός νηπιαγωγείο Άγιος Δημήτριος",
-    altEn: "O Pisipouk preschool kindergarten Agios Dimitrios logo",
-    type: "ai",
+    src: img27,
+    cat: "outdoors" as const,
+    gr: "Ο εξωτερικός χώρος του Πισιπούκ μέσα από μια αυθεντική στιγμή παιχνιδιού.",
+    en: "A real outdoor play moment at Pisipouk.",
+    altGr: "Αυθεντική φωτογραφία από τον Πισιπούκ στον Άγιο Δημήτριο — εικόνα 27",
+    altEn: "Authentic photo from Pisipouk preschool in Agios Dimitrios — image 27",
+    featured: true,
   },
 ];
 
 export const Route = createFileRoute("/gallery")({
   head: () => ({
     meta: [
-      {
-        title:
-          "Φωτογραφίες Παιδικού Σταθμού στον Άγιο Δημήτριο | Ο Πισιπούκ",
-      },
+      { title: "Φωτογραφίες Παιδικού Σταθμού στον Άγιο Δημήτριο | Ο Πισιπούκ" },
       {
         name: "description",
         content:
-          "Φωτογραφίες από τον Πισιπούκ στον Άγιο Δημήτριο: δημιουργική μάθηση, δραστηριότητες, γιορτές, παιχνίδι, τάξεις και αυλή παιδικού σταθμού και νηπιαγωγείου.",
+          "27 αυθεντικές φωτογραφίες από τον Πισιπούκ στον Άγιο Δημήτριο: δημιουργική μάθηση, δραστηριότητες, γιορτές, παιχνίδι, τάξεις και αυλή.",
       },
       {
         name: "keywords",
         content:
-          "παιδικός σταθμός Άγιος Δημήτριος φωτογραφίες, νηπιαγωγείο Άγιος Δημήτριος, δραστηριότητες νηπιαγωγείου, δημιουργική μάθηση, σχολικές γιορτές, αυλή παιδικού σταθμού, Πισιπούκ",
+          "παιδικός σταθμός Άγιος Δημήτριος φωτογραφίες, νηπιαγωγείο Άγιος Δημήτριος, δραστηριότητες νηπιαγωγείου, δημιουργική μάθηση, αυλή παιδικού σταθμού, Πισιπούκ",
       },
-      {
-        property: "og:title",
-        content: "Η ζωή στον Πισιπούκ | Φωτογραφίες & δραστηριότητες",
-      },
+      { property: "og:title", content: "Η ζωή στον Πισιπούκ | Φωτογραφίες & δραστηριότητες" },
       {
         property: "og:description",
         content:
-          "Χώροι, δημιουργικές δραστηριότητες και στιγμές από την καθημερινότητα στον Πισιπούκ, στον Άγιο Δημήτριο.",
+          "Αυθεντικές φωτογραφίες από χώρους, δημιουργικές δραστηριότητες και στιγμές της καθημερινότητας στον Πισιπούκ.",
       },
     ],
   }),
@@ -261,9 +317,7 @@ export const Route = createFileRoute("/gallery")({
 function GalleryPage() {
   const { lang } = useLanguage();
   const [active, setActive] = useState<Category>("all");
-  const visible = images.filter(
-    (image) => active === "all" || image.cat === active,
-  );
+  const visible = images.filter((image) => active === "all" || image.cat === active);
 
   const imageGallerySchema = {
     "@context": "https://schema.org",
@@ -274,8 +328,8 @@ function GalleryPage() {
         : "Photos from O Pisipouk preschool and kindergarten",
     description:
       lang === "gr"
-        ? "Εικόνες από χώρους, παιχνίδι και δημιουργικές δραστηριότητες στον Πισιπούκ στον Άγιο Δημήτριο."
-        : "Images of the spaces, play and creative activities at Pisipouk in Agios Dimitrios.",
+        ? "27 αυθεντικές εικόνες από χώρους, παιχνίδι και δημιουργικές δραστηριότητες στον Πισιπούκ στον Άγιο Δημήτριο."
+        : "27 authentic images of the spaces, play and creative activities at Pisipouk in Agios Dimitrios.",
     about: {
       "@type": "Preschool",
       name: "Ο Πισιπούκ",
@@ -301,14 +355,12 @@ function GalleryPage() {
             {lang === "gr" ? "Η ζωή στον Πισιπούκ" : "Life at Pisipouk"}
           </p>
           <h1 className="mt-2 max-w-4xl text-4xl font-black tracking-tight sm:text-6xl">
-            {lang === "gr"
-              ? "Χώροι, παιχνίδι και δημιουργία"
-              : "Spaces, play and creativity"}
+            {lang === "gr" ? "Χώροι, παιχνίδι και δημιουργία" : "Spaces, play and creativity"}
           </h1>
           <p className="mt-3 max-w-2xl text-base font-medium text-muted-foreground sm:text-lg">
             {lang === "gr"
-              ? "Μικρές στιγμές από την καθημερινότητα στον Πισιπούκ."
-              : "Small moments from everyday life at Pisipouk."}
+              ? "27 αυθεντικές στιγμές από την καθημερινότητά μας — καθαρές, φυσικές και χωρίς τεχνητή αλλοίωση."
+              : "27 authentic moments from everyday life — clean, natural and without artificial distortion."}
           </p>
         </div>
       </section>
@@ -346,7 +398,7 @@ function GalleryPage() {
               <div className="order-2 lg:order-1">
                 <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-black uppercase tracking-wider text-primary">
                   <Play className="h-3.5 w-3.5 fill-current" />
-                  {lang === "gr" ? "Video" : "Video"}
+                  Video
                 </div>
                 <h2 id="pisipouk-reel-title" className="mt-3 text-2xl font-black sm:text-3xl">
                   {lang === "gr" ? "Μια στιγμή από τον Πισιπούκ" : "A moment from Pisipouk"}
@@ -357,7 +409,6 @@ function GalleryPage() {
                     : "Watch a short reel from our everyday life and activities."}
                 </p>
               </div>
-
               <div className="order-1 flex justify-center lg:order-2">
                 <div className="w-[267px] overflow-hidden rounded-2xl bg-white shadow-lg ring-1 ring-black/5">
                   <iframe
@@ -385,7 +436,7 @@ function GalleryPage() {
                 itemType="https://schema.org/ImageObject"
                 className={cn(
                   "gallery-shot group",
-                  ((image as any).featured || index % 7 === 0) && "gallery-shot-wide",
+                  (image.featured || index % 9 === 0) && "gallery-shot-wide",
                 )}
               >
                 <div className="relative overflow-hidden">
@@ -394,33 +445,15 @@ function GalleryPage() {
                     alt={lang === "gr" ? image.altGr : image.altEn}
                     title={image[lang]}
                     itemProp="contentUrl"
-                    loading={index < 2 ? "eager" : "lazy"}
+                    loading={index < 4 ? "eager" : "lazy"}
                     decoding="async"
-                    className={cn(
-                      "w-full transition-transform duration-500 group-hover:scale-[1.015]",
-                      (image as any).privacyBlur && "scale-[1.035] blur-[6px]"
-                    )}
+                    className="w-full transition-transform duration-500 group-hover:scale-[1.015]"
                   />
-                  {(image as any).privacyBlur && (
-                    <span className="absolute bottom-3 left-3 rounded-full bg-white/90 px-3 py-1 text-[11px] font-black text-foreground shadow-sm backdrop-blur">
-                      🔒 {lang === "gr" ? "Προστασία προσώπων" : "Face privacy"}
-                    </span>
-                  )}
                 </div>
                 <figcaption itemProp="caption">
                   <span className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider">
-                    {image.type === "real" ? (
-                      <Camera className="h-3.5 w-3.5" />
-                    ) : (
-                      <Sparkles className="h-3.5 w-3.5" />
-                    )}
-                    {image.type === "real"
-                      ? lang === "gr"
-                        ? "Στιγμή δραστηριότητας"
-                        : "Activity moment"
-                      : lang === "gr"
-                        ? "Δημιουργική απεικόνιση"
-                        : "Creative representation"}
+                    <Camera className="h-3.5 w-3.5" />
+                    {lang === "gr" ? "Αυθεντική φωτογραφία" : "Authentic photo"}
                   </span>
                   <strong>{image[lang]}</strong>
                 </figcaption>
@@ -431,9 +464,7 @@ function GalleryPage() {
           <div className="mt-16 rounded-[2rem] bg-sun p-7 sm:flex sm:items-center sm:justify-between sm:gap-8 sm:p-10">
             <div>
               <h2 className="text-3xl font-black">
-                {lang === "gr"
-                  ? "Οι φωτογραφίες βοηθούν. Η επίσκεψη αποφασίζει."
-                  : "Photos help. A visit decides."}
+                {lang === "gr" ? "Οι φωτογραφίες βοηθούν. Η επίσκεψη αποφασίζει." : "Photos help. A visit decides."}
               </h2>
               <p className="mt-3 max-w-2xl leading-7 text-foreground/75">
                 {lang === "gr"
@@ -441,11 +472,7 @@ function GalleryPage() {
                   : "Meet the space, the team and the way we welcome every child."}
               </p>
             </div>
-            <Button
-              asChild
-              size="lg"
-              className="mt-6 shrink-0 rounded-full sm:mt-0"
-            >
+            <Button asChild size="lg" className="mt-6 shrink-0 rounded-full sm:mt-0">
               <Link to="/book-visit">
                 {lang === "gr" ? "Κλείστε μια γνωριμία" : "Book a visit"}
                 <ArrowRight className="h-5 w-5" />
