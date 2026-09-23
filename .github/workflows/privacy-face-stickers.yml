@@ -42,3 +42,5 @@ jobs:
           git add src/assets/gallery-jpg/*.jpg
           git commit -m "Gallery: cover visible faces with privacy smileys"
           git push origin HEAD:main
+
+# rerun after detector performance update
