@@ -1,0 +1,44 @@
+name: Apply gallery face stickers
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/privacy-face-stickers.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  anonymize-gallery:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install image tools
+        run: python -m pip install --upgrade pip pillow opencv-python-headless numpy
+
+      - name: Apply smiley privacy stickers
+        run: python scripts/privacy_face_stickers.py
+
+      - name: Commit updated gallery images
+        run: |
+          if git diff --quiet -- src/assets/gallery-jpg; then
+            echo "No gallery changes detected."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/assets/gallery-jpg/*.jpg
+          git commit -m "Gallery: cover visible faces with privacy smileys"
+          git push origin HEAD:main
