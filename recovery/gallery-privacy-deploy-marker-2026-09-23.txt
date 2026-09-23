@@ -1,0 +1,3 @@
+Gallery privacy deployment marker
+Commit with privacy-smiley JPG assets: e3c5c115f842a436570d1839c5398865ca8f5a8d
+Requested: 2026-09-23
