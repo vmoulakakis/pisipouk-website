@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { Button } from "@/components/ui/button";
+import octoberMenuImage from "@/assets/menu-october-2026.webp";
 import {
   ArrowRight,
   Check,
@@ -223,6 +224,23 @@ function NutritionPage() {
                 : "The menu below follows the October 2026 plan supplied by the school. The first week begins on 28 September and the supplied schedule runs through 23 October."}
             </p>
           </div>
+
+          <figure className="mt-10 overflow-hidden rounded-[2rem] border bg-white p-3 shadow-xl">
+            <img
+              src={octoberMenuImage}
+              alt={
+                gr
+                  ? "Το νέο διαιτολόγιο του Πισιπούκ για τον Οκτώβριο 2026"
+                  : "Pisipouk October 2026 meal plan"
+              }
+              className="w-full rounded-[1.4rem]"
+            />
+            <figcaption className="px-3 pb-1 pt-3 text-center text-xs font-bold text-muted-foreground">
+              {gr
+                ? "Το επίσημο εικαστικό του μενού Οκτωβρίου 2026."
+                : "The official October 2026 menu artwork."}
+            </figcaption>
+          </figure>
 
           <div className="mt-10 grid gap-7">
             {weeks.map((week) => (
