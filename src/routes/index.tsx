@@ -39,7 +39,6 @@ import parentWelcomeImage from "@/assets/parent-welcome.webp";
 import realCreativeImage from "@/assets/real-creative-table.webp";
 import realCircleImage from "@/assets/real-circle-play.webp";
 import realGreeceImage from "@/assets/real-greece-circle.webp";
-import sampleMenuImage from "@/assets/sample-menu-september-2026.webp";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -656,69 +655,79 @@ function HomePage() {
       </section>
 
       <section className="py-20 sm:py-28">
-        <div className="mx-auto grid max-w-7xl gap-10 px-4 lg:grid-cols-[0.78fr_1.22fr] lg:items-center lg:px-8">
+        <div className="mx-auto grid max-w-7xl gap-10 px-4 lg:grid-cols-[0.82fr_1.18fr] lg:items-center lg:px-8">
           <div>
             <p className="section-kicker">
               {lang === "gr"
-                ? "Διατροφή με διαφάνεια"
-                : "Food with transparency"}
+                ? "Νέο διαιτολόγιο · Οκτώβριος 2026"
+                : "New meal plan · October 2026"}
             </p>
             <h2 className="mt-3 text-4xl font-black tracking-tight sm:text-5xl">
               {lang === "gr"
-                ? "Τι μπορεί να τρώει το παιδί σε έναν μήνα;"
-                : "What might a child eat over a month?"}
+                ? "Ποιότητα πρώτων υλών και φροντισμένη παρασκευή."
+                : "Ingredient quality and careful preparation."}
             </h2>
             <p className="mt-5 text-lg leading-8 text-muted-foreground">
               {lang === "gr"
-                ? "Παρακάτω παρουσιάζεται ενδεικτικό μηνιαίο μενού Σεπτεμβρίου 2026. Το πραγματικό μενού κάθε περιόδου μπορεί να προσαρμόζεται με βάση εποχικότητα, διαθεσιμότητα και διατροφικές ανάγκες."
-                : "Below is a sample September 2026 monthly menu. The current menu may change for seasonality, availability and dietary needs."}
+                ? "Το νέο πρόγραμμα Οκτωβρίου συνδυάζει πρωινό 08:00–09:00, κυρίως γεύμα και συνοδευτικά με ποικιλία μέσα στην εβδομάδα. Δίνουμε μεγαλύτερη έμφαση όχι μόνο στο τι σερβίρεται, αλλά και στη λογική των πρώτων υλών, της παρασκευής και της σωστής ενημέρωσης της οικογένειας."
+                : "The new October plan combines breakfast 08:00–09:00, main meals and accompaniments with variety through the week, with greater emphasis on ingredient quality, preparation and clear family communication."}
             </p>
             <ul className="mt-6 space-y-3 text-sm font-bold">
               <li className="flex gap-2">
                 <Check className="h-5 w-5 text-primary" />
                 {lang === "gr"
-                  ? "Πρωινό και μεσημεριανό σε καθαρή εβδομαδιαία εικόνα"
-                  : "Breakfast and lunch in a clear weekly view"}
+                  ? "Ποικιλία σε λαχανικά, όσπρια, φρούτα, ψάρι, κοτόπουλο και κρέας"
+                  : "A varied rotation of vegetables, legumes, fruit, fish, chicken and meat"}
               </li>
               <li className="flex gap-2">
                 <Check className="h-5 w-5 text-primary" />
                 {lang === "gr"
-                  ? "Ορατές βασικές κατηγορίες γευμάτων"
-                  : "Visible core meal categories"}
+                  ? "Φροντισμένη καθημερινή παρασκευή και κατάλληλη παρουσίαση για μικρά παιδιά"
+                  : "Careful daily preparation and age-appropriate presentation"}
               </li>
               <li className="flex gap-2">
                 <Check className="h-5 w-5 text-primary" />
                 {lang === "gr"
-                  ? "Ενημέρωση για αλλεργίες και ειδικές ανάγκες προσωπικά"
-                  : "Allergy and special-needs guidance handled personally"}
+                  ? "Αναλυτικές οδηγίες και χρήσιμες πληροφορίες στο κάτω μέρος της σελίδας Διατροφής"
+                  : "Detailed guidance and useful information at the bottom of the Nutrition page"}
               </li>
             </ul>
             <Button asChild size="lg" className="mt-7 rounded-full">
               <Link to="/nutrition">
                 {lang === "gr"
-                  ? "Η διατροφική μας προσέγγιση"
-                  : "Our food approach"}
+                  ? "Δείτε το μενού Οκτωβρίου"
+                  : "View the October menu"}
                 <ArrowRight className="h-5 w-5" />
               </Link>
             </Button>
           </div>
-          <figure className="rounded-[2rem] border bg-white p-3 shadow-xl">
-            <img
-              src={sampleMenuImage}
-              alt={
-                lang === "gr"
-                  ? "Ενδεικτικό μηνιαίο μενού Πισιπούκ, Σεπτέμβριος 2026"
-                  : "Sample Pisipouk monthly menu, September 2026"
-              }
-              className="w-full rounded-[1.4rem]"
-              loading="lazy"
-            />
-            <figcaption className="px-3 pb-1 pt-3 text-center text-xs text-muted-foreground">
-              {lang === "gr"
-                ? "Ενδεικτικό παράδειγμα — όχι το τρέχον δεσμευτικό μενού."
-                : "Illustrative example — not the current binding menu."}
-            </figcaption>
-          </figure>
+
+          <div className="overflow-hidden rounded-[2rem] border bg-white shadow-xl">
+            <div className="bg-gradient-to-r from-yellow-300 via-amber-200 to-lime-200 px-5 py-5 text-center">
+              <p className="text-sm font-black uppercase tracking-[0.16em] text-emerald-800">Ο Πισιπούκ</p>
+              <h3 className="mt-1 text-3xl font-black text-emerald-950">Διαιτολόγιο · Οκτώβριος 2026</h3>
+            </div>
+            <div className="grid gap-3 p-4 sm:grid-cols-2">
+              {[
+                ["28/9–2/10", "Χορτόσουπα · Ψαρόσουπα · Φασολάδα · Κοτόπουλο φούρνου · Γιουβαρλάκια"],
+                ["5/10–9/10", "Σπανακόρυζο · Ψαροκροκέτες με ρύζι · Φακές · Κοτόσουπα · Μακαρόνια με κιμά"],
+                ["12/10–16/10", "Μακαρόνια με σάλτσα · Ψαρόσουπα · Φασολάκια · Κοτόπουλο με ρύζι · Κρεατόσουπα"],
+                ["19/10–23/10", "Ντοματόσουπα · Ψαροκροκέτες με ρύζι · Φακές · Κοτόσουπα · Μπιφτέκια με πατάτες"],
+              ].map(([week, meals]) => (
+                <div key={week} className="rounded-2xl border border-emerald-100 bg-emerald-50/60 p-4">
+                  <p className="text-sm font-black text-emerald-800">{week}</p>
+                  <p className="mt-2 text-sm leading-6 text-slate-700">{meals}</p>
+                </div>
+              ))}
+            </div>
+            <div className="border-t bg-slate-50 px-5 py-4">
+              <div className="grid gap-2 text-xs font-bold text-slate-700 sm:grid-cols-3">
+                <span className="rounded-full bg-white px-3 py-2 text-center">Πρωινό 08:00–09:00</span>
+                <span className="rounded-full bg-white px-3 py-2 text-center">Κυρίως γεύμα</span>
+                <span className="rounded-full bg-white px-3 py-2 text-center">Συνοδευτικά</span>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
