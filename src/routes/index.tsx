@@ -39,6 +39,7 @@ import parentWelcomeImage from "@/assets/parent-welcome.webp";
 import realCreativeImage from "@/assets/real-creative-table.webp";
 import realCircleImage from "@/assets/real-circle-play.webp";
 import realGreeceImage from "@/assets/real-greece-circle.webp";
+import octoberMenuImage from "@/assets/menu-october-2026.webp";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -702,32 +703,23 @@ function HomePage() {
             </Button>
           </div>
 
-          <div className="overflow-hidden rounded-[2rem] border bg-white shadow-xl">
-            <div className="bg-gradient-to-r from-yellow-300 via-amber-200 to-lime-200 px-5 py-5 text-center">
-              <p className="text-sm font-black uppercase tracking-[0.16em] text-emerald-800">Ο Πισιπούκ</p>
-              <h3 className="mt-1 text-3xl font-black text-emerald-950">Διαιτολόγιο · Οκτώβριος 2026</h3>
-            </div>
-            <div className="grid gap-3 p-4 sm:grid-cols-2">
-              {[
-                ["28/9–2/10", "Χορτόσουπα · Ψαρόσουπα · Φασολάδα · Κοτόπουλο φούρνου · Γιουβαρλάκια"],
-                ["5/10–9/10", "Σπανακόρυζο · Ψαροκροκέτες με ρύζι · Φακές · Κοτόσουπα · Μακαρόνια με κιμά"],
-                ["12/10–16/10", "Μακαρόνια με σάλτσα · Ψαρόσουπα · Φασολάκια · Κοτόπουλο με ρύζι · Κρεατόσουπα"],
-                ["19/10–23/10", "Ντοματόσουπα · Ψαροκροκέτες με ρύζι · Φακές · Κοτόσουπα · Μπιφτέκια με πατάτες"],
-              ].map(([week, meals]) => (
-                <div key={week} className="rounded-2xl border border-emerald-100 bg-emerald-50/60 p-4">
-                  <p className="text-sm font-black text-emerald-800">{week}</p>
-                  <p className="mt-2 text-sm leading-6 text-slate-700">{meals}</p>
-                </div>
-              ))}
-            </div>
-            <div className="border-t bg-slate-50 px-5 py-4">
-              <div className="grid gap-2 text-xs font-bold text-slate-700 sm:grid-cols-3">
-                <span className="rounded-full bg-white px-3 py-2 text-center">Πρωινό 08:00–09:00</span>
-                <span className="rounded-full bg-white px-3 py-2 text-center">Κυρίως γεύμα</span>
-                <span className="rounded-full bg-white px-3 py-2 text-center">Συνοδευτικά</span>
-              </div>
-            </div>
-          </div>
+          <figure className="overflow-hidden rounded-[2rem] border bg-white p-3 shadow-xl">
+            <img
+              src={octoberMenuImage}
+              alt={
+                lang === "gr"
+                  ? "Το νέο διαιτολόγιο Πισιπούκ για τον Οκτώβριο 2026"
+                  : "Pisipouk October 2026 meal plan"
+              }
+              className="w-full rounded-[1.4rem]"
+              loading="lazy"
+            />
+            <figcaption className="px-3 pb-1 pt-3 text-center text-xs font-bold text-muted-foreground">
+              {lang === "gr"
+                ? "Το επίσημο εικαστικό του νέου μενού Οκτωβρίου 2026."
+                : "The official October 2026 menu artwork."}
+            </figcaption>
+          </figure>
         </div>
       </section>
 
