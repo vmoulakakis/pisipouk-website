@@ -87,7 +87,7 @@ function teacherFeedback(age: Age, childName: string, message: string) {
 function useTeacherVoice(age: Age, childName: string) {
   const [enabled, setEnabled] = useState(false);
   const [supported, setSupported] = useState(false);
-  const [femaleAvailable, setFemaleAvailable] = useState(false);
+  const [voiceReady, setVoiceReady] = useState(false);
   const enabledRef = useRef(false);
   const voiceRef = useRef<SpeechSynthesisVoice | null>(null);
 
@@ -101,24 +101,29 @@ function useTeacherVoice(age: Age, childName: string) {
     const synth = window.speechSynthesis;
 
     const chooseVoice = () => {
-      const greekVoices = synth.getVoices().filter((voice) => voice.lang.toLowerCase().startsWith("el"));
-      const femalePattern = /melina|athina|eleni|maria|sofia|sophia|katerina|female|woman/;
-      const femaleVoices = greekVoices.filter((voice) => femalePattern.test((voice.name + " " + voice.voiceURI).toLowerCase()));
+      const voices = synth.getVoices();
+      const greekVoices = voices.filter((voice) => voice.lang.toLowerCase().startsWith("el"));
+      const preferredPattern = /melina|athina|eleni|maria|sofia|sophia|katerina|female|woman/;
 
       const score = (voice: SpeechSynthesisVoice) => {
         const name = (voice.name + " " + voice.voiceURI).toLowerCase();
         let value = 0;
-        if (voice.lang.toLowerCase() === "el-gr") value += 60;
-        if (/melina|athina|eleni|maria|sofia|sophia|katerina/.test(name)) value += 140;
+        if (voice.lang.toLowerCase() === "el-gr") value += 100;
+        if (preferredPattern.test(name)) value += 120;
         if (/natural|neural|premium|enhanced/.test(name)) value += 60;
-        if (/microsoft/.test(name)) value += 20;
-        if (/google/.test(name)) value += 15;
+        if (/microsoft|google|apple/.test(name)) value += 20;
         if (voice.localService) value += 8;
         return value;
       };
 
-      voiceRef.current = [...femaleVoices].sort((a, b) => score(b) - score(a))[0] ?? null;
-      setFemaleAvailable(Boolean(voiceRef.current));
+      voiceRef.current =
+        [...greekVoices].sort((a, b) => score(b) - score(a))[0] ??
+        [...voices].sort((a, b) => score(b) - score(a))[0] ??
+        null;
+
+      // Ακόμη κι αν ο browser δεν εκθέτει λίστα φωνών, μπορεί να χρησιμοποιήσει
+      // την προεπιλεγμένη φωνή όταν ορίζουμε lang="el-GR".
+      setVoiceReady(true);
     };
 
     chooseVoice();
@@ -133,13 +138,12 @@ function useTeacherVoice(age: Age, childName: string) {
 
   const speakRaw = useCallback((text: string) => {
     if (typeof window === "undefined" || !("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") return;
-    if (!voiceRef.current) return;
     try {
       const synth = window.speechSynthesis;
       synth.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = "el-GR";
-      utterance.voice = voiceRef.current;
+      if (voiceRef.current) utterance.voice = voiceRef.current;
       utterance.volume = 1;
       utterance.rate = TEACHER_VOICE[age].rate;
       utterance.pitch = TEACHER_VOICE[age].pitch;
@@ -170,7 +174,7 @@ function useTeacherVoice(age: Age, childName: string) {
     if (typeof window !== "undefined" && "speechSynthesis" in window) window.speechSynthesis.cancel();
   }, []);
 
-  return { enabled, supported, femaleAvailable, speakFeedback, repeatFeedback, activate, disable };
+  return { enabled, supported, voiceReady, speakFeedback, repeatFeedback, activate, disable };
 }
 
 function isAge(value: unknown): value is Age {
@@ -362,7 +366,7 @@ function GameShell({
     } catch {}
   }, []);
 
-  const { enabled: voiceEnabled, supported: voiceSupported, femaleAvailable, speakFeedback, repeatFeedback, activate, disable } = useTeacherVoice(age, childName);
+  const { enabled: voiceEnabled, supported: voiceSupported, voiceReady, speakFeedback, repeatFeedback, activate, disable } = useTeacherVoice(age, childName);
 
   useEffect(() => {
     void trackEvent("learning_game_start", { age, title });
@@ -411,10 +415,10 @@ function GameShell({
                 {mood === "success" && <span className="pp-spark absolute -right-2 -top-1 text-2xl" aria-hidden="true">✨⭐</span>}
                 {mood === "thinking" && <span className="absolute -right-1 top-0 text-2xl" aria-hidden="true">💭</span>}
               </div>
-              <p className="mt-2 text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground">Ο Πισιπούκ σε παρακολουθεί</p>
+              <p className="mt-2 text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground">Ο Πισιπούκ είναι μαζί σου</p>
 
               <div className={"mt-4 rounded-2xl border px-3 py-3 text-left " + (mood === "success" ? "border-emerald-200 bg-emerald-50" : mood === "thinking" ? "border-amber-200 bg-amber-50" : "border-sky-200 bg-sky-50")}>
-                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-primary">👩‍🏫 Η δασκάλα λέει</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-primary">💬 Ο Πισιπούκ λέει</p>
                 <p className="mt-1 text-xs font-bold leading-5 text-slate-700">{message}</p>
               </div>
 
@@ -442,14 +446,14 @@ function GameShell({
                     type="button"
                     size="sm"
                     className="w-full rounded-full"
-                    disabled={!voiceSupported || !femaleAvailable}
+                    disabled={!voiceSupported || !voiceReady}
                     onClick={() => activate(instruction)}
                   >
                     {!voiceSupported
                       ? "🔇 Δεν υποστηρίζεται φωνή"
-                      : femaleAvailable
-                        ? "🔊 Άκου τη δασκάλα"
-                        : "🔇 Δεν βρέθηκε γυναικεία ελληνική φωνή"}
+                      : !voiceReady
+                        ? "⏳ Φόρτωση φωνής…"
+                        : "🔊 Άκου την οδηγία"}
                   </Button>
                 ) : (
                   <>
@@ -460,7 +464,7 @@ function GameShell({
                       className="w-full rounded-full"
                       onClick={() => repeatFeedback(message)}
                     >
-                      🔁 Άκου ξανά τη δασκάλα
+                      🔁 Άκου ξανά την οδηγία
                     </Button>
                     <Button
                       type="button"
