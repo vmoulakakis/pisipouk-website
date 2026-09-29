@@ -640,6 +640,17 @@ function SnakeGame({ age }: { age: Age }) {
   const maxDie = age === "2-3" ? 3 : age === "4-5" ? 4 : 6;
   const columns = age === "2-3" ? 4 : 6;
 
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === " " || event.key === "Enter") {
+        event.preventDefault();
+        roll();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  });
+
   const roll = () => {
     if (position >= length) return;
     const value = 1 + Math.floor(Math.random() * maxDie);
@@ -694,6 +705,7 @@ function SnakeGame({ age }: { age: Age }) {
         <Button type="button" className="min-h-14 rounded-full px-6 text-base font-black" onClick={roll} disabled={position >= length}>
           🎲 {die ? "Ξανά · " + die : "Ρίξε το ζάρι"}
         </Button>
+        <p className="w-full text-right text-[11px] font-bold text-muted-foreground">Πληκτρολόγιο: Space / Enter</p>
       </div>
 
       <div className="mt-5 grid gap-2" style={{ gridTemplateColumns: "repeat(" + columns + ", minmax(0, 1fr))" }}>
@@ -806,6 +818,25 @@ function MazeGame({ age }: { age: Age }) {
     }
   };
 
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      const row = Math.floor(position / size);
+      const col = position % size;
+      const moves: Record<string, number | null> = {
+        ArrowUp: row > 0 ? position - size : null,
+        ArrowRight: col < size - 1 ? position + 1 : null,
+        ArrowDown: row < size - 1 ? position + size : null,
+        ArrowLeft: col > 0 ? position - 1 : null,
+      };
+      if (!(event.key in moves)) return;
+      event.preventDefault();
+      const target = moves[event.key];
+      if (target !== null) moveTo(target);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [position, size, maze]);
+
   const newRound = () => {
     setMaze(makeMaze(size));
     setPosition(0);
@@ -826,6 +857,21 @@ function MazeGame({ age }: { age: Age }) {
       skills={["Χωρικός προσανατολισμός", "Σχεδιασμός", "Συγκέντρωση", "Επίλυση προβλήματος"]}
       parentNote="Ενθαρρύνετε το παιδί να κοιτάζει πρώτα τις ανοιχτές πλευρές και μετά να επιλέγει. Αν κλειστεί σε αδιέξοδο, η επιστροφή είναι μέρος της λύσης."
     >
+      <div className="mb-4 rounded-2xl border bg-white p-3 text-center shadow-sm">
+        <p className="text-xs font-black uppercase tracking-[0.14em] text-muted-foreground">Χειρισμός: βελάκια πληκτρολογίου ή κουμπιά οθόνης</p>
+        <div className="mx-auto mt-3 grid w-40 grid-cols-3 gap-2">
+          <span />
+          <button type="button" onClick={() => position >= size && moveTo(position - size)} className="h-12 rounded-xl border bg-sky-50 text-xl font-black">↑</button>
+          <span />
+          <button type="button" onClick={() => position % size > 0 && moveTo(position - 1)} className="h-12 rounded-xl border bg-sky-50 text-xl font-black">←</button>
+          <button type="button" disabled className="h-12 rounded-xl border bg-amber-50 text-lg">🐻</button>
+          <button type="button" onClick={() => position % size < size - 1 && moveTo(position + 1)} className="h-12 rounded-xl border bg-sky-50 text-xl font-black">→</button>
+          <span />
+          <button type="button" onClick={() => position < size * (size - 1) && moveTo(position + size)} className="h-12 rounded-xl border bg-sky-50 text-xl font-black">↓</button>
+          <span />
+        </div>
+      </div>
+
       <div className="mx-auto grid max-w-xl bg-[#0b3b82] p-1" style={{ gridTemplateColumns: "repeat(" + size + ", minmax(0, 1fr))" }}>
         {maze.map((cell, index) => {
           const walls = {
