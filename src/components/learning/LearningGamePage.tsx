@@ -40,9 +40,9 @@ const GAME_META: Record<GameId, { title: string; emoji: string }> = {
 type VoiceMood = Mood;
 
 const TEACHER_VOICE = {
-  "2-3": { rate: 0.90, pitch: 1.0 },
-  "4-5": { rate: 0.94, pitch: 1.0 },
-  "5-6": { rate: 0.97, pitch: 1.0 },
+  "2-3": { rate: 0.78, pitch: 1.12 },
+  "4-5": { rate: 0.82, pitch: 1.10 },
+  "5-6": { rate: 0.86, pitch: 1.08 },
 } satisfies Record<Age, { rate: number; pitch: number }>;
 
 function cleanTeacherText(text: string) {
@@ -73,10 +73,10 @@ function teacherGreeting(age: Age, childName: string, instruction: string) {
   const task = limitForAge(age, instruction);
   const intro =
     age === "2-3"
-      ? "Γεια σου! Πάμε να παίξουμε μαζί. Θα σου λέω ένα μικρό βήμα κάθε φορά."
+      ? "Γεια σου, είμαι η δασκάλα Κατερίνα. Πάμε να παίξουμε γλυκά και ήρεμα, ένα μικρό βήμα κάθε φορά."
       : age === "4-5"
-        ? "Γεια σου! Πάμε να παίξουμε μαζί. Θα παρατηρούμε, θα σκεφτόμαστε και θα δοκιμάζουμε."
-        : "Γεια σου! Πάμε να παίξουμε μαζί. Σκέψου με την ησυχία σου και εγώ θα σε βοηθώ όταν το χρειάζεσαι.";
+        ? "Γεια σου, είμαι η δασκάλα Κατερίνα. Πάμε μαζί να παρατηρήσουμε, να σκεφτούμε και να δοκιμάσουμε με την ησυχία μας."
+        : "Γεια σου, είμαι η δασκάλα Κατερίνα. Πάμε να σκεφτούμε μαζί, χωρίς βιασύνη. Είμαι εδώ για να σε βοηθάω όταν το χρειάζεσαι.";
   return addressChild(childName, intro + " " + task);
 }
 
@@ -103,13 +103,14 @@ function useTeacherVoice(age: Age, childName: string) {
     const chooseVoice = () => {
       const voices = synth.getVoices();
       const greekVoices = voices.filter((voice) => voice.lang.toLowerCase().startsWith("el"));
-      const preferredPattern = /melina|athina|eleni|maria|sofia|sophia|katerina|female|woman/;
+      const preferredPattern = /katerina|melina|athina|eleni|maria|sofia|sophia|female|woman/;
 
       const score = (voice: SpeechSynthesisVoice) => {
         const name = (voice.name + " " + voice.voiceURI).toLowerCase();
         let value = 0;
         if (voice.lang.toLowerCase() === "el-gr") value += 100;
-        if (preferredPattern.test(name)) value += 120;
+        if (/katerina/.test(name)) value += 220;
+        else if (preferredPattern.test(name)) value += 150;
         if (/natural|neural|premium|enhanced/.test(name)) value += 60;
         if (/microsoft|google|apple/.test(name)) value += 20;
         if (voice.localService) value += 8;
@@ -418,7 +419,7 @@ function GameShell({
               <p className="mt-2 text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground">Ο Πισιπούκ είναι μαζί σου</p>
 
               <div className={"mt-4 rounded-2xl border px-3 py-3 text-left " + (mood === "success" ? "border-emerald-200 bg-emerald-50" : mood === "thinking" ? "border-amber-200 bg-amber-50" : "border-sky-200 bg-sky-50")}>
-                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-primary">💬 Ο Πισιπούκ λέει</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-primary">👩‍🏫 Η Δασκάλα Κατερίνα λέει</p>
                 <p className="mt-1 text-xs font-bold leading-5 text-slate-700">{message}</p>
               </div>
 
@@ -453,7 +454,7 @@ function GameShell({
                       ? "🔇 Δεν υποστηρίζεται φωνή"
                       : !voiceReady
                         ? "⏳ Φόρτωση φωνής…"
-                        : "🔊 Άκου την οδηγία"}
+                        : "🔊 Άκου τη Δασκάλα Κατερίνα"}
                   </Button>
                 ) : (
                   <>
@@ -464,7 +465,7 @@ function GameShell({
                       className="w-full rounded-full"
                       onClick={() => repeatFeedback(message)}
                     >
-                      🔁 Άκου ξανά την οδηγία
+                      🔁 Άκου ξανά τη Δασκάλα Κατερίνα
                     </Button>
                     <Button
                       type="button"
