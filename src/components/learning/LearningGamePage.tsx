@@ -103,28 +103,26 @@ function useTeacherVoice(age: Age, childName: string) {
     const chooseVoice = () => {
       const voices = synth.getVoices();
       const greekVoices = voices.filter((voice) => voice.lang.toLowerCase().startsWith("el"));
-      const preferredPattern = /katerina|melina|athina|eleni|maria|sofia|sophia|female|woman/;
+      const femalePattern = /katerina|melina|athina|eleni|maria|sofia|sophia|female|woman/;
 
       const score = (voice: SpeechSynthesisVoice) => {
         const name = (voice.name + " " + voice.voiceURI).toLowerCase();
         let value = 0;
         if (voice.lang.toLowerCase() === "el-gr") value += 100;
-        if (/katerina/.test(name)) value += 220;
-        else if (preferredPattern.test(name)) value += 150;
+        if (/katerina/.test(name)) value += 240;
+        else if (femalePattern.test(name)) value += 170;
         if (/natural|neural|premium|enhanced/.test(name)) value += 60;
         if (/microsoft|google|apple/.test(name)) value += 20;
         if (voice.localService) value += 8;
         return value;
       };
 
-      voiceRef.current =
-        [...greekVoices].sort((a, b) => score(b) - score(a))[0] ??
-        [...voices].sort((a, b) => score(b) - score(a))[0] ??
-        null;
+      const femaleGreekVoices = greekVoices.filter((voice) =>
+        femalePattern.test((voice.name + " " + voice.voiceURI).toLowerCase()),
+      );
 
-      // Ακόμη κι αν ο browser δεν εκθέτει λίστα φωνών, μπορεί να χρησιμοποιήσει
-      // την προεπιλεγμένη φωνή όταν ορίζουμε lang="el-GR".
-      setVoiceReady(true);
+      voiceRef.current = [...femaleGreekVoices].sort((a, b) => score(b) - score(a))[0] ?? null;
+      setVoiceReady(Boolean(voiceRef.current));
     };
 
     chooseVoice();
@@ -143,8 +141,9 @@ function useTeacherVoice(age: Age, childName: string) {
       const synth = window.speechSynthesis;
       synth.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
+      if (!voiceRef.current) return;
       utterance.lang = "el-GR";
-      if (voiceRef.current) utterance.voice = voiceRef.current;
+      utterance.voice = voiceRef.current;
       utterance.volume = 1;
       utterance.rate = TEACHER_VOICE[age].rate;
       utterance.pitch = TEACHER_VOICE[age].pitch;
@@ -453,7 +452,7 @@ function GameShell({
                     {!voiceSupported
                       ? "🔇 Δεν υποστηρίζεται φωνή"
                       : !voiceReady
-                        ? "⏳ Φόρτωση φωνής…"
+                        ? "🔇 Η γυναικεία φωνή δεν είναι διαθέσιμη"
                         : "🔊 Άκου τη Δασκάλα Κατερίνα"}
                   </Button>
                 ) : (
