@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Download, Eraser, FileDown, Paintbrush, Printer, RotateCcw, Sparkles } from "lucide-react";
 import { trackEvent } from "@/lib/pisipoukApi";
 import pisipoukLogo from "@/assets/pisipouk-logo.webp";
+import { loadPreschoolProgress, markPreschoolActivityComplete, preschoolBadgeLabel, setPreschoolAge, type PreschoolAge } from "@/lib/pisipoukPreschoolProgress";
 
 export const Route = createFileRoute("/virtual-preschool")({
   head: () => ({
@@ -942,6 +943,62 @@ function VirtualPreschool() {
     });
   }, [daySeed]);
 
+  const [progress, setProgress] = useState(() => ({
+    age: "2-3" as PreschoolAge,
+    completedIds: [] as string[],
+    favorites: [] as string[],
+    stars: 0,
+    lastActiveDate: null as string | null,
+  }));
+
+  useEffect(() => {
+    setProgress(loadPreschoolProgress());
+  }, []);
+
+  const designAgeFromProfile = (age: PreschoolAge): Design["age"] =>
+    age === "2-3" ? "2–3" : age === "4-5" ? "4–5" : "5–6";
+
+  const profileAgeFromDesign = (age: Design["age"]): PreschoolAge =>
+    age === "2–3" ? "2-3" : age === "4–5" ? "4-5" : "5-6";
+
+  const todayDesign = useMemo(() => {
+    const age = designAgeFromProfile(progress.age);
+    const pool = DESIGNS.filter((item) => item.age === age);
+    return pool[daySeed % pool.length] ?? pool[0] ?? DESIGNS[0];
+  }, [daySeed, progress.age]);
+
+  const todayCraft = useMemo(() => {
+    const age = designAgeFromProfile(progress.age);
+    const pool = CRAFTS.filter((item) => item.age === age);
+    return pool[(daySeed + 2) % pool.length] ?? pool[0] ?? CRAFTS[0];
+  }, [daySeed, progress.age]);
+
+  const todayGame = useMemo(() => {
+    const games = [
+      { id: "count", title: "Μέτρα και Βρες", emoji: "🔢" },
+      { id: "memory", title: "Παιχνίδι Μνήμης", emoji: "🧠" },
+      { id: "maze", title: "Λαβύρινθος του Πισιπούκ", emoji: "🌀" },
+      { id: "pattern", title: "Βρες το Μοτίβο", emoji: "🔷" },
+      { id: "odd-one", title: "Ποιο δεν ταιριάζει;", emoji: "🧐" },
+      { id: "colors-shapes", title: "Χρώματα & Σχήματα", emoji: "🎨" },
+    ];
+    return games[(daySeed + (progress.age === "2-3" ? 0 : progress.age === "4-5" ? 2 : 4)) % games.length];
+  }, [daySeed, progress.age]);
+
+  const markComplete = (id: string) => {
+    setProgress(markPreschoolActivityComplete(id));
+  };
+
+  const updateAge = (age: PreschoolAge) => {
+    setProgress(setPreschoolAge(age));
+    const nextAge = designAgeFromProfile(age);
+    const nextDesign = DESIGNS.find((item) => item.age === nextAge);
+    if (nextDesign) {
+      setDesignId(nextDesign.id);
+      setSelectedAge(nextDesign.age);
+    }
+  };
+
   const [designId, setDesignId] = useState(dailyChoices[0].id);
   const [selectedAge, setSelectedAge] = useState<Design["age"]>(dailyChoices[0].age);
   const [color, setColor] = useState(COLORS[0]);
@@ -967,7 +1024,10 @@ function VirtualPreschool() {
   const pickDesign = (id: string) => {
     const nextDesign = DESIGNS.find((d) => d.id === id);
     setDesignId(id);
-    if (nextDesign) setSelectedAge(nextDesign.age);
+    if (nextDesign) {
+      setSelectedAge(nextDesign.age);
+      setProgress(setPreschoolAge(profileAgeFromDesign(nextDesign.age)));
+    }
     clearCanvas();
     setErasing(false);
     requestAnimationFrame(() => {
@@ -1255,6 +1315,100 @@ function VirtualPreschool() {
     <SiteLayout>
       <section className="bg-white py-8 sm:py-12">
         <div className="mx-auto max-w-[1500px] px-3 sm:px-5 lg:px-7">
+          <section className="mb-6 overflow-hidden rounded-[2rem] border bg-gradient-to-br from-sky-50 via-white to-amber-50 shadow-sm">
+            <div className="grid gap-6 p-5 sm:p-7 lg:grid-cols-[1.15fr_.85fr] lg:p-9">
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="rounded-full bg-[#0b3b82] px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.14em] text-white">Σήμερα με τον Πισιπούκ</span>
+                  <span className="rounded-full bg-emerald-100 px-3 py-1.5 text-[11px] font-black text-emerald-800">15–25 λεπτά</span>
+                  <span className="rounded-full bg-amber-100 px-3 py-1.5 text-[11px] font-black text-amber-800">✨ Νέα δραστηριότητα κάθε εβδομάδα</span>
+                </div>
+                <h1 className="mt-4 text-4xl font-black tracking-tight text-[#0b3b82] sm:text-5xl">Το σημερινό μικρό πρόγραμμα</h1>
+                <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
+                  Επιλέξτε ηλικία και ο Πισιπούκ προτείνει μία μικρή διαδρομή με ζωγραφική, παιχνίδι και δημιουργία. Χωρίς login — η πρόοδος μένει μόνο σε αυτή τη συσκευή.
+                </p>
+
+                <div className="mt-5 grid grid-cols-3 gap-2 rounded-[1.4rem] border bg-white p-2 shadow-sm sm:max-w-xl">
+                  {([
+                    ["2-3","2–3 ετών"],
+                    ["4-5","4–5 ετών"],
+                    ["5-6","5–6 ετών"],
+                  ] as const).map(([value,label]) => (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() => updateAge(value)}
+                      aria-pressed={progress.age === value}
+                      className={"min-h-12 rounded-xl px-2 py-2 text-sm font-black transition " + (progress.age === value ? "bg-primary text-primary-foreground" : "bg-slate-50 text-slate-700 hover:bg-slate-100")}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <aside className="rounded-[1.8rem] border bg-white p-5 shadow-sm">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-black uppercase tracking-[0.14em] text-primary">Η πρόοδός μου</p>
+                    <p className="mt-1 text-3xl font-black text-[#0b3b82]">{progress.stars} ⭐</p>
+                  </div>
+                  <img src={pisipoukLogo} alt="" className="h-20 w-20 object-contain" />
+                </div>
+                <p className="mt-3 rounded-xl bg-amber-50 px-3 py-2 text-sm font-black text-amber-900">{preschoolBadgeLabel(progress.stars)}</p>
+                <p className="mt-3 text-xs leading-5 text-muted-foreground">Κάθε ολοκληρωμένη δραστηριότητα δίνει ένα αστέρι. Τα στοιχεία αποθηκεύονται τοπικά στο browser.</p>
+                <Link to="/parent-zone" className="mt-4 inline-flex rounded-full border bg-white px-4 py-2 text-xs font-black text-[#0b3b82] shadow-sm">👨‍👩‍👧 Parent Zone →</Link>
+              </aside>
+            </div>
+
+            <div className="grid gap-3 border-t bg-white/80 p-4 sm:grid-cols-3 sm:p-6">
+              <article className="rounded-[1.5rem] border bg-pink-50/70 p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-3xl">{todayDesign.emoji}</span>
+                  <span className="rounded-full bg-white px-2 py-1 text-[10px] font-black text-pink-700">ΖΩΓΡΑΦΙΚΗ</span>
+                </div>
+                <h2 className="mt-3 text-lg font-black text-[#0b3b82]">{todayDesign.title}</h2>
+                <p className="mt-1 text-xs text-muted-foreground">{todayDesign.age} ετών · {todayDesign.level}</p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <button type="button" onClick={() => pickDesign(todayDesign.id)} className="rounded-full bg-primary px-4 py-2 text-xs font-black text-primary-foreground">Ξεκίνα →</button>
+                  <button type="button" onClick={() => markComplete("coloring:" + todayDesign.id)} disabled={progress.completedIds.includes("coloring:" + todayDesign.id)} className="rounded-full border bg-white px-3 py-2 text-xs font-black disabled:opacity-50">
+                    {progress.completedIds.includes("coloring:" + todayDesign.id) ? "✓ Έτοιμο" : "Ολοκλήρωσα +⭐"}
+                  </button>
+                </div>
+              </article>
+
+              <article className="rounded-[1.5rem] border bg-violet-50/70 p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-3xl">{todayGame.emoji}</span>
+                  <span className="rounded-full bg-white px-2 py-1 text-[10px] font-black text-violet-700">ΠΑΙΧΝΙΔΙ</span>
+                </div>
+                <h2 className="mt-3 text-lg font-black text-[#0b3b82]">{todayGame.title}</h2>
+                <p className="mt-1 text-xs text-muted-foreground">Τυχαίοι γύροι · προσαρμογή ανά ηλικία</p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <a href={"/learning-games/" + todayGame.id + "?age=" + progress.age} className="rounded-full bg-primary px-4 py-2 text-xs font-black text-primary-foreground">Παίξε →</a>
+                  <button type="button" onClick={() => markComplete("game:" + todayGame.id + ":" + progress.age)} disabled={progress.completedIds.includes("game:" + todayGame.id + ":" + progress.age)} className="rounded-full border bg-white px-3 py-2 text-xs font-black disabled:opacity-50">
+                    {progress.completedIds.includes("game:" + todayGame.id + ":" + progress.age) ? "✓ Έτοιμο" : "Ολοκλήρωσα +⭐"}
+                  </button>
+                </div>
+              </article>
+
+              <article className="rounded-[1.5rem] border bg-emerald-50/70 p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-3xl">{todayCraft.emoji}</span>
+                  <span className="rounded-full bg-white px-2 py-1 text-[10px] font-black text-emerald-700">ΚΑΤΑΣΚΕΥΗ</span>
+                </div>
+                <h2 className="mt-3 text-lg font-black text-[#0b3b82]">{todayCraft.title}</h2>
+                <p className="mt-1 text-xs text-muted-foreground">{todayCraft.season} · με επίβλεψη ενήλικα όπου χρειάζεται</p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <a href="#crafts-library" className="rounded-full bg-primary px-4 py-2 text-xs font-black text-primary-foreground">Δες οδηγίες →</a>
+                  <button type="button" onClick={() => markComplete("craft:" + todayCraft.id)} disabled={progress.completedIds.includes("craft:" + todayCraft.id)} className="rounded-full border bg-white px-3 py-2 text-xs font-black disabled:opacity-50">
+                    {progress.completedIds.includes("craft:" + todayCraft.id) ? "✓ Έτοιμο" : "Ολοκλήρωσα +⭐"}
+                  </button>
+                </div>
+              </article>
+            </div>
+          </section>
+
           <div className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <a href="#coloring-library" className="group rounded-[1.8rem] border bg-gradient-to-br from-pink-50 to-sky-50 p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
               <div className="flex items-center gap-4">
@@ -1410,7 +1564,7 @@ function VirtualPreschool() {
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-primary">Κατασκευές Πισιπούκ</p>
                 <h2 className="mt-2 text-3xl font-black text-[#0b3b82] sm:text-5xl">Φτιάχνουμε με τα χέρια μας ✂️</h2>
                 <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
-                  Πρωτότυπες ιδέες ανά ηλικία, με απλά υλικά και σύντομα βήματα. Οι εποχικές δραστηριότητες αλλάζουν μαζί με τη χρονιά.
+                  Πρωτότυπες ιδέες ανά ηλικία με υλικά, αναλυτικά βήματα και printable A4. Οι δραστηριότητες ανανεώνονται θεματικά μέσα στη χρονιά.
                 </p>
               </div>
 
