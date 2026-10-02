@@ -1,133 +1,159 @@
-import { Link, createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
+import {
+  ArrowRight,
+  CalendarDays,
+  Check,
+  CheckCircle2,
+  Clock3,
+  Download,
+  Gamepad2,
+  Heart,
+  Palette,
+  Printer,
+  RotateCcw,
+  Scissors,
+  ShieldCheck,
+  Sparkles,
+  Star,
+  Trophy,
+  Users,
+} from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
-import { Button } from "@/components/ui/button";
-import { Download, Eraser, FileDown, Paintbrush, Printer, RotateCcw, Sparkles } from "lucide-react";
 import { trackEvent } from "@/lib/pisipoukApi";
-import pisipoukLogo from "@/assets/pisipouk-logo.webp";
-import { loadPreschoolProgress, markPreschoolActivityComplete, preschoolBadgeLabel, setPreschoolAge, type PreschoolAge } from "@/lib/pisipoukPreschoolProgress";
 
 export const Route = createFileRoute("/virtual-preschool")({
   head: () => ({
     meta: [
-      { title: "Εικονικός Παιδικός Σταθμός | Ο Πισιπούκ" },
+      { title: "Pisipouk Virtual Preschool+ | Παιχνίδια, Ζωγραφιές & A4 Χειροτεχνίες" },
       {
         name: "description",
         content:
-          "Δωρεάν Online Preschool του Πισιπούκ για παιδιά 2–6 ετών με καθημερινές προτάσεις, ζωγραφική, κατασκευές, μαθησιακά παιχνίδια, εποχιακά πακέτα και Parent Zone.",
+          "Το δωρεάν Virtual Preschool του Πισιπούκ για παιδιά 2–6 ετών: καθημερινό πρόγραμμα, διαδραστικά παιχνίδια, online ζωγραφική, A4 πατρόν χειροτεχνίας και Parent Zone.",
       },
     ],
   }),
   component: VirtualPreschool,
 });
 
-const COLORS = ["#ef4444","#f97316","#facc15","#22c55e","#06b6d4","#3b82f6","#8b5cf6","#ec4899","#8b5e3c","#111827"];
-
-const AGE_META = {
-  "2–3": {
-    title: "Τα πρώτα μου χρώματα",
-    description: "Μεγάλα σχήματα, παχιά περιγράμματα και ένα καθαρό θέμα.",
-    accent: "from-rose-100 via-pink-50 to-orange-50",
-    emoji: "🧸",
-  },
-  "4–5": {
-    title: "Παίζω με ιστορίες",
-    description: "Περισσότερα αντικείμενα, χαρακτήρες και μικρές σκηνές.",
-    accent: "from-sky-100 via-cyan-50 to-indigo-50",
-    emoji: "🚀",
-  },
-  "5–6": {
-    title: "Δημιουργώ ολόκληρες σκηνές",
-    description: "Πιο σύνθετες εικόνες, φόντο και πολλές περιοχές για χρώμα.",
-    accent: "from-emerald-100 via-lime-50 to-teal-50",
-    emoji: "🏰",
-  },
-} as const;
-
-type Design = {
-  id: string;
-  title: string;
-  emoji: string;
-  age: "2–3" | "4–5" | "5–6";
-  level: "Εύκολο" | "Μεσαίο" | "Πιο λεπτομερές";
-};
+type Age = "2–3" | "4–5" | "5–6";
+type CraftKind = "owl" | "rocket" | "mask" | "tree" | "fish" | "butterfly" | "dino" | "crown" | "boat" | "flower" | "bunny" | "robot";
 
 type Craft = {
   id: string;
   title: string;
-  emoji: string;
-  age: "2–3" | "4–5" | "5–6";
-  season: "Όλο τον χρόνο" | "Φθινόπωρο" | "Χριστούγεννα" | "Απόκριες" | "25η Μαρτίου" | "Πάσχα" | "Καλοκαίρι" | "28η Οκτωβρίου";
+  kind: CraftKind;
+  age: Age;
+  minutes: number;
+  level: string;
+  skill: string;
   materials: string[];
   steps: string[];
 };
 
+type Game = {
+  id: string;
+  emoji: string;
+  title: string;
+  subtitle: string;
+  question: string;
+  options: string[];
+  correct: number;
+  skill: string;
+  age: Age | "2–6";
+};
 
-function dataUrlBytes(dataUrl: string) {
-  const base64 = dataUrl.split(",")[1] ?? "";
-  const binary = atob(base64);
-  const bytes = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
-  return bytes;
+type ColoringDesign = {
+  id: string;
+  title: string;
+  emoji: string;
+  age: Age;
+  scene: "garden" | "space" | "ocean" | "farm";
+};
+
+const AGES: { id: Age; label: string; note: string; emoji: string }[] = [
+  { id: "2–3", label: "2–3 ετών", note: "Μεγάλα σχήματα • απλές επιλογές", emoji: "🧸" },
+  { id: "4–5", label: "4–5 ετών", note: "Ιστορίες • μέτρηση • δημιουργία", emoji: "🌈" },
+  { id: "5–6", label: "5–6 ετών", note: "Γράμματα • λογική • σύνθετες δραστηριότητες", emoji: "🚀" },
+];
+
+const THEMES = [
+  { title: "Το μαγικό δάσος", emoji: "🌳", accent: "from-emerald-400 to-lime-300", tip: "Βρείτε 3 διαφορετικά φύλλα στη βόλτα σας." },
+  { title: "Μικροί αστροναύτες", emoji: "🪐", accent: "from-indigo-500 to-violet-400", tip: "Μετρήστε 5 αστέρια πριν τον ύπνο." },
+  { title: "Βουτιά στον ωκεανό", emoji: "🐳", accent: "from-cyan-500 to-sky-300", tip: "Κάντε μαζί τον ήχο της θάλασσας." },
+  { title: "Χρώματα παντού", emoji: "🎨", accent: "from-fuchsia-500 to-rose-300", tip: "Ψάξτε στο σπίτι ένα αντικείμενο για κάθε βασικό χρώμα." },
+];
+
+const CRAFTS: Craft[] = [
+  { id: "forest-owl", title: "Κουκουβάγια του δάσους", kind: "owl", age: "2–3", minutes: 15, level: "Εύκολο", skill: "Λεπτή κινητικότητα", materials: ["Α4 εκτύπωση", "κηρομπογιές", "κόλλα stick", "παιδικό ψαλίδι με ενήλικα"], steps: ["Χρωματίστε τα μεγάλα κομμάτια.", "Κόψτε πάνω στις διακεκομμένες γραμμές με βοήθεια ενήλικα.", "Κολλήστε μάτια, φτερά και κοιλίτσα πάνω στο σώμα."] },
+  { id: "happy-rocket", title: "Ο χαρούμενος πύραυλος", kind: "rocket", age: "4–5", minutes: 20, level: "Εύκολο", skill: "Σχήματα & ακολουθία", materials: ["Α4 πατρόν", "μαρκαδόροι", "κόλλα", "παιδικό ψαλίδι"], steps: ["Χρωματίστε τα μέρη του πυραύλου.", "Κόψτε σώμα, παράθυρο, πτερύγια και φλόγες.", "Συναρμολογήστε από πάνω προς τα κάτω."] },
+  { id: "party-mask", title: "Μάσκα φαντασίας", kind: "mask", age: "4–5", minutes: 20, level: "Εύκολο", skill: "Δημιουργική έκφραση", materials: ["Α4 πατρόν", "χρώματα", "χαρτάκια", "κορδέλα με ενήλικα"], steps: ["Διακοσμήστε τη μάσκα όπως θέλετε.", "Ο ενήλικας κόβει το περίγραμμα και τα μάτια.", "Προσθέστε κορδέλα ή κρατήστε τη σαν θεατρικό αξεσουάρ."] },
+  { id: "kind-tree", title: "Το δέντρο της καλοσύνης", kind: "tree", age: "5–6", minutes: 25, level: "Μεσαίο", skill: "Συναισθήματα & γλώσσα", materials: ["Α4 πατρόν", "χρωματιστά μολύβια", "κόλλα"], steps: ["Χρωματίστε κορμό και φύλλα.", "Σε κάθε φύλλο πείτε ή γράψτε μια καλή πράξη.", "Κολλήστε τα φύλλα γύρω από το δέντρο."] },
+  { id: "rainbow-fish", title: "Ψαράκι με πολύχρωμα λέπια", kind: "fish", age: "2–3", minutes: 15, level: "Εύκολο", skill: "Χρώματα & μοτίβα", materials: ["Α4 πατρόν", "δαχτυλομπογιές ή κηρομπογιές", "κόλλα"], steps: ["Δώστε διαφορετικό χρώμα στα μεγάλα λέπια.", "Κόψτε τα έτοιμα κυκλάκια με ενήλικα.", "Κολλήστε τα πάνω στο σώμα του ψαριού."] },
+  { id: "symmetry-butterfly", title: "Πεταλούδα συμμετρίας", kind: "butterfly", age: "4–5", minutes: 20, level: "Μεσαίο", skill: "Συμμετρία & παρατήρηση", materials: ["Α4 πατρόν", "μαρκαδόροι", "αυτοκόλλητα"], steps: ["Χρωματίστε ένα σχέδιο στο αριστερό φτερό.", "Αντιγράψτε τα ίδια χρώματα στο δεξί.", "Κόψτε την πεταλούδα και διπλώστε απαλά τα φτερά."] },
+  { id: "little-dino", title: "Ο δεινόσαυρός μου", kind: "dino", age: "5–6", minutes: 25, level: "Μεσαίο", skill: "Σχεδιασμός & αφήγηση", materials: ["Α4 πατρόν", "χρώματα", "κόλλα", "χαρτόνι"], steps: ["Διαλέξτε τα χρώματα του δεινόσαυρου.", "Κόψτε σώμα, πόδια και πλάκες.", "Συναρμολογήστε και δώστε του όνομα και μια μικρή ιστορία."] },
+  { id: "star-crown", title: "Στέμμα μικρού εξερευνητή", kind: "crown", age: "4–5", minutes: 15, level: "Εύκολο", skill: "Αυτοπεποίθηση & μοτίβα", materials: ["Α4 πατρόν", "χρώματα", "αυτοκόλλητα", "συρραπτικό μόνο από ενήλικα"], steps: ["Χρωματίστε τα αστέρια.", "Κόψτε το στέμμα με ενήλικα.", "Ο ενήλικας προσαρμόζει το μέγεθος και ενώνει τις άκρες."] },
+  { id: "sea-boat", title: "Καραβάκι στο Αιγαίο", kind: "boat", age: "5–6", minutes: 25, level: "Μεσαίο", skill: "Σχήματα & σύνθεση", materials: ["Α4 πατρόν", "μπλε/λευκά χρώματα", "κόλλα"], steps: ["Χρωματίστε θάλασσα, πανί και καραβάκι.", "Κόψτε τα κομμάτια.", "Κολλήστε το πανί και δημιουργήστε κύματα στο φόντο."] },
+  { id: "flower-wheel", title: "Ρόδα λουλουδιών", kind: "flower", age: "2–3", minutes: 15, level: "Εύκολο", skill: "Αντιστοίχιση χρωμάτων", materials: ["Α4 πατρόν", "κηρομπογιές", "κόλλα"], steps: ["Χρωματίστε κάθε πέταλο διαφορετικά.", "Βρείτε ένα αντικείμενο στο σπίτι με ίδιο χρώμα.", "Κολλήστε τον κύκλο στο κέντρο."] },
+  { id: "bunny-puppet", title: "Λαγουδάκι finger puppet", kind: "bunny", age: "4–5", minutes: 20, level: "Εύκολο", skill: "Ρόλοι & αφήγηση", materials: ["Α4 πατρόν", "χρώματα", "κόλλα"], steps: ["Χρωματίστε το λαγουδάκι.", "Ο ενήλικας κόβει το περίγραμμα και τις υποδοχές.", "Παίξτε μια μικρή ιστορία με το puppet."] },
+  { id: "shape-robot", title: "Ρομπότ από σχήματα", kind: "robot", age: "5–6", minutes: 25, level: "Μεσαίο", skill: "Γεωμετρία & επίλυση", materials: ["Α4 πατρόν", "χρώματα", "κόλλα"], steps: ["Ονομάστε όλα τα σχήματα.", "Χρωματίστε και κόψτε τα κομμάτια.", "Συνθέστε το δικό σας ρομπότ με διαφορετική διάταξη."] },
+];
+
+const COLORING: ColoringDesign[] = [
+  { id: "butterfly-garden", title: "Πεταλούδα στον κήπο", emoji: "🦋", age: "2–3", scene: "garden" },
+  { id: "happy-flowers", title: "Χαρούμενα λουλούδια", emoji: "🌼", age: "4–5", scene: "garden" },
+  { id: "rocket-moon", title: "Πύραυλος στο φεγγάρι", emoji: "🚀", age: "4–5", scene: "space" },
+  { id: "planet-party", title: "Πάρτι στους πλανήτες", emoji: "🪐", age: "5–6", scene: "space" },
+  { id: "whale-sea", title: "Φάλαινα στη θάλασσα", emoji: "🐳", age: "2–3", scene: "ocean" },
+  { id: "coral-friends", title: "Φίλοι στον βυθό", emoji: "🐠", age: "5–6", scene: "ocean" },
+  { id: "farm-day", title: "Μέρα στη φάρμα", emoji: "🐄", age: "4–5", scene: "farm" },
+  { id: "little-tractor", title: "Το μικρό τρακτέρ", emoji: "🚜", age: "5–6", scene: "farm" },
+];
+
+const GAMES: Game[] = [
+  { id: "shape-match", emoji: "🔷", title: "Κυνήγι σχημάτων", subtitle: "Βρες το σωστό σχήμα", question: "Ποιο είναι το τρίγωνο;", options: ["●", "▲", "■", "★"], correct: 1, skill: "Σχήματα", age: "2–3" },
+  { id: "color-match", emoji: "🎨", title: "Μαγικά χρώματα", subtitle: "Ταίριαξε το χρώμα", question: "Ποιο χρώμα είναι σαν τον ήλιο;", options: ["🔵", "🟡", "🟢", "🟣"], correct: 1, skill: "Χρώματα", age: "2–3" },
+  { id: "count-stars", emoji: "⭐", title: "Μέτρα τα αστέρια", subtitle: "1, 2, 3... πάμε!", question: "⭐⭐⭐⭐ Πόσα αστέρια βλέπεις;", options: ["3", "4", "5", "6"], correct: 1, skill: "Πρώιμα μαθηματικά", age: "4–5" },
+  { id: "letter-find", emoji: "🔤", title: "Βρες το Α", subtitle: "Παιχνίδι γραμμάτων", question: "Ποιο είναι το γράμμα Α;", options: ["Μ", "Α", "Π", "Σ"], correct: 1, skill: "Προγραφή", age: "4–5" },
+  { id: "logic-sequence", emoji: "🧠", title: "Τι έρχεται μετά;", subtitle: "Μικρή λογική πρόκληση", question: "🔴 🔵 🔴 🔵 ...", options: ["🔴", "🟢", "🟡", "🟣"], correct: 0, skill: "Μοτίβα", age: "5–6" },
+  { id: "animal-home", emoji: "🐾", title: "Πού μένει;", subtitle: "Ζωάκια & περιβάλλον", question: "Πού ζει το ψαράκι;", options: ["🌳", "🌊", "🏠", "☁️"], correct: 1, skill: "Γνώση κόσμου", age: "4–5" },
+  { id: "emotion-game", emoji: "😊", title: "Πώς νιώθω;", subtitle: "Αναγνωρίζω συναισθήματα", question: "Ποιο πρόσωπο δείχνει χαρά;", options: ["😢", "😊", "😠", "😴"], correct: 1, skill: "Συναισθήματα", age: "2–6" },
+  { id: "odd-one", emoji: "👀", title: "Βρες το διαφορετικό", subtitle: "Παρατήρηση & συγκέντρωση", question: "Ποιο είναι διαφορετικό; 🐠 🐠 🐟 🐠", options: ["1ο", "2ο", "3ο", "4ο"], correct: 2, skill: "Παρατήρηση", age: "5–6" },
+];
+
+const PALETTE = ["#ef4444", "#f97316", "#facc15", "#22c55e", "#06b6d4", "#3b82f6", "#8b5cf6", "#ec4899"];
+
+function track(name: string, data?: Record<string, string | number | boolean>) {
+  void trackEvent(name, data ?? {});
 }
 
-function downloadCanvasPdf(canvas: HTMLCanvasElement, filename: string) {
-  const jpeg = dataUrlBytes(canvas.toDataURL("image/jpeg", 0.98));
-  const landscape = canvas.width > canvas.height;
-  const pageWidth = landscape ? 841.89 : 595.28;
-  const pageHeight = landscape ? 595.28 : 841.89;
-  const margin = 10;
-  const maxWidth = pageWidth - margin * 2;
-  const maxHeight = pageHeight - margin * 2;
-  const scale = Math.min(maxWidth / canvas.width, maxHeight / canvas.height);
-  const drawWidth = canvas.width * scale;
-  const drawHeight = canvas.height * scale;
-  const x = (pageWidth - drawWidth) / 2;
-  const y = (pageHeight - drawHeight) / 2;
-  const encoder = new TextEncoder();
-  const chunks: Uint8Array[] = [];
-  const offsets: number[] = [0];
-  let length = 0;
-
-  const pushText = (value: string) => {
-    const bytes = encoder.encode(value);
-    chunks.push(bytes);
-    length += bytes.length;
+function patternBody(kind: CraftKind) {
+  const common = `stroke="#172033" stroke-width="5" fill="white" stroke-linejoin="round" stroke-linecap="round"`;
+  const dash = `stroke="#64748b" stroke-width="3" fill="none" stroke-dasharray="12 10"`;
+  const patterns: Record<CraftKind, string> = {
+    owl: `<ellipse cx="400" cy="560" rx="210" ry="260" ${common}/><circle cx="320" cy="480" r="72" ${common}/><circle cx="480" cy="480" r="72" ${common}/><circle cx="320" cy="480" r="20" fill="#172033"/><circle cx="480" cy="480" r="20" fill="#172033"/><polygon points="400,520 365,570 435,570" ${common}/><path d="M205 550 Q120 650 215 760" ${common}/><path d="M595 550 Q680 650 585 760" ${common}/><path d="M270 330 L320 225 L370 345" ${common}/><path d="M430 345 L480 225 L530 330" ${common}/><path d="M250 850 H550" ${dash}/>`,
+    rocket: `<path d="M400 180 C290 300 275 560 300 800 H500 C525 560 510 300 400 180Z" ${common}/><circle cx="400" cy="430" r="70" ${common}/><path d="M300 650 L190 820 L300 790Z" ${common}/><path d="M500 650 L610 820 L500 790Z" ${common}/><path d="M335 800 L400 970 L465 800Z" ${common}/><path d="M285 1030 H515" ${dash}/>`,
+    mask: `<path d="M150 430 Q400 220 650 430 L610 680 Q500 760 400 650 Q300 760 190 680Z" ${common}/><ellipse cx="300" cy="500" rx="75" ry="48" ${common}/><ellipse cx="500" cy="500" rx="75" ry="48" ${common}/><path d="M390 575 Q400 600 410 575" ${common}/><circle cx="170" cy="510" r="10" ${common}/><circle cx="630" cy="510" r="10" ${common}/><path d="M160 760 H640" ${dash}/>`,
+    tree: `<path d="M340 780 C355 650 350 560 300 480 C355 500 380 455 400 390 C420 455 445 500 500 480 C450 560 445 650 460 780Z" ${common}/><circle cx="260" cy="360" r="95" ${common}/><circle cx="400" cy="285" r="110" ${common}/><circle cx="540" cy="365" r="95" ${common}/><path d="M210 900 H590" ${dash}/><path d="M170 980 H630" ${dash}/>`,
+    fish: `<path d="M170 560 C300 380 530 390 620 560 C530 730 300 740 170 560Z" ${common}/><path d="M620 560 L745 420 L720 560 L745 700Z" ${common}/><circle cx="275" cy="515" r="18" fill="#172033"/><path d="M310 590 Q360 630 410 590" ${common}/><circle cx="430" cy="505" r="52" ${common}/><circle cx="520" cy="560" r="52" ${common}/><circle cx="430" cy="620" r="52" ${common}/><path d="M180 820 H700" ${dash}/>`,
+    butterfly: `<ellipse cx="400" cy="560" rx="35" ry="170" ${common}/><path d="M365 520 C170 250 105 430 210 590 C110 700 220 855 365 620Z" ${common}/><path d="M435 520 C630 250 695 430 590 590 C690 700 580 855 435 620Z" ${common}/><circle cx="245" cy="500" r="48" ${common}/><circle cx="555" cy="500" r="48" ${common}/><path d="M380 390 Q330 315 300 320" ${common}/><path d="M420 390 Q470 315 500 320" ${common}/><path d="M150 930 H650" ${dash}/>`,
+    dino: `<path d="M170 650 C140 500 250 370 420 410 C560 440 590 570 560 680 L670 710 L620 800 L500 750 L470 880 H390 L370 755 L270 760 L245 880 H165 L190 730 C155 710 145 680 170 650Z" ${common}/><path d="M250 440 L280 330 L330 430 L380 320 L420 420" ${common}/><circle cx="500" cy="520" r="16" fill="#172033"/><path d="M470 930 H640" ${dash}/>`,
+    crown: `<path d="M125 690 L170 350 L300 520 L400 300 L500 520 L630 350 L675 690Z" ${common}/><circle cx="400" cy="430" r="40" ${common}/><circle cx="260" cy="555" r="30" ${common}/><circle cx="540" cy="555" r="30" ${common}/><path d="M115 790 H685" ${dash}/>`,
+    boat: `<path d="M170 650 H650 L565 790 H255Z" ${common}/><path d="M400 250 V650" ${common}/><path d="M400 280 L400 570 L610 570Z" ${common}/><path d="M390 310 L390 540 L220 540Z" ${common}/><path d="M120 890 Q220 830 320 890 T520 890 T720 890" ${common}/><path d="M120 970 Q220 910 320 970 T520 970 T720 970" ${common}/>`,
+    flower: `<circle cx="400" cy="550" r="85" ${common}/><ellipse cx="400" cy="350" rx="85" ry="130" ${common}/><ellipse cx="400" cy="750" rx="85" ry="130" ${common}/><ellipse cx="200" cy="550" rx="130" ry="85" ${common}/><ellipse cx="600" cy="550" rx="130" ry="85" ${common}/><ellipse cx="260" cy="405" rx="110" ry="75" transform="rotate(45 260 405)" ${common}/><ellipse cx="540" cy="405" rx="110" ry="75" transform="rotate(-45 540 405)" ${common}/><ellipse cx="260" cy="695" rx="110" ry="75" transform="rotate(-45 260 695)" ${common}/><ellipse cx="540" cy="695" rx="110" ry="75" transform="rotate(45 540 695)" ${common}/>`,
+    bunny: `<ellipse cx="400" cy="585" rx="210" ry="260" ${common}/><ellipse cx="300" cy="260" rx="70" ry="180" transform="rotate(-12 300 260)" ${common}/><ellipse cx="500" cy="260" rx="70" ry="180" transform="rotate(12 500 260)" ${common}/><circle cx="330" cy="540" r="18" fill="#172033"/><circle cx="470" cy="540" r="18" fill="#172033"/><path d="M400 585 l-28 30 h56Z" ${common}/><path d="M400 620 Q350 680 300 640 M400 620 Q450 680 500 640" ${common}/><circle cx="205" cy="760" r="65" ${common}/><path d="M250 930 H550" ${dash}/>`,
+    robot: `<rect x="260" y="250" width="280" height="230" rx="35" ${common}/><circle cx="335" cy="340" r="28" ${common}/><circle cx="465" cy="340" r="28" ${common}/><path d="M330 420 H470" ${common}/><rect x="220" y="520" width="360" height="320" rx="35" ${common}/><circle cx="400" cy="620" r="55" ${common}/><path d="M220 580 L120 650 L190 710" ${common}/><path d="M580 580 L680 650 L610 710" ${common}/><path d="M310 840 V970 M490 840 V970" ${common}/><circle cx="310" cy="1000" r="50" ${common}/><circle cx="490" cy="1000" r="50" ${common}/>`
   };
-  const pushBytes = (bytes: Uint8Array) => {
-    chunks.push(bytes);
-    length += bytes.length;
-  };
-  const addObject = (id: number, body: string | Uint8Array, stream = false) => {
-    offsets[id] = length;
-    pushText(`${id} 0 obj\n`);
-    if (stream && body instanceof Uint8Array) {
-      pushText(`<< /Type /XObject /Subtype /Image /Width ${canvas.width} /Height ${canvas.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${body.length} >>\nstream\n`);
-      pushBytes(body);
-      pushText("\nendstream\n");
-    } else {
-      pushText(body as string);
-      pushText("\n");
-    }
-    pushText("endobj\n");
-  };
+  return patterns[kind];
+}
 
-  pushText("%PDF-1.4\n");
-  addObject(1, "<< /Type /Catalog /Pages 2 0 R >>");
-  addObject(2, "<< /Type /Pages /Kids [3 0 R] /Count 1 >>");
-  addObject(3, `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageWidth.toFixed(2)} ${pageHeight.toFixed(2)}] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>`);
-  addObject(4, jpeg, true);
-  const content = `q\n${drawWidth.toFixed(2)} 0 0 ${drawHeight.toFixed(2)} ${x.toFixed(2)} ${y.toFixed(2)} cm\n/Im0 Do\nQ`;
-  addObject(5, `<< /Length ${encoder.encode(content).length} >>\nstream\n${content}\nendstream`);
+function craftSvg(craft: Craft) {
+  const title = craft.title.replace(/[&<>]/g, "");
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="210mm" height="297mm" viewBox="0 0 800 1120"><rect width="800" height="1120" fill="white"/><text x="55" y="75" font-family="Arial" font-size="25" font-weight="700" fill="#0b3b82">PISIPOUK • A4 CRAFT PATTERN</text><text x="55" y="120" font-family="Arial" font-size="30" font-weight="700" fill="#172033">${title}</text><text x="55" y="155" font-family="Arial" font-size="18" fill="#64748b">Κόψε στις συνεχείς γραμμές • Δίπλωσε/ένωσε στις διακεκομμένες • Πάντα με ενήλικα</text><g transform="translate(0,80) scale(.82)">${patternBody(craft.kind)}</g><text x="400" y="1080" text-anchor="middle" font-family="Arial" font-size="16" fill="#64748b">pisipouk.vercel.app/virtual-preschool</text></svg>`;
+}
 
-  const xrefOffset = length;
-  pushText("xref\n0 6\n0000000000 65535 f \n");
-  for (let id = 1; id <= 5; id += 1) {
-    pushText(`${String(offsets[id]).padStart(10, "0")} 00000 n \n`);
-  }
-  pushText(`trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`);
-
-  const blob = new Blob(chunks, { type: "application/pdf" });
+function downloadTextFile(content: string, filename: string, type: string) {
+  const blob = new Blob([content], { type });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
@@ -135,1615 +161,339 @@ function downloadCanvasPdf(canvas: HTMLCanvasElement, filename: string) {
   document.body.appendChild(link);
   link.click();
   link.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  URL.revokeObjectURL(url);
 }
 
-function wrapCanvasText(
-  ctx: CanvasRenderingContext2D,
-  text: string,
-  x: number,
-  y: number,
-  maxWidth: number,
-  lineHeight: number,
-) {
-  const words = text.split(/\s+/);
-  let line = "";
-  let cursorY = y;
-  for (const word of words) {
-    const test = line ? `${line} ${word}` : word;
-    if (ctx.measureText(test).width > maxWidth && line) {
-      ctx.fillText(line, x, cursorY);
-      line = word;
-      cursorY += lineHeight;
-    } else {
-      line = test;
-    }
-  }
-  if (line) {
-    ctx.fillText(line, x, cursorY);
-    cursorY += lineHeight;
-  }
-  return cursorY;
+function printSvg(svg: string, title: string) {
+  const win = window.open("", "_blank", "noopener,noreferrer");
+  if (!win) return;
+  win.document.write(`<!doctype html><html><head><title>${title}</title><style>@page{size:A4;margin:0}html,body{margin:0;padding:0}svg{width:210mm;height:297mm;display:block}</style></head><body>${svg}<script>window.onload=()=>setTimeout(()=>window.print(),150)</script></body></html>`);
+  win.document.close();
 }
 
-function craftCanvas(craft: Craft) {
-  const canvas = document.createElement("canvas");
-  canvas.width = 1240;
-  canvas.height = 1754;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return canvas;
-
-  ctx.fillStyle = "#ffffff";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = "#0b3b82";
-  ctx.font = "700 34px Arial, sans-serif";
-  ctx.fillText("Ο Πισιπούκ • Κατασκευές", 70, 85);
-
-  ctx.font = "700 58px Arial, sans-serif";
-  let y = wrapCanvasText(ctx, `${craft.emoji} ${craft.title}`, 70, 180, 1100, 70);
-  ctx.font = "700 28px Arial, sans-serif";
-  ctx.fillStyle = "#475569";
-  ctx.fillText(`${craft.age} ετών • ${craft.season}`, 70, y + 4);
-  y += 58;
-
-  ctx.strokeStyle = "#dbe4f0";
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.moveTo(70, y);
-  ctx.lineTo(1170, y);
-  ctx.stroke();
-  y += 58;
-
-  ctx.fillStyle = "#0b3b82";
-  ctx.font = "700 32px Arial, sans-serif";
-  ctx.fillText("ΥΛΙΚΑ", 70, y);
-  y += 52;
-  ctx.fillStyle = "#1f2937";
-  ctx.font = "28px Arial, sans-serif";
-  for (const material of craft.materials) {
-    y = wrapCanvasText(ctx, `• ${material}`, 95, y, 1060, 40);
-    y += 7;
-  }
-
-  y += 24;
-  ctx.fillStyle = "#0b3b82";
-  ctx.font = "700 32px Arial, sans-serif";
-  ctx.fillText("ΒΗΜΑΤΑ", 70, y);
-  y += 54;
-  ctx.fillStyle = "#1f2937";
-  ctx.font = "28px Arial, sans-serif";
-  craft.steps.forEach((step, index) => {
-    y = wrapCanvasText(ctx, `${index + 1}. ${step}`, 95, y, 1060, 40);
-    y += 14;
-  });
-
-  const safetyY = Math.min(Math.max(y + 40, 1360), 1490);
-  ctx.fillStyle = "#fff7ed";
-  ctx.fillRect(70, safetyY, 1100, 145);
-  ctx.fillStyle = "#9a3412";
-  ctx.font = "700 27px Arial, sans-serif";
-  ctx.fillText("Με ενήλικα δίπλα μας 👩‍👧‍👦", 100, safetyY + 44);
-  ctx.fillStyle = "#7c2d12";
-  ctx.font = "23px Arial, sans-serif";
-  wrapCanvasText(
-    ctx,
-    "Ψαλίδι, μικρά εξαρτήματα και οποιοδήποτε κόψιμο ή τρύπημα γίνονται πάντα με επίβλεψη και βοήθεια ενήλικα.",
-    100,
-    safetyY + 84,
-    1030,
-    32,
+function CraftPattern({ craft, compact = false }: { craft: Craft; compact?: boolean }) {
+  return (
+    <svg viewBox="0 0 800 1120" className={compact ? "h-full w-full" : "h-auto w-full"} aria-label={`Πατρόν ${craft.title}`}>
+      <rect width="800" height="1120" rx="34" fill="#fff" />
+      <g transform="translate(0,60) scale(.82)" dangerouslySetInnerHTML={{ __html: patternBody(craft.kind) }} />
+    </svg>
   );
-
-  ctx.fillStyle = "#64748b";
-  ctx.font = "21px Arial, sans-serif";
-  ctx.textAlign = "center";
-  ctx.fillText("pisipouk.vercel.app", canvas.width / 2, 1718);
-  ctx.textAlign = "left";
-  return canvas;
 }
 
-const CRAFTS: Craft[] = [
-  { id: "leaf-collage", title: "Κολάζ με φθινοπωρινά φύλλα", emoji: "🍂", age: "2–3", season: "Φθινόπωρο", materials: ["χαρτόνι", "φύλλα", "κόλλα"], steps: ["Μαζεύουμε φύλλα.", "Τα ακουμπάμε πάνω στο χαρτόνι.", "Κολλάμε ελεύθερα και δημιουργούμε ένα μεγάλο δέντρο."] },
-  { id: "paper-sun", title: "Ήλιος με χάρτινες ακτίνες", emoji: "☀️", age: "2–3", season: "Όλο τον χρόνο", materials: ["κίτρινο χαρτί", "κόλλα", "κηρομπογιές"], steps: ["Χρωματίζουμε έναν μεγάλο κύκλο.", "Κολλάμε χάρτινες λωρίδες γύρω του.", "Ζωγραφίζουμε ένα χαμογελαστό πρόσωπο."] },
-  { id: "apple-stamp", title: "Τυπώματα με μήλο", emoji: "🍎", age: "2–3", season: "Φθινόπωρο", materials: ["μήλο κομμένο από ενήλικα", "τέμπερα", "χαρτί"], steps: ["Ο ενήλικας κόβει το μήλο.", "Βουτάμε απαλά στην τέμπερα.", "Κάνουμε μεγάλα τυπώματα στο χαρτί."] },
-  { id: "easter-egg-stickers", title: "Πασχαλινό αυγό με χαρτάκια", emoji: "🥚", age: "2–3", season: "Πάσχα", materials: ["χαρτόνι", "χρωματιστά χαρτάκια", "κόλλα"], steps: ["Κόβουμε ένα μεγάλο αυγό.", "Σκίζουμε μικρά χρωματιστά χαρτάκια.", "Τα κολλάμε πάνω στο αυγό."] },
-  { id: "summer-fish", title: "Ψαράκι με πολύχρωμα λέπια", emoji: "🐟", age: "2–3", season: "Καλοκαίρι", materials: ["χάρτινο ψαράκι", "κύκλοι χαρτιού", "κόλλα"], steps: ["Διαλέγουμε χρώματα.", "Κολλάμε κύκλους σαν λέπια.", "Προσθέτουμε μάτι και χαμόγελο."] },
-  { id: "christmas-tree-dots", title: "Χριστουγεννιάτικο δέντρο με βούλες", emoji: "🎄", age: "2–3", season: "Χριστούγεννα", materials: ["πράσινο χαρτόνι", "δαχτυλομπογιές", "αστέρι χαρτιού"], steps: ["Φτιάχνουμε το τρίγωνο του δέντρου.", "Βάζουμε χρωματιστές βούλες με το δάχτυλο.", "Κολλάμε το αστέρι στην κορυφή."] },
-
-  { id: "paper-butterfly", title: "Πεταλούδα με συμμετρικά χρώματα", emoji: "🦋", age: "4–5", season: "Όλο τον χρόνο", materials: ["χαρτί", "τέμπερες", "μαρκαδόρος"], steps: ["Διπλώνουμε το χαρτί στη μέση.", "Βάζουμε χρώματα στη μία πλευρά.", "Κλείνουμε, πιέζουμε και ανοίγουμε για συμμετρικά φτερά."] },
-  { id: "rocket-roll", title: "Πύραυλος από ρολό χαρτιού", emoji: "🚀", age: "4–5", season: "Όλο τον χρόνο", materials: ["ρολό χαρτιού", "χαρτόνια", "κόλλα"], steps: ["Ντύνουμε το ρολό με χαρτί.", "Προσθέτουμε μύτη και πτερύγια.", "Κολλάμε λωρίδες σαν φλόγες."] },
-  { id: "greek-flag-collage", title: "Ελληνική σημαία με κολάζ", emoji: "🇬🇷", age: "4–5", season: "28η Οκτωβρίου", materials: ["μπλε και λευκό χαρτί", "κόλλα", "χαρτόνι"], steps: ["Χωρίζουμε τη σημαία σε λωρίδες.", "Κολλάμε μπλε και λευκά κομμάτια.", "Προσθέτουμε τον σταυρό με βοήθεια ενήλικα."] },
-  { id: "mask-craft", title: "Αποκριάτικη μάσκα", emoji: "🎭", age: "4–5", season: "Απόκριες", materials: ["χαρτόνι", "λάστιχο", "πούλιες ή χαρτάκια"], steps: ["Σχεδιάζουμε το σχήμα της μάσκας.", "Διακοσμούμε με χρώματα και κολλάζ.", "Ο ενήλικας ανοίγει τρύπες και περνά το λάστιχο."] },
-  { id: "easter-bunny-cup", title: "Λαγουδάκι από χάρτινο ποτηράκι", emoji: "🐰", age: "4–5", season: "Πάσχα", materials: ["χάρτινο ποτηράκι", "χαρτί", "κόλλα", "μαρκαδόρος"], steps: ["Κολλάμε δύο μεγάλα αυτιά.", "Ζωγραφίζουμε μάτια και μουσούδα.", "Προσθέτουμε ουρίτσα από χαρτί."] },
-  { id: "boat-craft", title: "Καραβάκι με χάρτινο πανί", emoji: "⛵", age: "4–5", season: "Καλοκαίρι", materials: ["χαρτόνι", "καλαμάκι", "χρωματιστό χαρτί"], steps: ["Φτιάχνουμε τη βάση του καραβιού.", "Ο ενήλικας στερεώνει το καλαμάκι.", "Προσθέτουμε πανί και ζωγραφίζουμε κύματα."] },
-
-  { id: "forest-diorama", title: "Μικρό δάσος σε κουτί", emoji: "🌲", age: "5–6", season: "Φθινόπωρο", materials: ["μικρό κουτί", "χαρτόνια", "φύλλα", "κόλλα"], steps: ["Ντύνουμε το εσωτερικό του κουτιού.", "Φτιάχνουμε δέντρα και ζωάκια από χαρτί.", "Στήνουμε τα στοιχεία σε διαφορετικά επίπεδα."] },
-  { id: "city-recycle", title: "Μικρή πόλη από ανακυκλώσιμα", emoji: "🏙️", age: "5–6", season: "Όλο τον χρόνο", materials: ["κουτάκια", "ρολά", "χαρτόνι", "κόλλα"], steps: ["Διαλέγουμε κτίρια και οχήματα.", "Ντύνουμε τα κουτάκια με χαρτί.", "Στήνουμε δρόμους και μικρή γειτονιά."] },
-  { id: "peace-dove", title: "Περιστέρι ειρήνης", emoji: "🕊️", age: "5–6", season: "28η Οκτωβρίου", materials: ["λευκό χαρτόνι", "μπλε χαρτί", "κορδέλα"], steps: ["Σχεδιάζουμε το περίγραμμα του περιστεριού.", "Κόβουμε με βοήθεια ενήλικα.", "Προσθέτουμε κλαδί ή μπλε-λευκές λεπτομέρειες."] },
-  { id: "march-wreath", title: "Ανοιξιάτικο στεφάνι", emoji: "🌼", age: "5–6", season: "25η Μαρτίου", materials: ["χάρτινο πιάτο", "χρωματιστά χαρτιά", "κόλλα"], steps: ["Ο ενήλικας αφαιρεί το κέντρο του πιάτου.", "Φτιάχνουμε λουλούδια και φύλλα.", "Τα κολλάμε γύρω από το στεφάνι."] },
-  { id: "christmas-village", title: "Χριστουγεννιάτικο χωριό", emoji: "🏠", age: "5–6", season: "Χριστούγεννα", materials: ["χαρτόκουτα", "λευκό χαρτί", "βαμβάκι", "κόλλα"], steps: ["Φτιάχνουμε μικρά σπιτάκια.", "Προσθέτουμε πόρτες, παράθυρα και σκεπές.", "Στήνουμε χιονισμένο χωριό με βαμβάκι."] },
-  { id: "summer-aquarium", title: "Τρισδιάστατο ενυδρείο", emoji: "🐠", age: "5–6", season: "Καλοκαίρι", materials: ["χάρτινο κουτί", "νήμα", "χαρτόνια", "κόλλα"], steps: ["Ζωγραφίζουμε το εσωτερικό σαν θάλασσα.", "Φτιάχνουμε ψάρια και φύκια.", "Κρεμάμε τα ψάρια με νήμα από την οροφή του κουτιού."] },
-  {
-    id: "pisipouk-paper-character",
-    title: "Ο Πισιπούκ από χαρτί – βήμα βήμα",
-    emoji: "🐻",
-    age: "5–6",
-    season: "Όλο τον χρόνο",
-    materials: [
-      "καφέ χαρτόνι για κεφάλι και σώμα",
-      "μπεζ χαρτί για μουσούδα, κοιλίτσα και μέσα στα αυτιά",
-      "μπλε χαρτί για το καπελάκι",
-      "λευκό και μαύρο χαρτί για μάτια και μύτη",
-      "μολύβι, κόλλα και παιδικό ψαλίδι",
-      "μαύρος μαρκαδόρος για τις μικρές λεπτομέρειες"
-    ],
-    steps: [
-      "Σχεδιάζουμε στο καφέ χαρτόνι ένα μεγάλο οβάλ για το κεφάλι και ένα δεύτερο, λίγο πιο μακρύ, για το σώμα.",
-      "Φτιάχνουμε δύο καφέ κύκλους για τα αυτιά και δύο μικρότερους μπεζ κύκλους για το εσωτερικό τους. Τα κολλάμε πίσω από το κεφάλι.",
-      "Κόβουμε μία μπεζ οβάλ μουσούδα. Προσθέτουμε μαύρη μύτη, χαμόγελο και δύο λευκά μάτια με μαύρες κόρες.",
-      "Κόβουμε μία μπεζ κοιλίτσα και την κολλάμε στο κέντρο του σώματος, αφήνοντας γύρω αρκετό καφέ περίγραμμα.",
-      "Φτιάχνουμε δύο χέρια και δύο ποδαράκια από καφέ λωρίδες με στρογγυλεμένες άκρες και τα κολλάμε πίσω από το σώμα.",
-      "Από μπλε χαρτί φτιάχνουμε το καπελάκι του Πισιπούκ: ένα ημικύκλιο και ένα μικρό γείσο. Τα κολλάμε πάνω στο κεφάλι.",
-      "Ενώνουμε κεφάλι και σώμα. Με μαρκαδόρο προσθέτουμε φρύδια, πατουσάκια, γραμμές στα αυτιά και μικρές λεπτομέρειες στο καπελάκι.",
-      "Κολλάμε τον ολοκληρωμένο Πισιπούκ σε λευκό ή χρωματιστό Α4 και γράφουμε από κάτω «Ο δικός μου Πισιπούκ»."
-    ]
-  },
-];
-
-const DESIGNS: Design[] = [
-  // 2–3: μεγάλα, καθαρά αντικείμενα
-  { id: "sept-leaf", title: "Φθινοπωρινό φύλλο", emoji: "🍂", age: "2–3", level: "Εύκολο" },
-  { id: "sept-pencil", title: "Το πρώτο μου μολύβι", emoji: "✏️", age: "2–3", level: "Εύκολο" },
-  { id: "sun", title: "Ήλιος", emoji: "☀️", age: "2–3", level: "Εύκολο" },
-  { id: "apple", title: "Μήλο", emoji: "🍎", age: "2–3", level: "Εύκολο" },
-  { id: "balloon", title: "Μπαλόνι", emoji: "🎈", age: "2–3", level: "Εύκολο" },
-  { id: "cat", title: "Γατούλα", emoji: "🐱", age: "2–3", level: "Εύκολο" },
-  { id: "fish", title: "Ψαράκι", emoji: "🐠", age: "2–3", level: "Εύκολο" },
-  { id: "flower", title: "Λουλούδι", emoji: "🌼", age: "2–3", level: "Εύκολο" },
-  { id: "duck", title: "Παπάκι", emoji: "🐤", age: "2–3", level: "Εύκολο" },
-  { id: "car", title: "Αυτοκινητάκι", emoji: "🚗", age: "2–3", level: "Εύκολο" },
-  { id: "cloud", title: "Σύννεφο & βροχή", emoji: "🌧️", age: "2–3", level: "Εύκολο" },
-  { id: "star", title: "Αστεράκι", emoji: "⭐", age: "2–3", level: "Εύκολο" },
-  { id: "house", title: "Σπιτάκι", emoji: "🏠", age: "2–3", level: "Εύκολο" },
-  { id: "icecream", title: "Παγωτό", emoji: "🍦", age: "2–3", level: "Εύκολο" },
-  { id: "turtle", title: "Χελωνίτσα", emoji: "🐢", age: "2–3", level: "Εύκολο" },
-  { id: "bear", title: "Αρκουδάκι", emoji: "🧸", age: "2–3", level: "Εύκολο" },
-  { id: "pisipouk-easy", title: "Ο Πισιπούκ", emoji: "🐻", age: "2–3", level: "Εύκολο" },
-  { id: "ai-pumpkin", title: "Χαρούμενη κολοκύθα", emoji: "🎃", age: "2–3", level: "Εύκολο" },
-  { id: "ai-pear", title: "Μεγάλο αχλάδι", emoji: "🍐", age: "2–3", level: "Εύκολο" },
-  { id: "ai-snail", title: "Σαλιγκαράκι", emoji: "🐌", age: "2–3", level: "Εύκολο" },
-  { id: "ai-umbrella", title: "Ομπρέλα στη βροχή", emoji: "☂️", age: "2–3", level: "Εύκολο" },
-
-  // 4–5: μικρές σκηνές και περισσότερα στοιχεία
-  { id: "sept-backpack", title: "Η σχολική μου τσάντα", emoji: "🎒", age: "4–5", level: "Μεσαίο" },
-  { id: "sept-schoolbus", title: "Σχολικό λεωφορείο", emoji: "🚌", age: "4–5", level: "Μεσαίο" },
-  { id: "bunny", title: "Κουνελάκι", emoji: "🐰", age: "4–5", level: "Μεσαίο" },
-  { id: "elephant", title: "Ελεφαντάκι", emoji: "🐘", age: "4–5", level: "Μεσαίο" },
-  { id: "train", title: "Τρενάκι", emoji: "🚂", age: "4–5", level: "Μεσαίο" },
-  { id: "firetruck", title: "Πυροσβεστικό", emoji: "🚒", age: "4–5", level: "Μεσαίο" },
-  { id: "unicorn", title: "Μονόκερος", emoji: "🦄", age: "4–5", level: "Μεσαίο" },
-  { id: "butterfly", title: "Πεταλούδα", emoji: "🦋", age: "4–5", level: "Μεσαίο" },
-  { id: "dino", title: "Δεινόσαυρος", emoji: "🦕", age: "4–5", level: "Μεσαίο" },
-  { id: "rocket", title: "Πύραυλος", emoji: "🚀", age: "4–5", level: "Μεσαίο" },
-  { id: "seabed", title: "Μικρός βυθός", emoji: "🐟", age: "4–5", level: "Μεσαίο" },
-  { id: "fruit-basket", title: "Καλάθι με φρούτα", emoji: "🍓", age: "4–5", level: "Μεσαίο" },
-  { id: "bee-garden", title: "Μέλισσα στον κήπο", emoji: "🐝", age: "4–5", level: "Μεσαίο" },
-  { id: "airplane", title: "Αεροπλανάκι", emoji: "✈️", age: "4–5", level: "Μεσαίο" },
-  { id: "boat", title: "Καραβάκι", emoji: "⛵", age: "4–5", level: "Μεσαίο" },
-  { id: "pisipouk-balloon", title: "Πισιπούκ με μπαλόνι", emoji: "🐻", age: "4–5", level: "Μεσαίο" },
-  { id: "pisipouk-garden", title: "Πισιπούκ στον κήπο", emoji: "🐻", age: "4–5", level: "Μεσαίο" },
-  { id: "ai-robot", title: "Φιλικό ρομπότ", emoji: "🤖", age: "4–5", level: "Μεσαίο" },
-  { id: "ai-panda", title: "Πάντα με μπαμπού", emoji: "🐼", age: "4–5", level: "Μεσαίο" },
-  { id: "ai-rover", title: "Όχημα στη Σελήνη", emoji: "🌙", age: "4–5", level: "Μεσαίο" },
-  { id: "ai-pirate-boat", title: "Καραβάκι εξερεύνησης", emoji: "⛵", age: "4–5", level: "Μεσαίο" },
-
-  // 5–6: σύνθετες σκηνές / περισσότερες περιοχές
-  { id: "sept-autumn-tree", title: "Το φθινοπωρινό μας δέντρο", emoji: "🍁", age: "5–6", level: "Πιο λεπτομερές" },
-  { id: "sept-school-day", title: "Η πρώτη μέρα στην τάξη", emoji: "🏫", age: "5–6", level: "Πιο λεπτομερές" },
-  { id: "dino-scene", title: "Δεινόσαυρος στο δάσος", emoji: "🦕", age: "5–6", level: "Πιο λεπτομερές" },
-  { id: "space-scene", title: "Διάστημα & πλανήτες", emoji: "🚀", age: "5–6", level: "Πιο λεπτομερές" },
-  { id: "farm-scene", title: "Αγρόκτημα", emoji: "🚜", age: "5–6", level: "Πιο λεπτομερές" },
-  { id: "ocean-scene", title: "Βυθός", emoji: "🐙", age: "5–6", level: "Πιο λεπτομερές" },
-  { id: "castle-scene", title: "Κάστρο & ουράνιο τόξο", emoji: "🏰", age: "5–6", level: "Πιο λεπτομερές" },
-  { id: "garden-scene", title: "Κήπος με έντομα", emoji: "🌻", age: "5–6", level: "Πιο λεπτομερές" },
-  { id: "forest-scene", title: "Ζωάκια στο δάσος", emoji: "🦊", age: "5–6", level: "Πιο λεπτομερές" },
-  { id: "construction-scene", title: "Εργοτάξιο", emoji: "🚧", age: "5–6", level: "Πιο λεπτομερές" },
-  { id: "park-scene", title: "Παιχνίδι στο πάρκο", emoji: "🛝", age: "5–6", level: "Πιο λεπτομερές" },
-  { id: "classroom-scene", title: "Η τάξη μας", emoji: "🎨", age: "5–6", level: "Πιο λεπτομερές" },
-  { id: "beach-scene", title: "Μέρα στην παραλία", emoji: "🏖️", age: "5–6", level: "Πιο λεπτομερές" },
-  { id: "city-scene", title: "Μικρή πόλη", emoji: "🏘️", age: "5–6", level: "Πιο λεπτομερές" },
-  { id: "weather-scene", title: "Ο καιρός", emoji: "🌦️", age: "5–6", level: "Πιο λεπτομερές" },
-  { id: "pisipouk-class", title: "Ο Πισιπούκ στην τάξη", emoji: "🐻", age: "5–6", level: "Πιο λεπτομερές" },
-  { id: "pisipouk-adventure", title: "Η περιπέτεια του Πισιπούκ", emoji: "🐻", age: "5–6", level: "Πιο λεπτομερές" },
-  { id: "pisipouk-detailed", title: "Ο Πισιπούκ – αναλυτικό σχέδιο", emoji: "🐻", age: "5–6", level: "Πιο λεπτομερές" },
-  { id: "ai-waterfall-forest", title: "Δάσος με καταρράκτη", emoji: "🌲", age: "5–6", level: "Πιο λεπτομερές" },
-  { id: "ai-submarine", title: "Υποβρύχια εξερεύνηση", emoji: "🐠", age: "5–6", level: "Πιο λεπτομερές" },
-  { id: "ai-invention-lab", title: "Εργαστήριο εφευρέσεων", emoji: "⚙️", age: "5–6", level: "Πιο λεπτομερές" },
-  { id: "ai-space-station", title: "Σταθμός στο διάστημα", emoji: "🪐", age: "5–6", level: "Πιο λεπτομερές" },
-];
-
-const outlineStyle = (id: string) => {
-  const age = DESIGNS.find((design) => design.id === id)?.age ?? "4–5";
-  const strokeWidth = age === "2–3" ? 9 : age === "4–5" ? 6.5 : 5;
-  return {
-    fill: "none",
-    stroke: "#111827",
-    strokeWidth,
-    strokeLinecap: "round" as const,
-    strokeLinejoin: "round" as const,
-  };
-};
-
-function Outline({ id }: { id: string }) {
-  const common = outlineStyle(id);
-  if (id === "sun") return <>
-    <circle {...common} cx="450" cy="325" r="130"/>
-    {Array.from({length:12}).map((_,i)=>{const a=i*Math.PI/6;return <line key={i} x1={450+Math.cos(a)*180} y1={325+Math.sin(a)*180} x2={450+Math.cos(a)*245} y2={325+Math.sin(a)*245} {...common}/>})}
-    <circle cx="405" cy="300" r="12" fill="#111"/><circle cx="495" cy="300" r="12" fill="#111"/>
-    <path d="M400 365 Q450 410 500 365" {...common} fill="none"/>
-  </>;
-
-  if (id === "apple") return <>
-    <path {...common} d="M450 185 Q335 135 265 255 Q205 390 305 515 Q380 595 450 545 Q520 595 595 515 Q695 390 635 255 Q565 135 450 185Z"/>
-    <path d="M450 190 Q445 120 500 85" {...common} fill="none"/>
-    <path {...common} d="M500 105 Q565 75 600 125 Q550 160 495 140Z"/>
-  </>;
-
-  if (id === "balloon") return <>
-    <ellipse {...common} cx="450" cy="250" rx="170" ry="190"/>
-    <path {...common} d="M420 430 L480 430 L450 475Z"/>
-    <path d="M450 475 Q390 535 470 585 Q535 625 565 575" {...common} fill="none"/>
-  </>;
-
-  if (id === "cat") return <>
-    <path {...common} d="M285 175 L330 105 L370 170 Q450 130 530 170 L570 105 L615 175 Q650 230 625 335 Q605 430 450 455 Q295 430 275 335 Q250 230 285 175Z"/>
-    <circle cx="385" cy="275" r="10" fill="#111"/><circle cx="515" cy="275" r="10" fill="#111"/>
-    <path d="M425 320 Q450 340 475 320 M450 337 Q450 370 415 380 M450 337 Q450 370 485 380" {...common} fill="none" strokeWidth={6}/>
-    <path d="M300 315 L205 290 M300 340 L195 340 M600 315 L695 290 M600 340 L705 340" {...common} fill="none" strokeWidth={5}/>
-    <path {...common} d="M335 455 Q270 520 330 570 Q450 620 570 570 Q630 520 565 455"/>
-  </>;
-
-  if (id === "fish") return <>
-    <ellipse {...common} cx="430" cy="330" rx="220" ry="135"/>
-    <path {...common} d="M640 330 L760 225 L760 435Z"/>
-    <circle cx="330" cy="300" r="12" fill="#111"/>
-    <path d="M285 355 Q320 380 355 355" {...common} fill="none" strokeWidth={6}/>
-    <circle {...common} cx="150" cy="180" r="28"/><circle {...common} cx="105" cy="120" r="16"/>
-  </>;
-
-  if (id === "flower") return <>
-    <circle {...common} cx="450" cy="260" r="70"/>
-    {Array.from({length:8}).map((_,i)=>{const a=i*Math.PI/4;return <ellipse key={i} {...common} cx={450+Math.cos(a)*120} cy={260+Math.sin(a)*120} rx="48" ry="80" transform={`rotate(${i*45} ${450+Math.cos(a)*120} ${260+Math.sin(a)*120})`}/>})}
-    <path {...common} d="M430 390 Q385 500 410 590 H490 Q515 500 470 390Z"/>
-    <path d="M410 475 Q340 430 300 490 M490 475 Q560 430 600 490" {...common} fill="none"/>
-  </>;
-
-  if (id === "bunny") return <>
-    <ellipse {...common} cx="350" cy="165" rx="55" ry="125"/><ellipse {...common} cx="550" cy="165" rx="55" ry="125"/>
-    <ellipse {...common} cx="450" cy="330" rx="185" ry="165"/>
-    <circle cx="385" cy="300" r="10" fill="#111"/><circle cx="515" cy="300" r="10" fill="#111"/>
-    <path d="M430 350 Q450 365 470 350 M450 365 Q430 395 405 400 M450 365 Q470 395 495 400" {...common} fill="none" strokeWidth={6}/>
-    <ellipse {...common} cx="450" cy="525" rx="165" ry="70"/><circle {...common} cx="660" cy="500" r="55"/>
-  </>;
-
-  if (id === "elephant") return <>
-    <ellipse {...common} cx="430" cy="310" rx="230" ry="155"/><circle {...common} cx="610" cy="285" r="110"/>
-    <ellipse {...common} cx="545" cy="285" rx="75" ry="95"/>
-    <path d="M690 300 Q735 340 700 455 Q675 515 720 535" {...common} fill="none"/>
-    <circle cx="640" cy="260" r="10" fill="#111"/>
-    <path d="M260 420 L250 560 M390 450 L390 565 M520 450 L520 565" {...common} fill="none"/>
-    <path d="M215 320 Q150 285 135 345" {...common} fill="none"/>
-  </>;
-
-  if (id === "train") return <>
-    <rect {...common} x="180" y="250" width="300" height="220" rx="22"/><rect {...common} x="480" y="310" width="165" height="160" rx="18"/>
-    <rect {...common} x="225" y="175" width="80" height="85" rx="8"/><path {...common} d="M160 250 H500 L455 180 H210Z"/>
-    <circle {...common} cx="260" cy="500" r="55"/><circle {...common} cx="430" cy="500" r="55"/><circle {...common} cx="575" cy="500" r="55"/>
-    <path d="M295 175 Q260 120 305 95 Q350 75 360 120" {...common} fill="none"/>
-  </>;
-
-  if (id === "firetruck") return <>
-    <rect {...common} x="165" y="270" width="500" height="210" rx="25"/><path {...common} d="M500 270 L590 185 L665 185 L720 270Z"/>
-    <rect {...common} x="550" y="220" width="90" height="70" rx="8"/>
-    <circle {...common} cx="285" cy="500" r="62"/><circle {...common} cx="620" cy="500" r="62"/>
-    <path d="M210 250 L520 120 M260 250 L570 120 M300 225 L325 185 M360 200 L385 160 M420 175 L445 135" {...common} fill="none"/>
-  </>;
-
-  if (id === "unicorn") return <>
-    <ellipse {...common} cx="450" cy="345" rx="195" ry="155"/>
-    <path {...common} d="M360 220 Q320 115 405 125 L450 205"/><path {...common} d="M490 205 L555 90 L590 210"/>
-    <path {...common} d="M520 175 L565 65 L600 180"/>
-    <circle cx="390" cy="325" r="10" fill="#111"/><circle cx="510" cy="325" r="10" fill="#111"/>
-    <path d="M410 390 Q450 420 490 390" {...common} fill="none" strokeWidth={6}/>
-    <path d="M335 455 Q300 535 355 565 M565 455 Q600 535 545 565" {...common} fill="none"/>
-  </>;
-
-  if (id === "butterfly") return <>
-    <ellipse {...common} cx="450" cy="335" rx="38" ry="180"/>
-    <path {...common} d="M405 260 Q270 125 190 220 Q150 305 285 355 Q155 420 220 520 Q315 580 405 420Z"/>
-    <path {...common} d="M495 260 Q630 125 710 220 Q750 305 615 355 Q745 420 680 520 Q585 580 495 420Z"/>
-    <circle {...common} cx="450" cy="135" r="42"/>
-    <circle {...common} cx="285" cy="275" r="45"/><circle {...common} cx="615" cy="275" r="45"/>
-    <circle {...common} cx="300" cy="445" r="35"/><circle {...common} cx="600" cy="445" r="35"/>
-  </>;
-
-  if (id === "ai-pumpkin") return <>
-    <path {...common} d="M450 170 Q350 120 290 220 Q210 345 285 485 Q355 585 450 540 Q545 585 615 485 Q690 345 610 220 Q550 120 450 170Z"/>
-    <path d="M450 175 Q445 115 485 85 M455 115 Q520 85 555 125" {...common} fill="none"/>
-    <circle cx="385" cy="330" r="12" fill="#111"/><circle cx="515" cy="330" r="12" fill="#111"/>
-    <path d="M395 405 Q450 450 505 405" {...common} fill="none" strokeWidth={6}/>
-  </>;
-
-  if (id === "ai-pear") return <>
-    <path {...common} d="M455 145 Q520 175 525 255 Q635 305 620 430 Q605 555 450 575 Q295 555 280 430 Q265 305 375 255 Q380 175 455 145Z"/>
-    <path d="M450 150 Q445 95 485 70" {...common} fill="none"/>
-    <path {...common} d="M490 90 Q555 60 590 110 Q540 145 490 125Z"/>
-    <circle cx="390" cy="360" r="10" fill="#111"/><circle cx="510" cy="360" r="10" fill="#111"/>
-    <path d="M405 420 Q450 455 495 420" {...common} fill="none" strokeWidth={6}/>
-  </>;
-
-  if (id === "ai-snail") return <>
-    <path {...common} d="M235 430 Q260 300 390 300 H610 Q690 300 710 385 Q720 470 625 500 H285 Q205 500 235 430Z"/>
-    <circle {...common} cx="430" cy="330" r="120"/>
-    <path d="M430 250 Q515 290 475 375 Q440 430 365 390 Q320 350 350 300 Q380 265 430 285" {...common} fill="none"/>
-    <path d="M620 300 Q620 215 665 185 M665 300 Q690 220 735 205" {...common} fill="none"/>
-    <circle cx="665" cy="180" r="10" fill="#111"/><circle cx="738" cy="200" r="10" fill="#111"/>
-    <path d="M610 410 Q650 445 690 410" {...common} fill="none" strokeWidth={6}/>
-  </>;
-
-  if (id === "ai-umbrella") return <>
-    <path {...common} d="M180 315 Q240 150 450 150 Q660 150 720 315 Q650 280 585 315 Q520 280 450 315 Q380 280 315 315 Q250 280 180 315Z"/>
-    <path d="M450 150 V485 Q450 565 375 550 Q330 540 340 495" {...common} fill="none"/>
-    <path d="M245 405 L220 475 M330 390 L305 460 M570 390 L545 460 M655 405 L630 475" {...common} fill="none"/>
-  </>;
-
-  if (id === "ai-robot") return <>
-    <rect {...common} x="290" y="170" width="320" height="230" rx="35"/>
-    <rect {...common} x="335" y="410" width="230" height="145" rx="25"/>
-    <circle cx="385" cy="270" r="18" fill="#111"/><circle cx="515" cy="270" r="18" fill="#111"/>
-    <path d="M390 335 H510 M450 170 V115 M420 115 H480" {...common} fill="none"/>
-    <path d="M335 440 L235 500 M565 440 L665 500 M380 555 L350 610 M520 555 L550 610" {...common} fill="none"/>
-    <circle {...common} cx="400" cy="485" r="18"/><circle {...common} cx="500" cy="485" r="18"/>
-  </>;
-
-  if (id === "ai-panda") return <>
-    <circle {...common} cx="330" cy="205" r="70"/><circle {...common} cx="570" cy="205" r="70"/>
-    <ellipse {...common} cx="450" cy="345" rx="190" ry="175"/>
-    <ellipse {...common} cx="385" cy="315" rx="48" ry="62"/><ellipse {...common} cx="515" cy="315" rx="48" ry="62"/>
-    <circle cx="385" cy="315" r="12" fill="#111"/><circle cx="515" cy="315" r="12" fill="#111"/>
-    <ellipse {...common} cx="450" cy="390" rx="58" ry="42"/>
-    <path d="M610 520 L700 180 M665 260 L735 225 M640 340 L710 320 M620 420 L690 405" {...common} fill="none"/>
-    <path {...common} d="M315 505 Q280 570 330 600 M585 505 Q620 570 570 600"/>
-  </>;
-
-  if (id === "ai-rover") return <>
-    <rect {...common} x="230" y="300" width="430" height="180" rx="30"/>
-    <path {...common} d="M320 300 L375 220 H515 L570 300Z"/>
-    <circle {...common} cx="320" cy="505" r="65"/><circle {...common} cx="570" cy="505" r="65"/>
-    <circle {...common} cx="390" cy="285" r="28"/><circle {...common} cx="500" cy="285" r="28"/>
-    <path d="M445 220 V145 M445 145 L505 115" {...common} fill="none"/>
-    <circle {...common} cx="525" cy="105" r="24"/>
-    <path d="M100 570 Q280 525 450 570 Q620 525 800 570" {...common} fill="none"/>
-    <circle {...common} cx="145" cy="165" r="55"/>
-  </>;
-
-  if (id === "ai-pirate-boat") return <>
-    <path {...common} d="M210 430 H690 Q645 545 450 570 Q255 545 210 430Z"/>
-    <path d="M450 430 V135" {...common} fill="none"/>
-    <path {...common} d="M460 165 L460 370 L650 370 Q585 245 460 165Z"/>
-    <path {...common} d="M440 190 L440 360 L295 360 Q335 250 440 190Z"/>
-    <circle {...common} cx="450" cy="260" r="36"/>
-    <path d="M105 595 Q230 545 355 595 Q480 545 605 595 Q730 545 825 595" {...common} fill="none"/>
-    <path d="M690 215 Q740 165 790 215 Q755 250 720 245Z" {...common}/>
-  </>;
-
-  if (id === "ai-waterfall-forest") return <>
-    <path {...common} d="M95 565 Q130 390 175 565Z M690 565 Q735 360 790 565Z"/>
-    <circle {...common} cx="175" cy="235" r="95"/><circle {...common} cx="735" cy="220" r="105"/>
-    <path {...common} d="M330 150 Q450 95 570 150 L550 370 Q500 430 450 430 Q400 430 350 370Z"/>
-    <path d="M420 155 Q390 245 420 335 Q450 410 480 335 Q510 245 480 155" {...common} fill="none"/>
-    <path d="M0 590 Q180 535 350 590 Q520 535 900 590" {...common} fill="none"/>
-    <path {...common} d="M245 510 Q285 445 325 510Z M585 510 Q625 445 665 510Z"/>
-    <circle {...common} cx="610" cy="300" r="32"/><path d="M585 300 H635" {...common} fill="none" strokeWidth={5}/>
-  </>;
-
-  if (id === "ai-submarine") return <>
-    <ellipse {...common} cx="450" cy="350" rx="250" ry="135"/>
-    <path {...common} d="M690 350 L790 270 L790 430Z"/>
-    <path {...common} d="M360 230 Q450 165 540 230 V300 H360Z"/>
-    <circle {...common} cx="350" cy="350" r="48"/><circle {...common} cx="450" cy="350" r="48"/><circle {...common} cx="550" cy="350" r="48"/>
-    <path d="M450 165 V115 H515 M515 115 V155" {...common} fill="none"/>
-    <path d="M120 550 Q150 470 190 550 M220 550 Q255 455 290 550 M690 550 Q730 455 770 550" {...common} fill="none"/>
-    <circle {...common} cx="150" cy="210" r="22"/><circle {...common} cx="110" cy="165" r="14"/>
-  </>;
-
-  if (id === "ai-invention-lab") return <>
-    <rect {...common} x="115" y="390" width="670" height="160" rx="20"/>
-    <circle {...common} cx="260" cy="300" r="85"/>
-    <circle {...common} cx="260" cy="300" r="32"/>
-    <path d="M260 190 V145 M260 455 V410 M150 300 H105 M415 300 H370 M182 222 L150 190 M338 378 L370 410 M338 222 L370 190 M182 378 L150 410" {...common} fill="none"/>
-    <rect {...common} x="470" y="190" width="210" height="150" rx="20"/>
-    <path d="M515 240 H635 M515 285 H600" {...common} fill="none"/>
-    <path {...common} d="M520 550 V610 M660 550 V610"/>
-    <circle {...common} cx="735" cy="180" r="45"/><path d="M735 225 V390" {...common} fill="none"/>
-    <path {...common} d="M700 390 H770 L750 455 H720Z"/>
-  </>;
-
-  if (id === "ai-space-station") return <>
-    <circle {...common} cx="450" cy="315" r="125"/>
-    <rect {...common} x="135" y="260" width="190" height="110" rx="20"/>
-    <rect {...common} x="575" y="260" width="190" height="110" rx="20"/>
-    <path d="M325 315 H575 M450 190 V110 M450 440 V530" {...common} fill="none"/>
-    <circle {...common} cx="450" cy="315" r="48"/>
-    <path {...common} d="M360 530 H540 L500 600 H400Z"/>
-    <circle {...common} cx="150" cy="150" r="55"/>
-    <circle {...common} cx="750" cy="145" r="38"/>
-    <path d="M120 470 L150 470 M135 455 L135 485 M740 470 L775 470 M758 452 L758 488 M285 120 L320 120 M302 102 L302 138" {...common} fill="none" strokeWidth={5}/>
-  </>;
-
-  if (id === "dino-scene") return <>
-    <path {...common} d="M175 480 Q155 350 235 270 Q310 195 430 215 Q505 120 620 145 Q730 170 710 255 Q690 315 610 315 L575 470 Q520 515 465 470 L425 395 Q380 450 315 465 L285 555 L215 555 L230 465Z"/>
-    <circle cx="645" cy="205" r="10" fill="#111"/>
-    <path d="M290 245 L330 175 L365 230 L410 160 L450 220 L500 155 L535 215" {...common} fill="none"/>
-    <path {...common} d="M95 555 Q130 430 170 555Z M710 555 Q750 410 795 555Z"/>
-    <circle {...common} cx="120" cy="180" r="55"/><path d="M120 90 L120 55 M45 180 L10 180 M195 180 L230 180 M65 125 L40 100 M175 125 L200 100" {...common} fill="none" strokeWidth={6}/>
-    <path d="M70 575 Q220 520 370 575 Q540 520 830 575" {...common} fill="none"/>
-  </>;
-
-  if (id === "space-scene") return <>
-    <path {...common} d="M450 120 Q555 195 555 340 Q555 445 450 505 Q345 445 345 340 Q345 195 450 120Z"/>
-    <circle {...common} cx="450" cy="285" r="60"/>
-    <path {...common} d="M345 365 L270 440 L350 445 M555 365 L630 440 L550 445"/>
-    <path {...common} d="M410 495 Q450 590 490 495"/>
-    <circle {...common} cx="170" cy="175" r="70"/><path {...common} d="M110 185 Q170 125 230 185"/>
-    <circle {...common} cx="730" cy="210" r="55"/><path d="M665 210 Q730 175 795 210" {...common} fill="none"/>
-    <path d="M120 390 L155 390 M138 372 L138 408 M720 430 L755 430 M738 412 L738 448 M250 95 L280 95 M265 80 L265 110" {...common} fill="none" strokeWidth={6}/>
-  </>;
-
-  if (id === "farm-scene") return <>
-    <path {...common} d="M120 365 L300 210 L480 365Z"/><rect {...common} x="150" y="365" width="300" height="205"/>
-    <rect {...common} x="245" y="430" width="110" height="140"/><rect {...common} x="185" y="395" width="70" height="65"/>
-    <path {...common} d="M535 440 H735 L790 490 V565 H535Z"/><circle {...common} cx="590" cy="565" r="48"/><circle {...common} cx="720" cy="565" r="48"/>
-    <circle {...common} cx="650" cy="255" r="85"/><path d="M650 340 L650 520" {...common} fill="none"/>
-    <path {...common} d="M70 575 Q250 520 430 575 Q610 520 830 575"/>
-    <path d="M95 500 L95 575 M125 500 L125 575 M95 525 H125" {...common} fill="none" strokeWidth={5}/>
-  </>;
-
-  if (id === "ocean-scene") return <>
-    <path d="M0 140 Q110 95 220 140 Q330 185 440 140 Q550 95 660 140 Q770 185 900 140" {...common} fill="none"/>
-    <ellipse {...common} cx="300" cy="325" rx="145" ry="85"/><path {...common} d="M440 325 L535 250 L535 400Z"/>
-    <circle cx="250" cy="300" r="9" fill="#111"/>
-    <path {...common} d="M610 280 Q690 235 745 300 Q785 350 730 410 Q655 470 595 405 Q550 340 610 280Z"/>
-    <circle cx="690" cy="315" r="8" fill="#111"/>
-    <path d="M620 450 Q585 505 620 560 M675 455 Q650 515 675 570 M730 445 Q770 505 735 565" {...common} fill="none"/>
-    <path {...common} d="M120 560 Q150 485 185 560 M195 560 Q225 470 255 560 M780 560 Q810 470 845 560"/>
-    <circle {...common} cx="120" cy="250" r="18"/><circle {...common} cx="95" cy="210" r="11"/>
-  </>;
-
-  if (id === "castle-scene") return <>
-    <rect {...common} x="250" y="270" width="400" height="300"/>
-    <rect {...common} x="165" y="330" width="120" height="240"/><rect {...common} x="615" y="330" width="120" height="240"/>
-    <path {...common} d="M150 330 L180 270 L210 330 L240 270 L270 330Z M600 330 L630 270 L660 330 L690 270 L720 330Z"/>
-    <path {...common} d="M390 570 V430 Q450 365 510 430 V570Z"/>
-    <rect {...common} x="320" y="330" width="70" height="70"/><rect {...common} x="510" y="330" width="70" height="70"/>
-    <path d="M115 260 Q180 135 300 170 Q450 40 600 170 Q720 135 785 260" {...common} fill="none"/>
-    <circle {...common} cx="115" cy="155" r="50"/>
-    <path d="M60 155 H20 M170 155 H210 M115 100 V60" {...common} fill="none" strokeWidth={6}/>
-  </>;
-
-  if (id === "duck") return <>
-    <ellipse {...common} cx="430" cy="340" rx="180" ry="120"/>
-    <circle {...common} cx="585" cy="285" r="85"/>
-    <path {...common} d="M655 285 L755 325 L655 350Z"/>
-    <circle cx="610" cy="260" r="9" fill="#111"/>
-    <path {...common} d="M300 445 Q260 515 305 545 M465 445 Q430 520 475 550"/>
-  </>;
-
-  if (id === "car") return <>
-    <path {...common} d="M190 395 L245 285 H575 L680 395 V485 H190Z"/>
-    <path {...common} d="M315 285 L380 205 H520 L575 285Z"/>
-    <circle {...common} cx="300" cy="500" r="62"/><circle {...common} cx="575" cy="500" r="62"/>
-    <rect {...common} x="385" y="225" width="115" height="60" rx="10"/>
-  </>;
-
-  if (id === "cloud") return <>
-    <path {...common} d="M255 330 Q265 245 350 250 Q390 165 485 220 Q590 200 615 295 Q705 300 705 380 H230 Q205 345 255 330Z"/>
-    <path d="M300 430 L275 500 M390 430 L365 500 M480 430 L455 500 M570 430 L545 500" {...common} fill="none"/>
-  </>;
-
-  if (id === "star") return <>
-    <path {...common} d="M450 105 L500 245 L650 250 L530 340 L575 485 L450 400 L325 485 L370 340 L250 250 L400 245Z"/>
-    <circle cx="410" cy="285" r="10" fill="#111"/><circle cx="490" cy="285" r="10" fill="#111"/>
-    <path d="M410 340 Q450 375 490 340" {...common} fill="none" strokeWidth={6}/>
-  </>;
-
-  if (id === "house") return <>
-    <path {...common} d="M210 320 L450 125 L690 320Z"/>
-    <rect {...common} x="255" y="320" width="390" height="255"/>
-    <rect {...common} x="400" y="420" width="100" height="155"/>
-    <rect {...common} x="305" y="370" width="75" height="75"/><rect {...common} x="520" y="370" width="75" height="75"/>
-  </>;
-
-  if (id === "icecream") return <>
-    <circle {...common} cx="450" cy="220" r="115"/>
-    <path {...common} d="M340 315 H560 L450 575Z"/>
-    <path d="M385 365 L520 500 M515 365 L380 500" {...common} fill="none" strokeWidth={5}/>
-  </>;
-
-  if (id === "turtle") return <>
-    <ellipse {...common} cx="430" cy="340" rx="210" ry="140"/>
-    <circle {...common} cx="655" cy="335" r="70"/>
-    <circle cx="680" cy="315" r="8" fill="#111"/>
-    <path {...common} d="M300 230 Q260 180 225 230 M300 450 Q255 505 220 455 M540 225 Q585 175 620 225 M535 455 Q585 510 620 455"/>
-    <path d="M350 260 L510 420 M510 260 L350 420 M430 210 V470 M225 340 L635 340" {...common} fill="none" strokeWidth={5}/>
-  </>;
-
-  if (id === "bear" || id === "pisipouk-easy") return <>
-    <circle {...common} cx="335" cy="185" r="70"/><circle {...common} cx="565" cy="185" r="70"/>
-    <ellipse {...common} cx="450" cy="330" rx="190" ry="175"/>
-    <circle cx="390" cy="300" r="10" fill="#111"/><circle cx="510" cy="300" r="10" fill="#111"/>
-    <ellipse {...common} cx="450" cy="365" rx="70" ry="50"/>
-    <circle cx="450" cy="350" r="12" fill="#111"/>
-    <path {...common} d="M330 480 Q285 545 335 585 M570 480 Q615 545 565 585"/>
-    {id === "pisipouk-easy" ? <path {...common} d="M330 140 Q450 55 570 140 Q500 110 450 120 Q400 110 330 140Z"/> : null}
-  </>;
-
-  if (id === "dino") return <>
-    <path {...common} d="M190 465 Q170 330 245 260 Q315 190 430 210 Q520 105 655 140 Q755 170 730 255 Q710 305 630 305 L590 470 Q530 520 470 475 L425 390 Q380 445 315 460 L285 555 L215 555 L230 455Z"/>
-    <circle cx="665" cy="205" r="9" fill="#111"/>
-    <path d="M300 245 L335 185 L370 235 L410 170 L450 225 L495 165 L530 220" {...common} fill="none"/>
-  </>;
-
-  if (id === "rocket") return <>
-    <path {...common} d="M450 90 Q560 170 560 340 Q560 460 450 525 Q340 460 340 340 Q340 170 450 90Z"/>
-    <circle {...common} cx="450" cy="280" r="65"/>
-    <path {...common} d="M340 365 L255 450 L345 455 M560 365 L645 450 L555 455 M405 510 Q450 600 495 510"/>
-    <path d="M410 555 Q450 625 490 555" {...common} fill="none"/>
-  </>;
-
-  if (id === "seabed") return <>
-    <path d="M0 165 Q110 120 220 165 Q330 210 440 165 Q550 120 660 165 Q770 210 900 165" {...common} fill="none"/>
-    <ellipse {...common} cx="390" cy="340" rx="180" ry="105"/><path {...common} d="M565 340 L680 260 L680 420Z"/>
-    <circle cx="335" cy="315" r="9" fill="#111"/>
-    <path {...common} d="M145 560 Q175 470 210 560 M235 560 Q265 455 300 560 M700 560 Q735 465 770 560"/>
-  </>;
-
-  if (id === "fruit-basket") return <>
-    <path {...common} d="M250 360 Q450 280 650 360 L600 545 H300Z"/>
-    <circle {...common} cx="340" cy="315" r="70"/><circle {...common} cx="450" cy="280" r="75"/><circle {...common} cx="560" cy="315" r="70"/>
-    <path d="M450 205 Q445 155 485 125 M340 250 Q330 210 360 185 M560 250 Q575 205 610 190" {...common} fill="none"/>
-    <path d="M300 410 H600 M320 465 H580" {...common} fill="none" strokeWidth={5}/>
-  </>;
-
-  if (id === "bee-garden") return <>
-    <ellipse {...common} cx="445" cy="285" rx="110" ry="75"/>
-    <ellipse {...common} cx="365" cy="230" rx="70" ry="95"/><ellipse {...common} cx="525" cy="230" rx="70" ry="95"/>
-    <path d="M380 250 H510 M375 300 H515" {...common} fill="none" strokeWidth={6}/>
-    <circle cx="410" cy="270" r="8" fill="#111"/><circle cx="480" cy="270" r="8" fill="#111"/>
-    <circle {...common} cx="250" cy="470" r="50"/><circle {...common} cx="650" cy="465" r="50"/>
-    <path d="M250 520 V590 M650 515 V590" {...common} fill="none"/>
-  </>;
-
-  if (id === "airplane") return <>
-    <path {...common} d="M110 335 L390 300 L560 145 L620 160 L545 300 L760 325 Q815 335 760 365 L545 370 L620 505 L560 520 L390 380 L110 350Z"/>
-    <circle {...common} cx="500" cy="335" r="12"/><circle {...common} cx="560" cy="335" r="12"/><circle {...common} cx="620" cy="335" r="12"/>
-  </>;
-
-  if (id === "boat") return <>
-    <path {...common} d="M220 420 H680 Q640 535 450 560 Q260 535 220 420Z"/>
-    <path d="M450 420 V135" {...common} fill="none"/>
-    <path {...common} d="M455 150 L455 375 L640 375Z"/>
-    <path {...common} d="M445 175 L445 360 L300 360Z"/>
-    <path d="M95 585 Q220 535 345 585 Q470 535 595 585 Q720 535 825 585" {...common} fill="none"/>
-  </>;
-
-  if (id === "pisipouk-balloon") return <>
-    <circle {...common} cx="335" cy="185" r="60"/><circle {...common} cx="515" cy="185" r="60"/>
-    <ellipse {...common} cx="425" cy="325" rx="160" ry="150"/>
-    <circle cx="380" cy="300" r="9" fill="#111"/><circle cx="470" cy="300" r="9" fill="#111"/>
-    <ellipse {...common} cx="425" cy="355" rx="60" ry="45"/>
-    <path {...common} d="M330 455 Q290 520 330 565 M520 455 Q560 520 520 565"/>
-    <ellipse {...common} cx="700" cy="190" rx="80" ry="105"/>
-    <path d="M700 295 Q650 390 545 420" {...common} fill="none"/>
-  </>;
-
-  if (id === "pisipouk-garden") return <>
-    <circle {...common} cx="330" cy="190" r="55"/><circle {...common} cx="500" cy="190" r="55"/>
-    <ellipse {...common} cx="415" cy="325" rx="150" ry="140"/>
-    <circle cx="375" cy="300" r="9" fill="#111"/><circle cx="455" cy="300" r="9" fill="#111"/>
-    <ellipse {...common} cx="415" cy="350" rx="55" ry="42"/>
-    <path {...common} d="M320 455 Q280 520 320 565 M510 455 Q550 520 510 565"/>
-    <circle {...common} cx="700" cy="360" r="45"/><path d="M700 405 V575" {...common} fill="none"/>
-    <path {...common} d="M630 575 Q665 515 700 575 Q735 515 770 575Z"/>
-  </>;
-
-  if (id === "forest-scene") return <>
-    <path {...common} d="M130 565 Q160 430 210 565Z M690 565 Q730 400 780 565Z"/>
-    <circle {...common} cx="210" cy="250" r="95"/><circle {...common} cx="730" cy="235" r="100"/>
-    <path {...common} d="M330 430 Q365 330 410 430 Q455 330 500 430 Q545 330 590 430 L575 565 H345Z"/>
-    <circle {...common} cx="455" cy="395" r="42"/><circle cx="440" cy="385" r="7" fill="#111"/><circle cx="470" cy="385" r="7" fill="#111"/>
-    <path d="M80 590 Q260 540 440 590 Q620 540 830 590" {...common} fill="none"/>
-  </>;
-
-  if (id === "construction-scene") return <>
-    <rect {...common} x="160" y="390" width="360" height="150" rx="18"/>
-    <circle {...common} cx="240" cy="555" r="58"/><circle {...common} cx="455" cy="555" r="58"/>
-    <path {...common} d="M420 390 L565 210 L620 235 L520 390Z"/>
-    <path {...common} d="M610 235 L740 300 L680 405 L560 350Z"/>
-    <path {...common} d="M120 590 H780"/>
-    <path {...common} d="M690 530 L735 440 L780 530Z"/>
-  </>;
-
-  if (id === "park-scene") return <>
-    <path {...common} d="M130 560 V300 H330 V560 M130 360 H330"/>
-    <path d="M175 360 V520 M285 360 V520" {...common} fill="none"/>
-    <path {...common} d="M470 565 L540 330 L610 565"/>
-    <path {...common} d="M540 330 Q660 360 700 465 H570"/>
-    <circle {...common} cx="770" cy="210" r="90"/><path d="M770 300 V560" {...common} fill="none"/>
-    <path d="M60 590 Q260 545 460 590 Q660 545 840 590" {...common} fill="none"/>
-  </>;
-
-  if (id === "classroom-scene") return <>
-    <rect {...common} x="170" y="115" width="560" height="220" rx="12"/>
-    <rect {...common} x="210" y="405" width="220" height="110"/><rect {...common} x="500" y="405" width="220" height="110"/>
-    <path {...common} d="M250 515 V585 M390 515 V585 M540 515 V585 M680 515 V585"/>
-    <circle {...common} cx="275" cy="245" r="42"/><circle {...common} cx="450" cy="245" r="42"/><circle {...common} cx="625" cy="245" r="42"/>
-    <path d="M230 160 H670 M230 200 H600" {...common} fill="none" strokeWidth={5}/>
-  </>;
-
-  if (id === "beach-scene") return <>
-    <circle {...common} cx="150" cy="155" r="65"/>
-    <path d="M0 355 Q150 300 300 355 Q450 410 600 355 Q750 300 900 355" {...common} fill="none"/>
-    <path {...common} d="M300 530 L360 300 L420 530"/>
-    <path {...common} d="M360 300 Q500 320 560 450 H390"/>
-    <path {...common} d="M620 485 Q680 420 740 485 Q770 530 710 565 Q650 585 605 545Z"/>
-    <path {...common} d="M100 585 Q280 530 450 585 Q620 530 820 585"/>
-  </>;
-
-  if (id === "city-scene") return <>
-    <rect {...common} x="90" y="300" width="180" height="270"/><rect {...common} x="300" y="220" width="210" height="350"/><rect {...common} x="540" y="330" width="220" height="240"/>
-    <rect {...common} x="130" y="350" width="50" height="50"/><rect {...common} x="205" y="350" width="50" height="50"/>
-    <rect {...common} x="350" y="275" width="55" height="55"/><rect {...common} x="430" y="275" width="55" height="55"/>
-    <rect {...common} x="585" y="380" width="55" height="55"/><rect {...common} x="675" y="380" width="55" height="55"/>
-    <path {...common} d="M40 585 H840"/>
-  </>;
-
-  if (id === "weather-scene") return <>
-    <circle {...common} cx="165" cy="170" r="65"/>
-    <path {...common} d="M365 195 Q375 125 445 135 Q480 80 545 120 Q610 110 625 175 Q690 180 690 240 H345 Q325 210 365 195Z"/>
-    <path d="M390 285 L365 350 M470 285 L445 350 M550 285 L525 350 M630 285 L605 350" {...common} fill="none"/>
-    <path {...common} d="M210 520 Q305 410 400 520 Q500 410 590 520 Q680 430 780 520"/>
-    <path d="M165 80 V35 M80 170 H35 M250 170 H295" {...common} fill="none" strokeWidth={6}/>
-  </>;
-
-  if (id === "pisipouk-class") return <>
-    <circle {...common} cx="300" cy="185" r="55"/><circle {...common} cx="470" cy="185" r="55"/>
-    <ellipse {...common} cx="385" cy="320" rx="150" ry="140"/>
-    <circle cx="345" cy="295" r="9" fill="#111"/><circle cx="425" cy="295" r="9" fill="#111"/>
-    <ellipse {...common} cx="385" cy="345" rx="55" ry="42"/>
-    <rect {...common} x="555" y="160" width="220" height="170"/>
-    <path d="M585 210 H745 M585 250 H700" {...common} fill="none" strokeWidth={5}/>
-    <rect {...common} x="240" y="485" width="450" height="85" rx="15"/>
-    <circle {...common} cx="300" cy="530" r="22"/><circle {...common} cx="360" cy="530" r="22"/><circle {...common} cx="420" cy="530" r="22"/>
-  </>;
-
-  if (id === "pisipouk-adventure") return <>
-    <circle {...common} cx="290" cy="190" r="55"/><circle {...common} cx="460" cy="190" r="55"/>
-    <ellipse {...common} cx="375" cy="325" rx="150" ry="140"/>
-    <circle cx="335" cy="300" r="9" fill="#111"/><circle cx="415" cy="300" r="9" fill="#111"/>
-    <ellipse {...common} cx="375" cy="350" rx="55" ry="42"/>
-    <path {...common} d="M610 565 Q650 410 700 565Z"/>
-    <circle {...common} cx="720" cy="230" r="90"/>
-    <path {...common} d="M560 500 Q620 420 680 500 Q740 420 800 500 L800 590 H560Z"/>
-    <path {...common} d="M105 590 Q280 530 455 590 Q630 530 825 590"/>
-  </>;
-
-  if (id === "pisipouk-detailed") return <>
-    <circle {...common} cx="320" cy="165" r="70"/>
-    <circle {...common} cx="580" cy="165" r="70"/>
-    <circle {...common} cx="320" cy="165" r="36"/>
-    <circle {...common} cx="580" cy="165" r="36"/>
-    <path {...common} d="M290 150 Q330 70 450 70 Q570 70 610 150 Q550 120 450 125 Q350 120 290 150Z"/>
-    <path {...common} d="M330 125 Q450 85 570 125 L545 165 Q450 145 355 165Z"/>
-    <ellipse {...common} cx="450" cy="300" rx="205" ry="180"/>
-    <path {...common} d="M320 245 Q350 210 385 240"/>
-    <path {...common} d="M515 240 Q550 210 580 245"/>
-    <ellipse {...common} cx="375" cy="285" rx="28" ry="38"/>
-    <ellipse {...common} cx="525" cy="285" rx="28" ry="38"/>
-    <circle cx="375" cy="292" r="10" fill="#111"/>
-    <circle cx="525" cy="292" r="10" fill="#111"/>
-    <ellipse {...common} cx="450" cy="360" rx="92" ry="68"/>
-    <path {...common} d="M420 340 Q450 320 480 340 Q474 375 450 380 Q426 375 420 340Z"/>
-    <path d="M450 380 Q450 412 415 425 M450 380 Q450 412 485 425" {...common} fill="none"/>
-    <path d="M408 435 Q450 458 492 435" {...common} fill="none"/>
-    <path {...common} d="M310 465 Q255 495 245 560 Q300 585 345 540"/>
-    <path {...common} d="M590 465 Q645 495 655 560 Q600 585 555 540"/>
-    <path {...common} d="M345 450 Q365 425 400 445 Q450 470 500 445 Q535 425 555 450 L590 600 H310Z"/>
-    <ellipse {...common} cx="450" cy="535" rx="105" ry="68"/>
-    <path {...common} d="M355 585 Q330 615 315 625 H415 L430 585"/>
-    <path {...common} d="M545 585 Q570 615 585 625 H485 L470 585"/>
-    <path d="M375 505 Q400 485 425 505 M475 505 Q500 485 525 505" {...common} fill="none"/>
-    <path d="M385 545 Q450 565 515 545" {...common} fill="none"/>
-    <path {...common} d="M690 150 L760 220 L690 290 L620 220Z"/>
-    <path d="M690 180 V260 M650 220 H730" {...common} fill="none"/>
-    <path {...common} d="M120 515 Q165 455 210 515 Q255 455 300 515"/>
-    <circle {...common} cx="150" cy="420" r="34"/>
-    <circle {...common} cx="230" cy="395" r="28"/>
-  </>;
-
-  if (id === "garden-scene") return <>
-    <circle {...common} cx="450" cy="245" r="62"/>
-    {Array.from({length:10}).map((_,i)=>{const a=i*Math.PI/5;const x=450+Math.cos(a)*115;const y=245+Math.sin(a)*115;return <ellipse key={i} {...common} cx={x} cy={y} rx="40" ry="70" transform={`rotate(${i*36} ${x} ${y})`}/>})}
-    <path {...common} d="M430 355 Q390 470 410 580 H490 Q510 470 470 355Z"/>
-    <path d="M410 455 Q340 410 290 475 M490 455 Q560 410 610 475" {...common} fill="none"/>
-    <path {...common} d="M170 575 Q220 505 270 575 Q320 500 370 575 Q420 500 470 575 Q520 500 570 575 Q620 500 690 575Z"/>
-    <circle {...common} cx="220" cy="410" r="32"/><path d="M220 378 V330 M188 410 H145 M252 410 H295" {...common} fill="none" strokeWidth={5}/>
-    <path {...common} d="M670 365 Q715 320 760 365 Q785 410 740 450 Q695 465 655 430 Q625 390 670 365Z"/>
-  </>;
-
-
-  if (id === "sept-leaf") return <>
-    <path {...common} d="M455 115 Q365 155 300 235 Q250 315 280 405 Q320 515 450 565 Q580 515 620 405 Q650 315 600 235 Q535 155 455 115Z"/>
-    <path d="M450 145 V540 M450 260 L355 210 M450 335 L555 275 M450 410 L350 365" {...common} fill="none"/>
-  </>;
-
-  if (id === "sept-pencil") return <>
-    <path {...common} d="M250 470 L565 155 L690 280 L375 595 L235 610Z"/>
-    <path {...common} d="M565 155 L620 100 L745 225 L690 280Z"/>
-    <path {...common} d="M250 470 L235 610 L375 595Z"/>
-    <path d="M300 520 L610 210 M350 570 L660 260" {...common} fill="none" strokeWidth={5}/>
-  </>;
-
-  if (id === "sept-backpack") return <>
-    <path {...common} d="M315 245 Q330 145 450 145 Q570 145 585 245"/>
-    <rect {...common} x="275" y="220" width="350" height="330" rx="75"/>
-    <rect {...common} x="335" y="355" width="230" height="135" rx="38"/>
-    <path d="M305 285 Q225 320 250 500 M595 285 Q675 320 650 500" {...common} fill="none"/>
-    <path d="M405 250 H495" {...common} fill="none"/>
-  </>;
-
-  if (id === "sept-schoolbus") return <>
-    <rect {...common} x="155" y="260" width="590" height="255" rx="40"/>
-    <rect {...common} x="225" y="305" width="105" height="85"/><rect {...common} x="355" y="305" width="105" height="85"/><rect {...common} x="485" y="305" width="105" height="85"/><rect {...common} x="615" y="305" width="80" height="85"/>
-    <circle {...common} cx="290" cy="525" r="58"/><circle {...common} cx="620" cy="525" r="58"/>
-    <path d="M155 430 H745 M205 225 H520" {...common} fill="none"/>
-  </>;
-
-  if (id === "sept-autumn-tree") return <>
-    <path {...common} d="M410 575 Q390 480 420 390 Q390 330 410 255 Q450 180 500 255 Q520 330 490 390 Q520 480 500 575Z"/>
-    <circle {...common} cx="330" cy="250" r="95"/><circle {...common} cx="450" cy="190" r="110"/><circle {...common} cx="565" cy="260" r="95"/>
-    <path {...common} d="M120 565 Q155 500 190 565 Q225 500 260 565Z"/>
-    <path {...common} d="M650 565 Q690 495 730 565 Q770 500 805 565Z"/>
-    <path d="M255 500 Q300 450 345 500 M570 500 Q620 450 665 500" {...common} fill="none"/>
-    <path {...common} d="M205 390 Q235 350 270 390 Q245 425 205 390Z"/>
-    <path {...common} d="M620 395 Q650 350 690 390 Q660 430 620 395Z"/>
-  </>;
-
-  if (id === "sept-school-day") return <>
-    <rect {...common} x="145" y="120" width="610" height="220" rx="20"/>
-    <path d="M200 180 H700 M200 235 H625" {...common} fill="none"/>
-    <rect {...common} x="190" y="410" width="210" height="120" rx="16"/><rect {...common} x="500" y="410" width="210" height="120" rx="16"/>
-    <circle {...common} cx="260" cy="375" r="42"/><circle {...common} cx="575" cy="375" r="42"/>
-    <path d="M220 530 V590 M370 530 V590 M530 530 V590 M680 530 V590" {...common} fill="none"/>
-    <path {...common} d="M760 455 Q810 420 840 470 Q805 505 765 490Z"/>
-  </>;
-
-  return null;
-}
-
-function VirtualPreschool() {
-  const daySeed = useMemo(() => Math.floor(Date.now() / 86400000), []);
-
-  const dailyChoices = useMemo(() => {
-    const groups = ["2–3","4–5","5–6"] as const;
-    return groups.flatMap((age, groupIndex) => {
-      const group = DESIGNS.filter((d) => d.age === age);
-      const start = (daySeed + groupIndex * 2) % group.length;
-      return [group[start], group[(start + 3) % group.length]];
-    });
-  }, [daySeed]);
-
-  const [progress, setProgress] = useState(() => ({
-    age: "2-3" as PreschoolAge,
-    completedIds: [] as string[],
-    favorites: [] as string[],
-    stars: 0,
-    lastActiveDate: null as string | null,
-  }));
-
-  useEffect(() => {
-    setProgress(loadPreschoolProgress());
-  }, []);
-
-  const designAgeFromProfile = (age: PreschoolAge): Design["age"] =>
-    age === "2-3" ? "2–3" : age === "4-5" ? "4–5" : "5–6";
-
-  const profileAgeFromDesign = (age: Design["age"]): PreschoolAge =>
-    age === "2–3" ? "2-3" : age === "4–5" ? "4-5" : "5-6";
-
-  const todayDesign = useMemo(() => {
-    const age = designAgeFromProfile(progress.age);
-    const pool = DESIGNS.filter((item) => item.age === age);
-    return pool[daySeed % pool.length] ?? pool[0] ?? DESIGNS[0];
-  }, [daySeed, progress.age]);
-
-  const todayCraft = useMemo(() => {
-    const age = designAgeFromProfile(progress.age);
-    const pool = CRAFTS.filter((item) => item.age === age);
-    return pool[(daySeed + 2) % pool.length] ?? pool[0] ?? CRAFTS[0];
-  }, [daySeed, progress.age]);
-
-  const todayGame = useMemo(() => {
-    const games = [
-      { id: "count", title: "Μέτρα και Βρες", emoji: "🔢" },
-      { id: "memory", title: "Παιχνίδι Μνήμης", emoji: "🧠" },
-      { id: "maze", title: "Λαβύρινθος του Πισιπούκ", emoji: "🌀" },
-      { id: "pattern", title: "Βρες το Μοτίβο", emoji: "🔷" },
-      { id: "odd-one", title: "Ποιο δεν ταιριάζει;", emoji: "🧐" },
-      { id: "colors-shapes", title: "Χρώματα & Σχήματα", emoji: "🎨" },
+function sceneRegions(scene: ColoringDesign["scene"]) {
+  if (scene === "space") {
+    return [
+      "M300 720 C270 570 300 350 400 220 C500 350 530 570 500 720 Z",
+      "M300 590 L190 770 L305 735 Z",
+      "M500 590 L610 770 L495 735 Z",
+      "M350 720 L400 930 L450 720 Z",
+      "M355 420 A45 45 0 1 0 445 420 A45 45 0 1 0 355 420",
+      "M120 280 A70 70 0 1 0 260 280 A70 70 0 1 0 120 280",
+      "M580 260 A45 45 0 1 0 670 260 A45 45 0 1 0 580 260",
     ];
-    return games[(daySeed + (progress.age === "2-3" ? 0 : progress.age === "4-5" ? 2 : 4)) % games.length];
-  }, [daySeed, progress.age]);
+  }
+  if (scene === "ocean") {
+    return [
+      "M160 540 C270 370 520 370 610 540 C520 710 270 710 160 540 Z",
+      "M610 540 L740 405 L710 540 L740 675 Z",
+      "M270 455 A25 25 0 1 0 320 455 A25 25 0 1 0 270 455",
+      "M170 790 Q260 700 350 790 T530 790 T710 790 L710 930 L170 930 Z",
+      "M120 250 C170 200 230 200 280 250 C230 285 170 285 120 250 Z",
+      "M500 260 C550 210 610 210 660 260 C610 295 550 295 500 260 Z",
+    ];
+  }
+  if (scene === "farm") {
+    return [
+      "M160 710 L160 420 L400 250 L640 420 L640 710 Z",
+      "M320 710 L320 520 L480 520 L480 710 Z",
+      "M205 465 H295 V555 H205 Z",
+      "M505 465 H595 V555 H505 Z",
+      "M110 820 C180 680 270 680 340 820 Z",
+      "M460 820 C530 680 620 680 690 820 Z",
+      "M365 175 A35 35 0 1 0 435 175 A35 35 0 1 0 365 175",
+    ];
+  }
+  return [
+    "M400 500 C255 220 100 340 210 560 C100 720 260 840 400 620 Z",
+    "M400 500 C545 220 700 340 590 560 C700 720 540 840 400 620 Z",
+    "M375 430 H425 V720 H375 Z",
+    "M190 860 C210 760 300 740 330 860 Z",
+    "M470 860 C500 740 590 760 610 860 Z",
+    "M255 790 A45 45 0 1 0 345 790 A45 45 0 1 0 255 790",
+    "M455 790 A45 45 0 1 0 545 790 A45 45 0 1 0 455 790",
+  ];
+}
 
-  const markComplete = (id: string) => {
-    setProgress(markPreschoolActivityComplete(id));
-  };
+function ColoringCanvas({ design }: { design: ColoringDesign }) {
+  const regions = useMemo(() => sceneRegions(design.scene), [design.scene]);
+  const [selectedColor, setSelectedColor] = useState(PALETTE[0]);
+  const [fills, setFills] = useState<Record<number, string>>({});
 
-  const updateAge = (age: PreschoolAge) => {
-    setProgress(setPreschoolAge(age));
-    const nextAge = designAgeFromProfile(age);
-    const nextDesign = DESIGNS.find((item) => item.age === nextAge);
-    if (nextDesign) {
-      setDesignId(nextDesign.id);
-      setSelectedAge(nextDesign.age);
-    }
-  };
-
-  const [designId, setDesignId] = useState(dailyChoices[0].id);
-  const [selectedAge, setSelectedAge] = useState<Design["age"]>(dailyChoices[0].age);
-  const [color, setColor] = useState(COLORS[0]);
-  const [brushSize, setBrushSize] = useState(24);
-  const [erasing, setErasing] = useState(false);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const svgRef = useRef<SVGSVGElement>(null);
-  const drawingRef = useRef(false);
-  const lastRef = useRef<{ x: number; y: number } | null>(null);
-
-  const current = DESIGNS.find((d) => d.id === designId) ?? DESIGNS[0];
-
-  useEffect(() => {
-    trackEvent("game_start", { game: "freehand_coloring", drawing: designId, age: current.age });
-  }, [designId, current.age]);
-
-  const clearCanvas = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    canvas.getContext("2d")?.clearRect(0, 0, canvas.width, canvas.height);
-  };
-
-  const pickDesign = (id: string) => {
-    const nextDesign = DESIGNS.find((d) => d.id === id);
-    setDesignId(id);
-    if (nextDesign) {
-      setSelectedAge(nextDesign.age);
-      setProgress(setPreschoolAge(profileAgeFromDesign(nextDesign.age)));
-    }
-    clearCanvas();
-    setErasing(false);
-    requestAnimationFrame(() => {
-      document.getElementById("coloring-studio")?.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
-  };
-
-  const point = (e: React.PointerEvent<HTMLCanvasElement>) => {
-    const canvas = canvasRef.current!;
-    const rect = canvas.getBoundingClientRect();
-    return {
-      x: ((e.clientX - rect.left) / rect.width) * canvas.width,
-      y: ((e.clientY - rect.top) / rect.height) * canvas.height,
-    };
-  };
-
-  const startDraw = (e: React.PointerEvent<HTMLCanvasElement>) => {
-    e.preventDefault();
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    const p = point(e);
-    drawingRef.current = true;
-    lastRef.current = p;
-    e.currentTarget.setPointerCapture(e.pointerId);
-    if (!ctx) return;
-    ctx.save();
-    ctx.globalCompositeOperation = erasing ? "destination-out" : "source-over";
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, brushSize / 2, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
-  };
-
-  const draw = (e: React.PointerEvent<HTMLCanvasElement>) => {
-    if (!drawingRef.current || !lastRef.current) return;
-    e.preventDefault();
-    const canvas = canvasRef.current!;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    const p = point(e);
-    ctx.save();
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-    ctx.lineWidth = brushSize;
-    ctx.strokeStyle = color;
-    ctx.globalCompositeOperation = erasing ? "destination-out" : "source-over";
-    ctx.beginPath();
-    ctx.moveTo(lastRef.current.x, lastRef.current.y);
-    ctx.lineTo(p.x, p.y);
-    ctx.stroke();
-    ctx.restore();
-    lastRef.current = p;
-  };
-
-  const stopDraw = () => {
-    drawingRef.current = false;
-    lastRef.current = null;
-  };
-
-  const composeDrawing = (printerSafe = false) =>
-    new Promise<HTMLCanvasElement>((resolve, reject) => {
-      const paint = canvasRef.current;
-      const svg = svgRef.current;
-      if (!paint || !svg) {
-        reject(new Error("Drawing is not ready"));
-        return;
-      }
-
-      // Exact A4 landscape ratio at higher resolution for crisp browser/PDF printing.
-      const out = document.createElement("canvas");
-      out.width = 1684;
-      out.height = 1191;
-      const ctx = out.getContext("2d");
-      if (!ctx) {
-        reject(new Error("Canvas is not available"));
-        return;
-      }
-      ctx.fillStyle = "#fff";
-      ctx.fillRect(0, 0, out.width, out.height);
-
-      const printableSvg = svg.cloneNode(true) as SVGSVGElement;
-      if (printerSafe) {
-        printableSvg.querySelectorAll<SVGElement>("[stroke]").forEach((node) => {
-          const rawWidth = Number.parseFloat(node.getAttribute("stroke-width") ?? "5");
-          node.setAttribute("stroke", "#000000");
-          node.setAttribute("stroke-width", String(Math.max(8, rawWidth * 1.65)));
-          node.setAttribute("opacity", "1");
-          node.style.stroke = "#000000";
-          node.style.opacity = "1";
-        });
-        printableSvg.querySelectorAll<SVGElement>("[fill]").forEach((node) => {
-          const fill = (node.getAttribute("fill") ?? "").toLowerCase();
-          if (fill === "#111" || fill === "#111827" || fill === "rgb(17, 24, 39)") {
-            node.setAttribute("fill", "#000000");
-            node.style.fill = "#000000";
-          }
-        });
-      }
-
-      const svgText = new XMLSerializer().serializeToString(printerSafe ? printableSvg : svg);
-      const svgBlob = new Blob([svgText], { type: "image/svg+xml;charset=utf-8" });
-      const url = URL.createObjectURL(svgBlob);
-      const bg = new Image();
-      bg.onload = () => {
-        const maxWidth = 1650;
-        const maxHeight = 1150;
-        const scale = Math.min(maxWidth / paint.width, maxHeight / paint.height);
-        const drawWidth = paint.width * scale;
-        const drawHeight = paint.height * scale;
-        const x = (out.width - drawWidth) / 2;
-        const y = 8;
-
-        ctx.drawImage(paint, x, y, drawWidth, drawHeight);
-        ctx.drawImage(bg, x, y, drawWidth, drawHeight);
-        ctx.fillStyle = printerSafe ? "#000000" : "#64748b";
-        ctx.font = printerSafe ? "700 20px Arial, sans-serif" : "18px Arial, sans-serif";
-        ctx.textAlign = "right";
-        ctx.fillText("pisipouk.vercel.app", out.width - 24, out.height - 14);
-        URL.revokeObjectURL(url);
-        resolve(out);
-      };
-      bg.onerror = () => {
-        URL.revokeObjectURL(url);
-        reject(new Error("Could not render drawing outline"));
-      };
-      bg.src = url;
-    });
-
-  const download = async () => {
-    const out = await composeDrawing();
-    const a = document.createElement("a");
-    a.href = out.toDataURL("image/png");
-    a.download = `pisipouk-${designId}.png`;
-    a.click();
-    trackEvent("share_click", { game: "freehand_coloring", action: "download", drawing: designId });
-  };
-
-  const downloadPdf = async () => {
-    const out = await composeDrawing();
-    downloadCanvasPdf(out, `pisipouk-${designId}.pdf`);
-    trackEvent("share_click", { game: "freehand_coloring", action: "download_pdf", drawing: designId });
-  };
-
-  const printDrawing = () => {
-    const printWindow = window.open("", "_blank", "width=1200,height=850");
-    if (!printWindow) return;
-    printWindow.document.write("<!doctype html><html><head><title>Πισιπούκ - Εκτύπωση</title></head><body style='font-family:Arial,sans-serif;text-align:center;padding:20px'>Προετοιμασία εκτύπωσης…</body></html>");
-    printWindow.document.close();
-
-    composeDrawing(true)
-      .then((out) => {
-        const dataUrl = out.toDataURL("image/png");
-        printWindow.document.open();
-        printWindow.document.write(`<!doctype html>
-          <html lang="el">
-            <head>
-              <meta charset="utf-8" />
-              <title>Πισιπούκ - Εκτύπωση ζωγραφιάς</title>
-              <style>
-                @page { size: A4 landscape; margin: 0; }
-                * { box-sizing: border-box; }
-                html, body {
-                  margin: 0 !important;
-                  padding: 0 !important;
-                  width: 297mm !important;
-                  height: 210mm !important;
-                  min-width: 0 !important;
-                  min-height: 0 !important;
-                  max-width: 297mm !important;
-                  max-height: 210mm !important;
-                  overflow: hidden !important;
-                  background: #fff !important;
-                  -webkit-print-color-adjust: exact;
-                  print-color-adjust: exact;
-                }
-                body { position: relative !important; }
-                .print-sheet {
-                  position: fixed !important;
-                  inset: 0 !important;
-                  width: 297mm !important;
-                  height: 210mm !important;
-                  padding: 3mm !important;
-                  overflow: hidden !important;
-                  page-break-before: avoid !important;
-                  page-break-after: avoid !important;
-                  page-break-inside: avoid !important;
-                  break-before: avoid-page !important;
-                  break-after: avoid-page !important;
-                  break-inside: avoid-page !important;
-                }
-                img {
-                  display: block !important;
-                  width: 100% !important;
-                  height: 100% !important;
-                  max-width: 100% !important;
-                  max-height: 100% !important;
-                  object-fit: contain !important;
-                  image-rendering: auto;
-                }
-              </style>
-            </head>
-            <body>
-              <div class="print-sheet">
-                <img src="${dataUrl}" alt="Ζωγραφιά Πισιπούκ" onload="if(!window.__pisipoukPrinted){window.__pisipoukPrinted=true;setTimeout(() => window.print(), 250)}" />
-              </div>
-            </body>
-          </html>`);
-        printWindow.document.close();
-        printWindow.onafterprint = () => printWindow.close();
-        trackEvent("share_click", { game: "freehand_coloring", action: "print", drawing: designId });
-      })
-      .catch(() => printWindow.close());
-  };
-
-  const downloadCraftPdf = (craft: Craft) => {
-    downloadCanvasPdf(craftCanvas(craft), `pisipouk-craft-${craft.id}.pdf`);
-    trackEvent("share_click", { game: "crafts", action: "download_pdf", craft: craft.id });
-  };
-
-  const printCraft = (craft: Craft) => {
-    const printWindow = window.open("", "_blank", "width=900,height=1100");
-    if (!printWindow) return;
-    const dataUrl = craftCanvas(craft).toDataURL("image/png");
-    printWindow.document.write(`<!doctype html>
-      <html lang="el">
-        <head>
-          <meta charset="utf-8" />
-          <title>Πισιπούκ - ${craft.title}</title>
-          <style>
-            @page { size: A4 portrait; margin: 0; }
-            * { box-sizing: border-box; }
-            html, body {
-              margin: 0 !important;
-              padding: 0 !important;
-              width: 210mm !important;
-              height: 297mm !important;
-              min-width: 0 !important;
-              min-height: 0 !important;
-              max-width: 210mm !important;
-              max-height: 297mm !important;
-              overflow: hidden !important;
-              background: #fff !important;
-              -webkit-print-color-adjust: exact;
-              print-color-adjust: exact;
-            }
-            body { position: relative !important; }
-            .print-sheet {
-              position: fixed !important;
-              inset: 0 !important;
-              width: 210mm !important;
-              height: 297mm !important;
-              padding: 4mm !important;
-              overflow: hidden !important;
-              page-break-before: avoid !important;
-              page-break-after: avoid !important;
-              page-break-inside: avoid !important;
-              break-before: avoid-page !important;
-              break-after: avoid-page !important;
-              break-inside: avoid-page !important;
-            }
-            img {
-              display: block !important;
-              width: 100% !important;
-              height: 100% !important;
-              max-width: 100% !important;
-              max-height: 100% !important;
-              object-fit: contain !important;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="print-sheet">
-            <img src="${dataUrl}" alt="${craft.title}" onload="if(!window.__pisipoukPrinted){window.__pisipoukPrinted=true;setTimeout(() => window.print(), 250)}" />
-          </div>
-        </body>
-      </html>`);
-    printWindow.document.close();
-    printWindow.onafterprint = () => printWindow.close();
-    trackEvent("share_click", { game: "crafts", action: "print", craft: craft.id });
+  const printable = () => {
+    const paths = regions.map((d) => `<path d="${d}" fill="white" stroke="#172033" stroke-width="8" stroke-linejoin="round"/>`).join("");
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="210mm" height="297mm" viewBox="0 0 800 1120"><rect width="800" height="1120" fill="white"/><text x="55" y="80" font-family="Arial" font-size="28" font-weight="700" fill="#172033">Pisipouk • ${design.title}</text><text x="55" y="115" font-family="Arial" font-size="18" fill="#64748b">Χρωμάτισε όπως φαντάζεσαι!</text><g transform="translate(0,80)">${paths}</g><text x="400" y="1080" text-anchor="middle" font-family="Arial" font-size="16" fill="#64748b">pisipouk.vercel.app/virtual-preschool</text></svg>`;
   };
 
   return (
-    <SiteLayout>
-      <section className="bg-white py-8 sm:py-12">
-        <div className="mx-auto max-w-[1500px] px-3 sm:px-5 lg:px-7">
-          <section className="mb-6 overflow-hidden rounded-[2rem] border bg-gradient-to-br from-sky-50 via-white to-amber-50 shadow-sm">
-            <div className="grid gap-6 p-5 sm:p-7 lg:grid-cols-[1.15fr_.85fr] lg:p-9">
-              <div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="rounded-full bg-[#0b3b82] px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.14em] text-white">Σήμερα με τον Πισιπούκ</span>
-                  <span className="rounded-full bg-emerald-100 px-3 py-1.5 text-[11px] font-black text-emerald-800">15–25 λεπτά</span>
-                  <span className="rounded-full bg-amber-100 px-3 py-1.5 text-[11px] font-black text-amber-800">✨ Νέα δραστηριότητα κάθε εβδομάδα</span>
-                </div>
-                <h1 className="mt-4 text-4xl font-black tracking-tight text-[#0b3b82] sm:text-5xl">Το σημερινό μικρό πρόγραμμα</h1>
-                <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
-                  Επιλέξτε ηλικία και ο Πισιπούκ προτείνει μία μικρή διαδρομή με ζωγραφική, παιχνίδι και δημιουργία. Χωρίς login — η πρόοδος μένει μόνο σε αυτή τη συσκευή.
-                </p>
+    <div className="grid gap-5 lg:grid-cols-[1fr_220px]">
+      <div className="rounded-[2rem] border border-slate-200 bg-white p-3 shadow-xl shadow-sky-100/60">
+        <svg viewBox="0 0 800 1040" className="aspect-[4/5] w-full rounded-[1.5rem] bg-gradient-to-b from-sky-50 to-amber-50">
+          <defs>
+            <filter id="softShadow"><feDropShadow dx="0" dy="8" stdDeviation="8" floodOpacity=".12" /></filter>
+          </defs>
+          <circle cx="680" cy="120" r="70" fill="#fde68a" opacity=".9" />
+          <path d="M0 900 Q180 820 350 900 T800 900 V1040 H0Z" fill="#d9f99d" />
+          <g transform="translate(0,15)" filter="url(#softShadow)">
+            {regions.map((d, index) => (
+              <path
+                key={`${design.id}-${index}`}
+                d={d}
+                fill={fills[index] ?? "#fff"}
+                stroke="#172033"
+                strokeWidth="8"
+                strokeLinejoin="round"
+                className="cursor-pointer transition hover:opacity-80"
+                onClick={() => setFills((current) => ({ ...current, [index]: selectedColor }))}
+              />
+            ))}
+          </g>
+        </svg>
+      </div>
+      <aside className="rounded-[2rem] bg-slate-950 p-5 text-white shadow-xl">
+        <p className="text-xs font-black uppercase tracking-[0.22em] text-cyan-300">Online Coloring</p>
+        <h3 className="mt-2 text-xl font-black">{design.emoji} {design.title}</h3>
+        <p className="mt-2 text-sm leading-6 text-slate-300">Διάλεξε χρώμα και πάτησε πάνω σε κάθε περιοχή της εικόνας.</p>
+        <div className="mt-5 grid grid-cols-4 gap-2">
+          {PALETTE.map((color) => (
+            <button
+              key={color}
+              type="button"
+              aria-label={`Χρώμα ${color}`}
+              onClick={() => setSelectedColor(color)}
+              className={`h-10 rounded-xl border-2 transition hover:scale-105 ${selectedColor === color ? "border-white ring-2 ring-white/30" : "border-transparent"}`}
+              style={{ backgroundColor: color }}
+            />
+          ))}
+        </div>
+        <div className="mt-5 grid gap-2">
+          <button type="button" onClick={() => setFills({})} className="flex items-center justify-center gap-2 rounded-xl bg-white/10 px-4 py-3 text-sm font-bold hover:bg-white/15"><RotateCcw className="h-4 w-4" /> Καθάρισμα</button>
+          <button type="button" onClick={() => { printSvg(printable(), design.title); track("preschool_coloring_print", { design: design.id }); }} className="flex items-center justify-center gap-2 rounded-xl bg-cyan-400 px-4 py-3 text-sm font-black text-slate-950 hover:bg-cyan-300"><Printer className="h-4 w-4" /> Εκτύπωση A4</button>
+          <button type="button" onClick={() => { downloadTextFile(printable(), `${design.id}-pisipouk-a4.svg`, "image/svg+xml"); track("preschool_coloring_download", { design: design.id }); }} className="flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-black text-slate-950 hover:bg-slate-100"><Download className="h-4 w-4" /> A4 αρχείο HD</button>
+        </div>
+      </aside>
+    </div>
+  );
+}
 
-                <div className="mt-5 grid grid-cols-3 gap-2 rounded-[1.4rem] border bg-white p-2 shadow-sm sm:max-w-xl">
-                  {([
-                    ["2-3","2–3 ετών"],
-                    ["4-5","4–5 ετών"],
-                    ["5-6","5–6 ετών"],
-                  ] as const).map(([value,label]) => (
-                    <button
-                      key={value}
-                      type="button"
-                      onClick={() => updateAge(value)}
-                      aria-pressed={progress.age === value}
-                      className={"min-h-12 rounded-xl px-2 py-2 text-sm font-black transition " + (progress.age === value ? "bg-primary text-primary-foreground" : "bg-slate-50 text-slate-700 hover:bg-slate-100")}
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              </div>
+function GameArena({ game }: { game: Game }) {
+  const [answer, setAnswer] = useState<number | null>(null);
+  const [score, setScore] = useState(0);
+  const correct = answer === game.correct;
 
-              <aside className="rounded-[1.8rem] border bg-white p-5 shadow-sm">
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <p className="text-xs font-black uppercase tracking-[0.14em] text-primary">Η πρόοδός μου</p>
-                    <p className="mt-1 text-3xl font-black text-[#0b3b82]">{progress.stars} ⭐</p>
-                  </div>
-                  <img src={pisipoukLogo} alt="" className="h-20 w-20 object-contain" />
-                </div>
-                <p className="mt-3 rounded-xl bg-amber-50 px-3 py-2 text-sm font-black text-amber-900">{preschoolBadgeLabel(progress.stars)}</p>
-                <p className="mt-3 text-xs leading-5 text-muted-foreground">Κάθε ολοκληρωμένη δραστηριότητα δίνει ένα αστέρι. Τα στοιχεία αποθηκεύονται τοπικά στο browser.</p>
-                <Link to="/parent-zone" className="mt-4 inline-flex rounded-full border bg-white px-4 py-2 text-xs font-black text-[#0b3b82] shadow-sm">👨‍👩‍👧 Parent Zone →</Link>
-              </aside>
-            </div>
+  const choose = (index: number) => {
+    setAnswer(index);
+    if (index === game.correct) {
+      setScore((value) => value + 1);
+      track("preschool_game_complete", { game: game.id, correct: true });
+    } else {
+      track("preschool_game_attempt", { game: game.id, correct: false });
+    }
+  };
 
-            <div className="grid gap-3 border-t bg-white/80 p-4 sm:grid-cols-3 sm:p-6">
-              <article className="rounded-[1.5rem] border bg-pink-50/70 p-4">
-                <div className="flex items-center justify-between gap-3">
-                  <span className="text-3xl">{todayDesign.emoji}</span>
-                  <span className="rounded-full bg-white px-2 py-1 text-[10px] font-black text-pink-700">ΖΩΓΡΑΦΙΚΗ</span>
-                </div>
-                <h2 className="mt-3 text-lg font-black text-[#0b3b82]">{todayDesign.title}</h2>
-                <p className="mt-1 text-xs text-muted-foreground">{todayDesign.age} ετών · {todayDesign.level}</p>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  <button type="button" onClick={() => pickDesign(todayDesign.id)} className="rounded-full bg-primary px-4 py-2 text-xs font-black text-primary-foreground">Ξεκίνα →</button>
-                  <button type="button" onClick={() => markComplete("coloring:" + todayDesign.id)} disabled={progress.completedIds.includes("coloring:" + todayDesign.id)} className="rounded-full border bg-white px-3 py-2 text-xs font-black disabled:opacity-50">
-                    {progress.completedIds.includes("coloring:" + todayDesign.id) ? "✓ Έτοιμο" : "Ολοκλήρωσα +⭐"}
-                  </button>
-                </div>
-              </article>
-
-              <article className="rounded-[1.5rem] border bg-violet-50/70 p-4">
-                <div className="flex items-center justify-between gap-3">
-                  <span className="text-3xl">{todayGame.emoji}</span>
-                  <span className="rounded-full bg-white px-2 py-1 text-[10px] font-black text-violet-700">ΠΑΙΧΝΙΔΙ</span>
-                </div>
-                <h2 className="mt-3 text-lg font-black text-[#0b3b82]">{todayGame.title}</h2>
-                <p className="mt-1 text-xs text-muted-foreground">Τυχαίοι γύροι · προσαρμογή ανά ηλικία</p>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  <a href={"/learning-games/" + todayGame.id + "?age=" + progress.age} className="rounded-full bg-primary px-4 py-2 text-xs font-black text-primary-foreground">Παίξε →</a>
-                  <button type="button" onClick={() => markComplete("game:" + todayGame.id + ":" + progress.age)} disabled={progress.completedIds.includes("game:" + todayGame.id + ":" + progress.age)} className="rounded-full border bg-white px-3 py-2 text-xs font-black disabled:opacity-50">
-                    {progress.completedIds.includes("game:" + todayGame.id + ":" + progress.age) ? "✓ Έτοιμο" : "Ολοκλήρωσα +⭐"}
-                  </button>
-                </div>
-              </article>
-
-              <article className="rounded-[1.5rem] border bg-emerald-50/70 p-4">
-                <div className="flex items-center justify-between gap-3">
-                  <span className="text-3xl">{todayCraft.emoji}</span>
-                  <span className="rounded-full bg-white px-2 py-1 text-[10px] font-black text-emerald-700">ΚΑΤΑΣΚΕΥΗ</span>
-                </div>
-                <h2 className="mt-3 text-lg font-black text-[#0b3b82]">{todayCraft.title}</h2>
-                <p className="mt-1 text-xs text-muted-foreground">{todayCraft.season} · με επίβλεψη ενήλικα όπου χρειάζεται</p>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  <a href="#crafts-library" className="rounded-full bg-primary px-4 py-2 text-xs font-black text-primary-foreground">Δες οδηγίες →</a>
-                  <button type="button" onClick={() => markComplete("craft:" + todayCraft.id)} disabled={progress.completedIds.includes("craft:" + todayCraft.id)} className="rounded-full border bg-white px-3 py-2 text-xs font-black disabled:opacity-50">
-                    {progress.completedIds.includes("craft:" + todayCraft.id) ? "✓ Έτοιμο" : "Ολοκλήρωσα +⭐"}
-                  </button>
-                </div>
-              </article>
-            </div>
-          </section>
-
-          <div className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <a href="#coloring-library" className="group rounded-[1.8rem] border bg-gradient-to-br from-pink-50 to-sky-50 p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
-              <div className="flex items-center gap-4">
-                <span className="text-4xl">🎨</span>
-                <div>
-                  <p className="text-xs font-black uppercase tracking-[0.16em] text-primary">Online Preschool</p>
-                  <h2 className="mt-1 text-2xl font-black text-[#0b3b82]">Ζωγραφική</h2>
-                  <p className="mt-1 text-sm text-muted-foreground">64 σχέδια + online studio · ανανέωση κάθε μήνα</p>
-                </div>
-              </div>
-            </a>
-            <a href="#crafts-library" className="group rounded-[1.8rem] border bg-gradient-to-br from-amber-50 to-emerald-50 p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
-              <div className="flex items-center gap-4">
-                <span className="text-4xl">✂️</span>
-                <div>
-                  <p className="text-xs font-black uppercase tracking-[0.16em] text-primary">Online Preschool</p>
-                  <h2 className="mt-1 text-2xl font-black text-[#0b3b82]">Κατασκευές</h2>
-                  <p className="mt-1 text-sm text-muted-foreground">Ιδέες, υλικά και βήματα για παιδιά 2–6 ετών</p>
-                </div>
-              </div>
-            </a>
-            <Link to="/learning-games" className="group rounded-[1.8rem] border bg-gradient-to-br from-violet-50 to-sky-50 p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
-              <div className="flex items-center gap-4">
-                <span className="text-4xl">🧩</span>
-                <div>
-                  <p className="text-xs font-black uppercase tracking-[0.16em] text-primary">Online Preschool</p>
-                  <h2 className="mt-1 text-2xl font-black text-[#0b3b82]">Μαθησιακά Παιχνίδια</h2>
-                  <p className="mt-1 text-sm text-muted-foreground">Τυχαίοι γύροι · drag & drop · δραστηριότητες ανά ηλικία</p>
-                </div>
-              </div>
-            </Link>
-            <Link to="/seasonal-packs" className="group rounded-[1.8rem] border bg-gradient-to-br from-orange-50 to-rose-50 p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
-              <div className="flex items-center gap-4">
-                <span className="text-4xl">🍂</span>
-                <div>
-                  <p className="text-xs font-black uppercase tracking-[0.16em] text-primary">Seasonal Packs</p>
-                  <h2 className="mt-1 text-2xl font-black text-[#0b3b82]">Εποχιακά Πακέτα</h2>
-                  <p className="mt-1 text-sm text-muted-foreground">Ζωγραφική · puzzle · κατασκευή · printable A4</p>
-                </div>
-              </div>
-            </Link>
+  return (
+    <div className="overflow-hidden rounded-[2rem] border border-violet-100 bg-white shadow-2xl shadow-violet-100/60">
+      <div className="bg-[radial-gradient(circle_at_top_left,#8b5cf6,#312e81_52%,#111827)] p-6 text-white md:p-8">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.24em] text-violet-200">Παίζω • Μαθαίνω • Ξαναπαίζω</p>
+            <h3 className="mt-2 text-2xl font-black md:text-3xl">{game.emoji} {game.title}</h3>
+            <p className="mt-1 text-violet-100">{game.subtitle} • {game.skill}</p>
           </div>
+          <div className="rounded-2xl bg-white/10 px-4 py-3 text-center backdrop-blur"><div className="text-xs text-violet-200">Μπράβο!</div><div className="text-xl font-black">{score} ⭐</div></div>
+        </div>
+      </div>
+      <div className="p-6 md:p-8">
+        <div className="rounded-3xl bg-amber-50 p-6 text-center text-2xl font-black text-slate-900 md:text-3xl">{game.question}</div>
+        <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
+          {game.options.map((option, index) => {
+            const isChosen = answer === index;
+            const state = answer !== null && index === game.correct ? "border-emerald-400 bg-emerald-50" : isChosen ? "border-rose-400 bg-rose-50" : "border-slate-200 bg-white hover:border-violet-300 hover:bg-violet-50";
+            return (
+              <button key={`${game.id}-${option}-${index}`} type="button" onClick={() => choose(index)} className={`min-h-24 rounded-3xl border-2 p-4 text-3xl font-black text-slate-900 transition hover:-translate-y-1 ${state}`}>{option}</button>
+            );
+          })}
+        </div>
+        {answer !== null && (
+          <div className={`mt-5 flex items-center justify-between gap-4 rounded-2xl p-4 ${correct ? "bg-emerald-50 text-emerald-800" : "bg-amber-50 text-amber-900"}`}>
+            <div className="flex items-center gap-3 font-bold">{correct ? <CheckCircle2 className="h-6 w-6" /> : <Sparkles className="h-6 w-6" />} {correct ? "Μπράβο! Το βρήκες!" : "Καλή προσπάθεια — δοκίμασε άλλη επιλογή."}</div>
+            <button type="button" onClick={() => setAnswer(null)} className="rounded-xl bg-white px-4 py-2 text-sm font-black shadow-sm">Ξανά</button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 
-          <div id="coloring-library" className="scroll-mt-24 overflow-hidden rounded-[2rem] border bg-white shadow-sm">
-            <div className="relative px-5 pb-6 pt-6 sm:px-8 lg:px-10">
-              <div className="absolute right-6 top-6 hidden text-5xl lg:block">☀️</div>
-              <div className="grid items-center gap-5 lg:grid-cols-[280px_1fr_280px]">
-                <div className="flex justify-center lg:justify-start">
-                  <img src={pisipoukLogo} alt="Ο Πισιπούκ" className="h-auto w-56 max-w-full object-contain" />
-                </div>
-                <div className="text-center">
-                  <p className="text-sm font-black uppercase tracking-[0.18em] text-primary">Εικονικός Παιδικός Σταθμός</p>
-                  <h1 className="mt-2 text-4xl font-black tracking-tight text-[#0b3b82] sm:text-5xl lg:text-6xl">
-                    Βιβλιοθήκη Ζωγραφικής
-                  </h1>
-                  <p className="mt-2 text-base font-bold text-[#0b3b82] sm:text-lg">
-                    64 σχέδια · 12 νέα AI-assisted + νέο αναλυτικό Πισιπούκ
-                  </p>
-                  <div className="mt-3 inline-flex rounded-full bg-amber-100 px-4 py-2 text-xs font-black text-amber-800">
-                    ✨ Νέα συλλογή: 12 AI-assisted σχέδια, προσαρμοσμένα ανά ηλικία
-                  </div>
-                </div>
-                <div className="hidden text-center font-black italic text-[#0b3b82] lg:block">
-                  <div className="text-2xl">Μικρά χεράκια</div>
-                  <div className="mt-1 text-3xl">Μεγάλες ιδέες!</div>
-                </div>
+function VirtualPreschool() {
+  const [age, setAge] = useState<Age>("4–5");
+  const [activeGameId, setActiveGameId] = useState(GAMES[2].id);
+  const [activeColoringId, setActiveColoringId] = useState(COLORING[2].id);
+  const [craftFilter, setCraftFilter] = useState<"all" | Age>("all");
+  const theme = THEMES[Math.floor(Date.now() / (1000 * 60 * 60 * 24 * 7)) % THEMES.length];
+  const activeGame = GAMES.find((game) => game.id === activeGameId) ?? GAMES[0];
+  const activeColoring = COLORING.find((item) => item.id === activeColoringId) ?? COLORING[0];
+  const filteredCrafts = craftFilter === "all" ? CRAFTS : CRAFTS.filter((craft) => craft.age === craftFilter);
+  const daily = [
+    { icon: "👋", title: "Πρωινός κύκλος", note: "2 λεπτά", text: "Πες το όνομά σου, τον καιρό και ένα πράγμα που σε κάνει χαρούμενο.", href: "#daily" },
+    { icon: "🎮", title: "Παιχνίδι της ημέρας", note: "5 λεπτά", text: activeGame.title, href: "#games" },
+    { icon: "🖍️", title: "Ζωγραφίζω", note: "10 λεπτά", text: activeColoring.title, href: "#coloring" },
+    { icon: "✂️", title: "Χειροτεχνία", note: "15–25 λεπτά", text: CRAFTS.find((craft) => craft.age === age)?.title ?? CRAFTS[0].title, href: "#crafts" },
+  ];
+
+  return (
+    <SiteLayout>
+      <div className="overflow-hidden bg-[#fffdf7] text-slate-900">
+        <section className="relative isolate overflow-hidden border-b border-amber-100">
+          <div className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_15%_20%,#fce7f3_0,transparent_30%),radial-gradient(circle_at_80%_10%,#cffafe_0,transparent_30%),radial-gradient(circle_at_70%_80%,#fef3c7_0,transparent_34%),linear-gradient(#fffdf7,#ffffff)]" />
+          <div className="absolute left-[7%] top-20 -z-10 h-24 w-24 rotate-12 rounded-[2rem] bg-pink-300/45 blur-[1px]" />
+          <div className="absolute right-[9%] top-28 -z-10 h-20 w-20 rounded-full bg-cyan-300/45" />
+          <div className="absolute bottom-16 left-[44%] -z-10 h-28 w-28 rounded-full bg-amber-300/35" />
+          <div className="mx-auto grid max-w-7xl gap-10 px-5 py-14 md:px-8 md:py-20 lg:grid-cols-[1.02fr_.98fr] lg:items-center lg:py-24">
+            <div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white/80 px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-violet-700 shadow-sm backdrop-blur">
+                <Sparkles className="h-4 w-4" /> Pisipouk Virtual Preschool+
+              </div>
+              <h1 className="mt-6 max-w-3xl text-4xl font-black leading-[1.02] tracking-[-0.04em] text-slate-950 sm:text-5xl md:text-6xl lg:text-7xl">
+                Κάθε μέρα μια νέα
+                <span className="block bg-gradient-to-r from-violet-600 via-fuchsia-500 to-orange-400 bg-clip-text text-transparent">μικρή περιπέτεια μάθησης.</span>
+              </h1>
+              <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600 md:text-xl">Παιχνίδια που παίζονται, ζωγραφιές που χρωματίζονται online, πραγματικά A4 πατρόν και οδηγίες χειροτεχνίας — φτιαγμένα για παιδιά 2–6 και γονείς που θέλουν ποιοτικό δημιουργικό χρόνο.</p>
+              <div className="mt-7 flex flex-wrap gap-3 text-sm font-bold text-slate-600">
+                <span className="rounded-full bg-white px-4 py-2 shadow-sm">✓ Χωρίς εγκατάσταση</span>
+                <span className="rounded-full bg-white px-4 py-2 shadow-sm">✓ HD vector γραφικά</span>
+                <span className="rounded-full bg-white px-4 py-2 shadow-sm">✓ A4 printables</span>
+                <span className="rounded-full bg-white px-4 py-2 shadow-sm">✓ Νέο θέμα κάθε εβδομάδα</span>
+              </div>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <a href="#daily" onClick={() => track("preschool_hero_start")} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-6 py-4 font-black text-white shadow-xl transition hover:-translate-y-1 hover:bg-violet-700">Ξεκίνα το σημερινό πρόγραμμα <ArrowRight className="h-5 w-5" /></a>
+                <a href="#crafts" className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-6 py-4 font-black text-slate-900 shadow-sm transition hover:-translate-y-1"><Printer className="h-5 w-5" /> Εκτύπωσε A4 δραστηριότητα</a>
               </div>
             </div>
 
-            <div className="grid gap-3 p-3 lg:grid-cols-3">
-              {(["2–3","4–5","5–6"] as const).map((age) => {
-                const meta = AGE_META[age];
-                const ageDesigns = DESIGNS.filter((item) => item.age === age);
-                const panel =
-                  age === "2–3"
-                    ? "border-rose-200 bg-gradient-to-b from-rose-50 to-pink-100/70"
-                    : age === "4–5"
-                      ? "border-sky-200 bg-gradient-to-b from-sky-50 to-blue-100/70"
-                      : "border-emerald-200 bg-gradient-to-b from-emerald-50 to-green-100/70";
-                const heading = age === "2–3" ? "text-rose-600" : age === "4–5" ? "text-blue-600" : "text-green-700";
-                const slogan =
-                  age === "2–3"
-                    ? "Μεγάλα σχήματα, απλά σχέδια, πολλή χαρά!"
-                    : age === "4–5"
-                      ? "Περισσότερες λεπτομέρειες, περισσότερες ιστορίες!"
-                      : "Ολόκληρες σκηνές, μικρές προκλήσεις, μεγάλα όνειρα!";
-                return (
-                  <div key={age} className={"rounded-[1.8rem] border p-4 sm:p-5 " + panel}>
-                    <div className="text-center">
-                      <div className={"text-4xl font-black sm:text-5xl " + heading}>{age} ετών</div>
-                      <p className={"mt-2 text-sm font-black sm:text-base " + heading}>{slogan}</p>
-                    </div>
-
-                    <div className="mt-5 grid grid-cols-3 gap-2 sm:grid-cols-5 lg:grid-cols-3 xl:grid-cols-5">
-                      {ageDesigns.map((item, index) => (
-                        <button
-                          key={item.id}
-                          type="button"
-                          onClick={() => pickDesign(item.id)}
-                          className={
-                            "group rounded-xl border bg-white p-1.5 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md " +
-                            (designId === item.id ? "ring-2 ring-primary ring-offset-1" : "")
-                          }
-                        >
-                          <div className="aspect-[4/3] overflow-hidden rounded-lg bg-white">
-                            <svg viewBox="0 0 900 650" className="h-full w-full" aria-hidden="true">
-                              <Outline id={item.id} />
-                            </svg>
-                          </div>
-                          <div className="mt-1 min-h-[2.4rem] text-center">
-                            <p className="text-[10px] font-black leading-tight text-slate-800 sm:text-[11px]">
-                              {index + 1}. {item.title}
-                            </p>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-
-                    <div className="mt-5 rounded-full bg-white/75 px-4 py-3 text-center text-sm font-black shadow-sm">
-                      {age === "2–3"
-                        ? "Τα πρώτα τους βήματα στον κόσμο των χρωμάτων!"
-                        : age === "4–5"
-                          ? "Φαντασία, δημιουργικότητα και χαμόγελα!"
-                          : "Μεγαλώνουμε μέσα από τη δημιουργία!"}
-                    </div>
+            <div className="relative mx-auto w-full max-w-xl">
+              <div className="absolute -left-5 top-6 z-20 rotate-[-8deg] rounded-2xl bg-amber-300 px-4 py-3 text-sm font-black shadow-lg">ΝΕΟ ΚΑΘΕ ΕΒΔΟΜΑΔΑ ✨</div>
+              <div className="relative overflow-hidden rounded-[3rem] border-[8px] border-white bg-gradient-to-br from-sky-300 via-cyan-100 to-amber-100 p-6 shadow-2xl shadow-violet-200/60 md:p-8">
+                <div className="absolute right-8 top-8 h-24 w-24 rounded-full bg-amber-300 shadow-[0_0_60px_rgba(251,191,36,.45)]" />
+                <div className="relative mt-20 rounded-[2.2rem] bg-white/80 p-5 shadow-xl backdrop-blur md:p-7">
+                  <div className="flex items-center justify-between gap-3"><div><p className="text-xs font-black uppercase tracking-[0.22em] text-violet-600">Theme of the week</p><h2 className="mt-1 text-2xl font-black md:text-3xl">{theme.emoji} {theme.title}</h2></div><div className="rounded-2xl bg-violet-100 px-3 py-2 text-center text-xs font-black text-violet-700">4<br/>δραστηριότητες</div></div>
+                  <div className="mt-5 grid grid-cols-4 gap-2">
+                    {["🎮", "🎨", "✂️", "📚"].map((icon) => <div key={icon} className="grid aspect-square place-items-center rounded-2xl bg-white text-3xl shadow-sm">{icon}</div>)}
                   </div>
-                );
+                  <div className="mt-5 rounded-2xl bg-emerald-50 p-4 text-sm font-bold leading-6 text-emerald-900">💡 Για γονείς: {theme.tip}</div>
+                </div>
+                <div className="relative mt-5 flex items-end justify-around">
+                  <div className="text-7xl drop-shadow-lg md:text-8xl">🦊</div><div className="-mb-1 text-8xl drop-shadow-lg md:text-9xl">🧒</div><div className="text-7xl drop-shadow-lg md:text-8xl">🐻</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="border-b border-slate-100 bg-white py-7">
+          <div className="mx-auto max-w-7xl px-5 md:px-8">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div><p className="text-sm font-black text-violet-700">Προσωποποίησε τη δυσκολία</p><h2 className="text-xl font-black">Για ποια ηλικία παίζουμε σήμερα;</h2></div>
+              <div className="grid gap-2 sm:grid-cols-3">
+                {AGES.map((item) => <button key={item.id} type="button" onClick={() => { setAge(item.id); track("preschool_age_select", { age: item.id }); }} className={`rounded-2xl border px-4 py-3 text-left transition ${age === item.id ? "border-violet-500 bg-violet-50 shadow-md" : "border-slate-200 bg-white hover:border-violet-200"}`}><div className="font-black">{item.emoji} {item.label}</div><div className="mt-1 text-xs text-slate-500">{item.note}</div></button>)}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="daily" className="py-16 md:py-20">
+          <div className="mx-auto max-w-7xl px-5 md:px-8">
+            <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+              <div><div className="inline-flex items-center gap-2 rounded-full bg-amber-100 px-3 py-1.5 text-xs font-black text-amber-900"><CalendarDays className="h-4 w-4" /> ΣΗΜΕΡΙΝΗ ΡΟΥΤΙΝΑ</div><h2 className="mt-4 text-3xl font-black tracking-tight md:text-5xl">20–40 λεπτά δημιουργικού χρόνου.</h2><p className="mt-3 max-w-2xl text-slate-600">Μια καθαρή καθημερινή διαδρομή ώστε ο γονιός να μη χρειάζεται να ψάχνει τι θα κάνει το παιδί.</p></div>
+              <div className="rounded-2xl bg-white px-5 py-4 text-sm font-bold text-slate-600 shadow-sm"><Clock3 className="mr-2 inline h-4 w-4 text-violet-600" /> Προσαρμόζεται στην ηλικία {age}</div>
+            </div>
+            <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              {daily.map((item, index) => <a key={item.title} href={item.href} className="group rounded-[2rem] border border-slate-100 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-xl"><div className="flex items-center justify-between"><div className="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-violet-50 to-amber-50 text-3xl">{item.icon}</div><span className="text-xs font-black text-slate-400">0{index + 1}</span></div><h3 className="mt-5 text-xl font-black">{item.title}</h3><p className="mt-2 min-h-12 text-sm leading-6 text-slate-600">{item.text}</p><div className="mt-4 flex items-center justify-between text-xs font-black text-violet-700"><span>{item.note}</span><ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" /></div></a>)}
+            </div>
+          </div>
+        </section>
+
+        <section id="games" className="bg-gradient-to-b from-violet-50/70 to-white py-16 md:py-20">
+          <div className="mx-auto max-w-7xl px-5 md:px-8">
+            <div className="max-w-3xl"><div className="inline-flex items-center gap-2 rounded-full bg-violet-100 px-3 py-1.5 text-xs font-black text-violet-800"><Gamepad2 className="h-4 w-4" /> PLAY LAB</div><h2 className="mt-4 text-3xl font-black tracking-tight md:text-5xl">8 μικρά παιχνίδια. Πραγματικά playable.</h2><p className="mt-3 text-slate-600">Σύντομοι γύροι, μεγάλα tap targets, άμεσο feedback και δυνατότητα επανάληψης χωρίς φόρτωση άλλης εφαρμογής.</p></div>
+            <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {GAMES.map((game) => <button key={game.id} type="button" onClick={() => { setActiveGameId(game.id); track("preschool_game_open", { game: game.id }); }} className={`rounded-[1.7rem] border p-4 text-left transition hover:-translate-y-1 ${activeGameId === game.id ? "border-violet-500 bg-white shadow-xl shadow-violet-100" : "border-violet-100 bg-white/80"}`}><div className="text-3xl">{game.emoji}</div><div className="mt-3 font-black">{game.title}</div><div className="mt-1 text-xs text-slate-500">{game.age} • {game.skill}</div></button>)}
+            </div>
+            <div className="mt-6"><GameArena key={activeGame.id} game={activeGame} /></div>
+          </div>
+        </section>
+
+        <section id="coloring" className="py-16 md:py-20">
+          <div className="mx-auto max-w-7xl px-5 md:px-8">
+            <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+              <div className="max-w-3xl"><div className="inline-flex items-center gap-2 rounded-full bg-cyan-100 px-3 py-1.5 text-xs font-black text-cyan-900"><Palette className="h-4 w-4" /> COLORING STUDIO</div><h2 className="mt-4 text-3xl font-black tracking-tight md:text-5xl">Ζωγραφίζω στην οθόνη ή εκτυπώνω A4.</h2><p className="mt-3 text-slate-600">Vector γραμμές που μένουν καθαρές σε κινητό, tablet και εκτύπωση. Χωρίς pixelated clip-art.</p></div>
+              <div className="flex max-w-full gap-2 overflow-x-auto pb-2">{COLORING.map((item) => <button key={item.id} type="button" onClick={() => setActiveColoringId(item.id)} className={`shrink-0 rounded-2xl border px-4 py-3 text-sm font-black ${activeColoringId === item.id ? "border-cyan-500 bg-cyan-50" : "border-slate-200 bg-white"}`}>{item.emoji} {item.title}</button>)}</div>
+            </div>
+            <div className="mt-8"><ColoringCanvas key={activeColoring.id} design={activeColoring} /></div>
+          </div>
+        </section>
+
+        <section id="crafts" className="bg-[#f8fafc] py-16 md:py-20">
+          <div className="mx-auto max-w-7xl px-5 md:px-8">
+            <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+              <div className="max-w-3xl"><div className="inline-flex items-center gap-2 rounded-full bg-rose-100 px-3 py-1.5 text-xs font-black text-rose-900"><Scissors className="h-4 w-4" /> CRAFT STUDIO</div><h2 className="mt-4 text-3xl font-black tracking-tight md:text-5xl">Όχι “ιδέες”. Πραγματικά A4 πατρόν.</h2><p className="mt-3 text-slate-600">Κάθε χειροτεχνία έχει print-ready vector πατρόν, υλικά, χρόνο, δεξιότητα και οδηγίες βήμα-βήμα.</p></div>
+              <div className="flex gap-2 overflow-x-auto pb-2"><button type="button" onClick={() => setCraftFilter("all")} className={`shrink-0 rounded-full px-4 py-2 text-sm font-black ${craftFilter === "all" ? "bg-slate-950 text-white" : "bg-white"}`}>Όλα</button>{AGES.map((item) => <button key={item.id} type="button" onClick={() => setCraftFilter(item.id)} className={`shrink-0 rounded-full px-4 py-2 text-sm font-black ${craftFilter === item.id ? "bg-slate-950 text-white" : "bg-white"}`}>{item.label}</button>)}</div>
+            </div>
+            <div className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+              {filteredCrafts.map((craft) => {
+                const svg = craftSvg(craft);
+                return <article key={craft.id} className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
+                  <div className="grid h-64 place-items-center overflow-hidden bg-gradient-to-br from-rose-50 via-white to-amber-50 p-4"><CraftPattern craft={craft} compact /></div>
+                  <div className="p-5">
+                    <div className="flex items-start justify-between gap-3"><div><div className="text-xs font-black uppercase tracking-[0.16em] text-rose-600">{craft.age} • {craft.minutes}′ • {craft.level}</div><h3 className="mt-2 text-xl font-black">{craft.title}</h3></div><div className="rounded-2xl bg-amber-100 p-2.5 text-amber-900"><Star className="h-5 w-5" /></div></div>
+                    <div className="mt-4 rounded-2xl bg-slate-50 p-4"><div className="text-xs font-black text-slate-500">ΤΙ ΚΑΛΛΙΕΡΓΕΙ</div><div className="mt-1 font-bold">{craft.skill}</div></div>
+                    <details className="mt-4 rounded-2xl border border-slate-200 p-4"><summary className="cursor-pointer font-black">Υλικά & οδηγίες</summary><div className="mt-3 text-sm leading-6 text-slate-600"><strong className="text-slate-900">Υλικά:</strong> {craft.materials.join(", ")}.<ol className="mt-2 list-decimal space-y-1 pl-5">{craft.steps.map((step) => <li key={step}>{step}</li>)}</ol></div></details>
+                    <div className="mt-4 grid grid-cols-2 gap-2"><button type="button" onClick={() => { printSvg(svg, craft.title); track("preschool_craft_print", { craft: craft.id }); }} className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-950 px-3 py-3 text-sm font-black text-white hover:bg-slate-800"><Printer className="h-4 w-4" /> Εκτύπωση A4</button><button type="button" onClick={() => { downloadTextFile(svg, `${craft.id}-pisipouk-a4.svg`, "image/svg+xml"); track("preschool_craft_download", { craft: craft.id }); }} className="inline-flex items-center justify-center gap-2 rounded-xl bg-rose-100 px-3 py-3 text-sm font-black text-rose-900 hover:bg-rose-200"><Download className="h-4 w-4" /> HD Πατρόν</button></div>
+                  </div>
+                </article>;
               })}
             </div>
+          </div>
+        </section>
 
-            <div className="border-t bg-white px-4 py-5 sm:px-7">
-              <div className="grid gap-3 text-center sm:grid-cols-5">
-                {[
-                  ["🎨", "Διάλεξε σχέδιο"],
-                  ["🖌️", "Ζωγράφισε"],
-                  ["⬇️", "Αποθήκευσε"],
-                  ["🖨️", "Εκτύπωσε"],
-                  ["❤️", "Δημιούργησε ξανά!"],
-                ].map(([icon, label]) => (
-                  <div key={label} className="flex items-center justify-center gap-2 rounded-full bg-slate-50 px-3 py-2.5">
-                    <span className="text-xl">{icon}</span>
-                    <span className="text-sm font-black text-[#0b3b82]">{label}</span>
-                  </div>
-                ))}
+        <section id="parents" className="py-16 md:py-20">
+          <div className="mx-auto max-w-7xl px-5 md:px-8">
+            <div className="overflow-hidden rounded-[2.8rem] bg-slate-950 text-white shadow-2xl">
+              <div className="grid gap-0 lg:grid-cols-[1.05fr_.95fr]">
+                <div className="p-7 md:p-10 lg:p-12"><div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-xs font-black text-cyan-200"><Users className="h-4 w-4" /> PARENT ZONE</div><h2 className="mt-5 text-3xl font-black tracking-tight md:text-5xl">Ο γονιός ξέρει πάντα τι κάνουμε — και γιατί.</h2><p className="mt-4 max-w-xl leading-7 text-slate-300">Στόχος δεν είναι περισσότερος παθητικός χρόνος οθόνης. Είναι μια μικρή ψηφιακή αφετηρία που οδηγεί σε χέρια, χαρτί, κουβέντα, κίνηση και δημιουργία.</p><div className="mt-7 grid gap-3 sm:grid-cols-2">{[
+                  ["🧠", "Τι καλλιεργεί", "Κάθε δραστηριότητα έχει ξεκάθαρο skill focus."],
+                  ["⏱️", "Πόσο κρατά", "Μικρά blocks 5–25 λεπτών για εύκολη ρουτίνα."],
+                  ["🖨️", "Τι εκτυπώνω", "A4 vector assets με καθαρές γραμμές."],
+                  ["🏡", "Τι κάνω offline", "Κάθε θέμα συνεχίζεται στο σπίτι χωρίς οθόνη."],
+                ].map(([emoji, title, text]) => <div key={title} className="rounded-2xl bg-white/7 p-4"><div className="text-2xl">{emoji}</div><div className="mt-2 font-black">{title}</div><div className="mt-1 text-sm leading-6 text-slate-400">{text}</div></div>)}</div></div>
+                <div className="bg-gradient-to-br from-cyan-300 via-emerald-200 to-amber-200 p-7 text-slate-950 md:p-10 lg:p-12"><p className="text-xs font-black uppercase tracking-[0.22em] text-slate-700">Weekly Parent Pack</p><h3 className="mt-3 text-3xl font-black">Το πακέτο αυτής της εβδομάδας</h3><div className="mt-6 space-y-3">{["1 A4 craft pattern", "2 printable coloring pages", "1 μικρό παιχνίδι λογικής", "1 offline family activity", "1 σύντομη parent tip"].map((item) => <div key={item} className="flex items-center gap-3 rounded-2xl bg-white/70 px-4 py-3 font-bold"><Check className="h-5 w-5 text-emerald-700" /> {item}</div>)}</div><button type="button" onClick={() => { document.getElementById("crafts")?.scrollIntoView({ behavior: "smooth" }); track("preschool_weekly_pack_start"); }} className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-4 font-black text-white hover:bg-violet-800"><Download className="h-5 w-5" /> Φτιάξε το δικό σου pack τώρα</button></div>
               </div>
             </div>
           </div>
+        </section>
 
-
-          <section id="crafts-library" className="scroll-mt-24 pt-10">
-            <div className="rounded-[2rem] border bg-gradient-to-br from-amber-50 via-white to-emerald-50 p-5 shadow-sm sm:p-8">
-              <div className="mx-auto max-w-3xl text-center">
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-primary">Κατασκευές Πισιπούκ</p>
-                <h2 className="mt-2 text-3xl font-black text-[#0b3b82] sm:text-5xl">Φτιάχνουμε με τα χέρια μας ✂️</h2>
-                <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
-                  Πρωτότυπες ιδέες ανά ηλικία με υλικά, αναλυτικά βήματα και printable A4. Οι δραστηριότητες ανανεώνονται θεματικά μέσα στη χρονιά.
-                </p>
-              </div>
-
-              <div className="mt-7 flex flex-wrap justify-center gap-2">
-                {["Όλο τον χρόνο","Φθινόπωρο","28η Οκτωβρίου","Χριστούγεννα","Απόκριες","25η Μαρτίου","Πάσχα","Καλοκαίρι"].map((season) => (
-                  <span key={season} className="rounded-full border bg-white px-3 py-1.5 text-xs font-black text-[#0b3b82]">{season}</span>
-                ))}
-              </div>
-
-              <div className="mt-8 grid gap-6 lg:grid-cols-3">
-                {(["2–3","4–5","5–6"] as const).map((age) => {
-                  const panel =
-                    age === "2–3"
-                      ? "border-rose-200 bg-rose-50/80"
-                      : age === "4–5"
-                        ? "border-sky-200 bg-sky-50/80"
-                        : "border-emerald-200 bg-emerald-50/80";
-                  return (
-                    <div key={age} className={"rounded-[1.8rem] border p-4 sm:p-5 " + panel}>
-                      <div className="text-center">
-                        <div className="text-3xl font-black text-[#0b3b82]">{age} ετών</div>
-                        <p className="mt-1 text-xs font-bold text-muted-foreground">{AGE_META[age].description}</p>
-                      </div>
-                      <div className="mt-5 grid gap-3">
-                        {CRAFTS.filter((craft) => craft.age === age).map((craft) => (
-                          <article key={craft.id} className="rounded-2xl border bg-white p-4 shadow-sm">
-                            <div className="flex items-start justify-between gap-3">
-                              <div className="flex items-center gap-3">
-                                <span className="text-3xl">{craft.emoji}</span>
-                                <div>
-                                  <h3 className="text-sm font-black leading-tight text-slate-900">{craft.title}</h3>
-                                  <span className="mt-1 inline-flex rounded-full bg-primary/10 px-2 py-1 text-[10px] font-black text-primary">{craft.season}</span>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="mt-3">
-                              <p className="text-[11px] font-black uppercase tracking-[0.12em] text-muted-foreground">Υλικά</p>
-                              <p className="mt-1 text-xs leading-5 text-slate-700">{craft.materials.join(" · ")}</p>
-                            </div>
-                            <div className="mt-3">
-                              <p className="text-[11px] font-black uppercase tracking-[0.12em] text-muted-foreground">Βήματα</p>
-                              <ol className="mt-1 space-y-1 text-xs leading-5 text-slate-700">
-                                {craft.steps.map((step, index) => (
-                                  <li key={step}><span className="font-black text-primary">{index + 1}.</span> {step}</li>
-                                ))}
-                              </ol>
-                            </div>
-                            <div className="mt-4 grid grid-cols-2 gap-2">
-                              <Button type="button" variant="outline" className="h-9 rounded-full px-3 text-xs" onClick={() => printCraft(craft)}>
-                                <Printer className="h-3.5 w-3.5" />Εκτύπωση A4
-                              </Button>
-                              <Button type="button" className="h-9 rounded-full px-3 text-xs" onClick={() => downloadCraftPdf(craft)}>
-                                <FileDown className="h-3.5 w-3.5" />PDF A4
-                              </Button>
-                            </div>
-                          </article>
-                        ))}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div className="mt-7 rounded-2xl border bg-white p-4 text-center">
-                <p className="text-sm font-black text-[#0b3b82]">Με ενήλικα δίπλα μας 👩‍👧‍👦</p>
-                <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                  Ψαλίδι, μικρά εξαρτήματα και οποιοδήποτε κόψιμο ή τρύπημα γίνονται πάντα με επίβλεψη και βοήθεια ενήλικα.
-                </p>
-              </div>
+        <section className="pb-20 pt-4 md:pb-24">
+          <div className="mx-auto max-w-7xl px-5 md:px-8">
+            <div className="grid gap-5 md:grid-cols-3">
+              <div className="rounded-[2rem] border border-emerald-100 bg-emerald-50 p-6"><ShieldCheck className="h-8 w-8 text-emerald-700" /><h3 className="mt-4 text-xl font-black">Child-first σχεδιασμός</h3><p className="mt-2 text-sm leading-6 text-emerald-950/70">Μεγάλα στοιχεία, ήρεμη πλοήγηση, σύντομες δραστηριότητες και παρουσία ενήλικα στις κατασκευές.</p></div>
+              <div className="rounded-[2rem] border border-violet-100 bg-violet-50 p-6"><Trophy className="h-8 w-8 text-violet-700" /><h3 className="mt-4 text-xl font-black">Μάθηση που μοιάζει με παιχνίδι</h3><p className="mt-2 text-sm leading-6 text-violet-950/70">Χρώματα, αριθμοί, γλώσσα, λογική, παρατήρηση και συναισθήματα μέσα από μικρές νίκες.</p></div>
+              <div className="rounded-[2rem] border border-rose-100 bg-rose-50 p-6"><Heart className="h-8 w-8 text-rose-700" /><h3 className="mt-4 text-xl font-black">Από το online στο μαζί</h3><p className="mt-2 text-sm leading-6 text-rose-950/70">Η εμπειρία σχεδιάζεται ώστε να συνεχίζεται με ζωγραφική, κόψιμο, κουβέντα και παιχνίδι εκτός οθόνης.</p></div>
             </div>
-          </section>
-
-          <div id="coloring-studio" className="scroll-mt-24 pt-10">
-            <div className="mb-4 text-center">
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-primary">Ζωγραφική</p>
-              <h2 className="mt-2 text-3xl font-black sm:text-4xl">{current.emoji} {current.title}</h2>
-              <p className="mt-2 text-sm text-muted-foreground">{current.age} ετών · {current.level}</p>
-            </div>
-
-            <div className="grid gap-6 xl:grid-cols-[1fr_360px] xl:items-start">
-              <div className="min-w-0">
-                <div className="print-area rounded-[2rem] border bg-white p-3 shadow-sm sm:p-5">
-                  <div className="relative mx-auto aspect-[900/650] w-full max-w-5xl overflow-hidden rounded-[1.4rem] bg-white">
-                    <canvas
-                      ref={canvasRef}
-                      width={900}
-                      height={650}
-                      onPointerDown={startDraw}
-                      onPointerMove={draw}
-                      onPointerUp={stopDraw}
-                      onPointerCancel={stopDraw}
-                      onPointerLeave={stopDraw}
-                      className="absolute inset-0 z-10 h-full w-full touch-none cursor-crosshair"
-                      aria-label="Καμβάς ζωγραφικής"
-                    />
-                    <svg
-                      ref={svgRef}
-                      viewBox="0 0 900 650"
-                      className="pointer-events-none absolute inset-0 z-20 h-full w-full"
-                      aria-label={`Σχέδιο: ${current.title}`}
-                    >
-                      <Outline id={designId} />
-                    </svg>
-                  </div>
-                  <div className="hidden print:block pt-3 text-center text-sm font-bold text-gray-700">
-                    Η ζωγραφιά μου στον Πισιπούκ - pisipouk.vercel.app
-                  </div>
-                </div>
-              </div>
-
-              <aside className="rounded-[2rem] border bg-card p-5 xl:sticky xl:top-24">
-                <div className="flex items-center gap-2">
-                  <Paintbrush className="h-5 w-5 text-primary" />
-                  <h3 className="font-black">Παλέτα ζωγραφικής</h3>
-                </div>
-
-                <p className="mt-2 text-xs leading-5 text-muted-foreground">
-                  {AGE_META[current.age].description}
-                </p>
-
-                <div className="mt-5 flex flex-wrap gap-3">
-                  {COLORS.map((paintColor) => (
-                    <button
-                      key={paintColor}
-                      type="button"
-                      onClick={() => { setColor(paintColor); setErasing(false); }}
-                      aria-label={"Χρώμα " + paintColor}
-                      className={"h-11 w-11 rounded-full border-2 transition-transform " + (!erasing && color === paintColor ? "scale-110 ring-2 ring-primary ring-offset-2" : "")}
-                      style={{ backgroundColor: paintColor }}
-                    />
-                  ))}
-                </div>
-
-                <div className="mt-5">
-                  <p className="mb-2 text-xs font-black uppercase tracking-[0.14em] text-muted-foreground">Πάχος πινέλου</p>
-                  <div className="grid grid-cols-3 gap-2">
-                    {[14,26,42].map((size) => (
-                      <button
-                        key={size}
-                        type="button"
-                        onClick={() => setBrushSize(size)}
-                        className={"flex h-12 items-center justify-center rounded-xl border bg-background " + (brushSize === size ? "ring-2 ring-primary" : "")}
-                      >
-                        <span className="rounded-full bg-foreground" style={{ width: Math.max(8,size/2), height: Math.max(8,size/2) }} />
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="mt-5 grid gap-3">
-                  <Button type="button" variant={erasing ? "default" : "outline"} className="rounded-full" onClick={() => setErasing(v => !v)}>
-                    <Eraser className="h-4 w-4" />{erasing ? "Γόμα ενεργή" : "Γόμα"}
-                  </Button>
-                  <Button type="button" variant="outline" className="rounded-full" onClick={clearCanvas}>
-                    <RotateCcw className="h-4 w-4" />Καθάρισέ το
-                  </Button>
-                  <Button type="button" className="rounded-full" onClick={download}>
-                    <Download className="h-4 w-4" />Αποθήκευση PNG
-                  </Button>
-                  <Button type="button" variant="outline" className="rounded-full" onClick={downloadPdf}>
-                    <FileDown className="h-4 w-4" />Αποθήκευση PDF A4
-                  </Button>
-                  <Button type="button" variant="secondary" className="rounded-full" onClick={printDrawing}>
-                    <Printer className="h-4 w-4" />Εκτύπωση A4
-                  </Button>
-                </div>
-
-                <div className="mt-5 rounded-2xl bg-primary/5 p-4">
-                  <p className="text-xs font-black text-primary">Μικρή υπενθύμιση</p>
-                  <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                    Δεν υπάρχει «σωστό» χρώμα. Το παιδί επιλέγει, πειραματίζεται και δημιουργεί ελεύθερα.
-                  </p>
-                </div>
-              </aside>
+            <div className="mt-8 overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-violet-700 via-fuchsia-600 to-orange-500 p-7 text-white shadow-2xl md:p-10">
+              <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between"><div><p className="text-sm font-black uppercase tracking-[0.18em] text-white/75">Γνώρισε και τον πραγματικό Πισιπούκ</p><h2 className="mt-2 text-3xl font-black md:text-4xl">Σου άρεσε ο τρόπος που μαθαίνουμε;</h2><p className="mt-2 max-w-2xl text-white/85">Κλείσε επίσκεψη και γνώρισε τον χώρο, την ομάδα και την καθημερινότητά μας από κοντά.</p></div><div className="flex flex-col gap-3 sm:flex-row"><a href="/book-visit" onClick={() => track("preschool_book_visit")} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-6 py-4 font-black text-slate-950 shadow-xl">Κλείσε επίσκεψη <ArrowRight className="h-5 w-5" /></a><a href="/contact" className="inline-flex items-center justify-center rounded-2xl border border-white/30 bg-white/10 px-6 py-4 font-black text-white backdrop-blur">Ρώτησέ μας</a></div></div>
             </div>
           </div>
-        </div>
-      </section>
-
+        </section>
+      </div>
     </SiteLayout>
   );
 }
