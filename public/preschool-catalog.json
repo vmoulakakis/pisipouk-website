@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "items": [
+    {"id":"game-memory","type":"game","title":"Παιχνίδι Μνήμης","emoji":"🧠","age":"3–6","skill":"Μνήμη · προσοχή","href":"/learning-games/memory?age=4-5","season":"all"},
+    {"id":"game-pattern","type":"game","title":"Βρες το Μοτίβο","emoji":"🔷","age":"3–6","skill":"Λογική · πρόβλεψη","href":"/learning-games/pattern?age=4-5","season":"all"},
+    {"id":"game-count","type":"game","title":"Μέτρα και Βρες","emoji":"🔢","age":"3–6","skill":"Αρίθμηση · ποσότητες","href":"/learning-games/count?age=4-5","season":"all"},
+    {"id":"game-colors-shapes","type":"game","title":"Χρώματα & Σχήματα","emoji":"🎨","age":"2–5","skill":"Οπτική διάκριση","href":"/learning-games/colors-shapes?age=2-3","season":"all"},
+    {"id":"game-maze","type":"game","title":"Λαβύρινθος του Πισιπούκ","emoji":"🌀","age":"4–6","skill":"Χωρικός προσανατολισμός","href":"/learning-games/maze?age=4-5","season":"all"},
+    {"id":"game-sort","type":"game","title":"Σωστή Κατηγορία","emoji":"🧺","age":"2–6","skill":"Κατηγοριοποίηση · γλώσσα","href":"/learning-games/sort?age=2-3","season":"all"},
+    {"id":"game-size","type":"game","title":"Από μικρό σε μεγάλο","emoji":"📏","age":"3–6","skill":"Σειροθέτηση · σύγκριση","href":"/learning-games/size-order?age=4-5","season":"all"},
+    {"id":"game-odd-one","type":"game","title":"Ποιο δεν ταιριάζει;","emoji":"🧐","age":"3–6","skill":"Λογική · κατηγορίες","href":"/learning-games/odd-one?age=4-5","season":"all"},
+
+    {"id":"print-shape-robot","type":"printable","title":"Ρομπότ από Σχήματα","emoji":"🤖","age":"3–6","skill":"Σχήματα · λεπτή κινητικότητα","href":"/virtual-preschool-grace#printable-shape-robot","season":"all"},
+    {"id":"print-emotion-wheel","type":"printable","title":"Ο Τροχός των Συναισθημάτων","emoji":"🙂","age":"3–6","skill":"Συναισθήματα · λεξιλόγιο","href":"/virtual-preschool-grace#printable-emotion-wheel","season":"all"},
+    {"id":"print-weather-wheel","type":"printable","title":"Τι Καιρό Κάνει;","emoji":"🌦️","age":"3–6","skill":"Παρατήρηση · ρουτίνα","href":"/virtual-preschool-grace#printable-weather-wheel","season":"all"},
+    {"id":"print-trace-paths","type":"printable","title":"Μονοπάτια για Μολύβι","emoji":"✏️","age":"2–5","skill":"Προγραφή · έλεγχος χεριού","href":"/virtual-preschool-grace#printable-trace-paths","season":"all"},
+    {"id":"print-dot-pattern","type":"printable","title":"Συνέχισε το Μοτίβο","emoji":"🔴","age":"3–6","skill":"Μοτίβα · πρόβλεψη","href":"/virtual-preschool-grace#printable-dot-pattern","season":"all"},
+    {"id":"print-story-cards","type":"printable","title":"Βάλε την Ιστορία σε Σειρά","emoji":"📚","age":"4–6","skill":"Αφήγηση · ακολουθία","href":"/virtual-preschool-grace#printable-story-cards","season":"all"},
+
+    {"id":"craft-owl","type":"craft","title":"Χτίσε τη Μικρή Κουκουβάγια","emoji":"🦉","age":"3–6","skill":"Κόψε · χρωμάτισε · κόλλησε","href":"/virtual-preschool-grace#printable-owl","season":"all"},
+    {"id":"craft-rocket","type":"craft","title":"Ο Πύραυλος του Πισιπούκ","emoji":"🚀","age":"4–6","skill":"Σχήματα · κατασκευή","href":"/virtual-preschool-grace#printable-rocket","season":"all"},
+    {"id":"craft-hedgehog","type":"craft","title":"Φθινοπωρινός Σκαντζόχοιρος","emoji":"🦔","age":"3–6","skill":"Κολλάζ · λεπτή κινητικότητα","href":"/virtual-preschool-grace#printable-hedgehog","season":"autumn"},
+    {"id":"craft-butterfly","type":"craft","title":"Πεταλούδα Συμμετρίας","emoji":"🦋","age":"3–6","skill":"Συμμετρία · δημιουργία","href":"/virtual-preschool-grace#printable-butterfly","season":"spring"},
+    {"id":"craft-crown","type":"craft","title":"Το Στέμμα της Φαντασίας","emoji":"👑","age":"3–6","skill":"Σχεδιασμός · φαντασία","href":"/virtual-preschool-grace#printable-crown","season":"all"},
+    {"id":"craft-puppet","type":"craft","title":"Δαχτυλόκουκλες Ζωάκια","emoji":"🐻","age":"3–6","skill":"Ρόλοι · γλώσσα · κατασκευή","href":"/virtual-preschool-grace#printable-puppet","season":"all"}
+  ]
+}
