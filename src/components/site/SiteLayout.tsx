@@ -5,7 +5,7 @@ import { Chatbot } from "../chatbot/Chatbot";
 import { SocialShareBar } from "./SocialShareBar";
 import { useLocation } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
-import { BookOpen, CalendarDays, Gamepad2, Home, LockKeyhole, Palette, PersonStanding, Sparkles, Users } from "lucide-react";
+import { BookOpen, CalendarDays, Gamepad2, Home, LockKeyhole, Palette, PersonStanding, Users } from "lucide-react";
 import {
   excludeThisBrowserFromAnalytics,
   includeThisBrowserInAnalytics,
@@ -36,13 +36,13 @@ export function SiteLayout({ children }: { children: ReactNode }) {
     return (
       <div className="preschool-kid-shell min-h-screen">
         <header className="preschool-kid-chrome" aria-label="Κύρια πλοήγηση Virtual Preschool">
-          <a href="#top" className="preschool-kid-logo" aria-label="Αρχική Virtual Preschool">
+          <a href="/virtual-preschool" className="preschool-kid-logo" aria-label="Αρχική Virtual Preschool">
             <span className="preschool-kid-mascot" aria-hidden="true">⭐</span>
             <span><b>PISIPOUK</b><small>VIRTUAL PRESCHOOL+</small></span>
           </a>
 
           <nav className="preschool-kid-nav" aria-label="Δραστηριότητες">
-            <a href="#top" className="is-active"><Home /><span>Αρχική</span></a>
+            <a href="/virtual-preschool" className="is-active"><Home /><span>Αρχική</span></a>
             <a href="#games"><Gamepad2 /><span>Παιχνίδια</span></a>
             <a href="#watch"><BookOpen /><span>Ιστορίες</span></a>
             <a href="#create"><Palette /><span>Δημιουργώ</span></a>
