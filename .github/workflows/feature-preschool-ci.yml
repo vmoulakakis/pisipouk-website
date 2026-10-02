@@ -1,0 +1,58 @@
+name: Feature Preschool CI
+
+on:
+  push:
+    branches:
+      - feature/online-preschool-grace-2026-10-02
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-build-browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Validate scoped preschool content
+        run: node scripts/validate_preschool_content.mjs
+      - name: Dry-run weekly rotation engine
+        shell: bash
+        run: |
+          cp public/preschool-weekly.json /tmp/preschool-weekly.before.json
+          node scripts/weekly_preschool_refresh.mjs
+          node scripts/validate_preschool_content.mjs
+          mapfile -t changed < <(git diff --name-only)
+          if [ ${#changed[@]} -ne 1 ] || [ "${changed[0]}" != "public/preschool-weekly.json" ]; then
+            echo "Weekly engine changed an unexpected file:"
+            printf '%s\n' "${changed[@]}"
+            exit 1
+          fi
+          git checkout -- public/preschool-weekly.json
+          cmp -s public/preschool-weekly.json /tmp/preschool-weekly.before.json
+      - name: Type/build gate
+        run: npm run build
+      - name: Install Chromium for scoped browser test
+        run: npx playwright install --with-deps chromium
+      - name: Start local preview server
+        shell: bash
+        run: |
+          npm run dev -- --host 127.0.0.1 --port 4173 > /tmp/pisipouk-vite.log 2>&1 &
+          echo $! > /tmp/pisipouk-vite.pid
+          for i in {1..45}; do
+            if curl -fsS http://127.0.0.1:4173/virtual-preschool >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/pisipouk-vite.log
+          exit 1
+      - name: Browser smoke tests
+        env:
+          PRESCHOOL_BASE_URL: http://127.0.0.1:4173
+        run: npx playwright test tests/e2e/preschool-plus.spec.ts tests/e2e/preschool-grace.spec.ts tests/e2e/preschool-world.spec.ts tests/e2e/preschool-final.spec.ts
