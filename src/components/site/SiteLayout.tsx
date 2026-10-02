@@ -13,6 +13,7 @@ import {
 
 export function SiteLayout({ children }: { children: ReactNode }) {
   const loc = useLocation();
+  const isPreschoolKidWorld = loc.pathname === "/virtual-preschool";
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -29,6 +30,10 @@ export function SiteLayout({ children }: { children: ReactNode }) {
 
     trackEvent("page_view", { title: document.title });
   }, [loc.pathname, loc.search]);
+
+  if (isPreschoolKidWorld) {
+    return <main className="min-h-screen">{children}</main>;
+  }
 
   return (
     <div className="flex min-h-screen flex-col">
