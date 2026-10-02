@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  validate-and-build:
+  validate-build-browser:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,3 +23,22 @@ jobs:
         run: node scripts/validate_preschool_content.mjs
       - name: Type/build gate
         run: npm run build
+      - name: Install Chromium for scoped browser test
+        run: npx playwright install --with-deps chromium
+      - name: Start local preview server
+        shell: bash
+        run: |
+          npm run dev -- --host 127.0.0.1 --port 4173 > /tmp/pisipouk-vite.log 2>&1 &
+          echo $! > /tmp/pisipouk-vite.pid
+          for i in {1..45}; do
+            if curl -fsS http://127.0.0.1:4173/virtual-preschool-grace >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/pisipouk-vite.log
+          exit 1
+      - name: Browser smoke tests
+        env:
+          PRESCHOOL_BASE_URL: http://127.0.0.1:4173
+        run: npx playwright test tests/e2e/preschool-grace.spec.ts --project=chromium
