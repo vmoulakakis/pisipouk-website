@@ -1,105 +1,142 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { CalendarDays, ChevronRight, Clock3, ExternalLink, Gamepad2, Heart, Palette, Play, Printer, RotateCcw, Scissors, ShieldCheck, Sparkles, Star, Users } from "lucide-react";
+import { CalendarDays, Heart, Palette, Play, Printer, RotateCcw, Scissors, ShieldCheck, Sparkles, Star, Users } from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { trackEvent } from "@/lib/pisipoukApi";
-import { COLORING_PAGES, CRAFT_LIBRARY, CURATED_MEDIA, MINI_GAMES, type PreschoolAge } from "@/content/virtualPreschoolMedia";
+import { PreschoolGameLab } from "@/components/preschool/PreschoolGameLab";
+import { COLORING_PAGES, CRAFT_LIBRARY, CURATED_MEDIA, type PreschoolAge } from "@/content/virtualPreschoolMedia";
 
 export const Route = createFileRoute("/virtual-preschool")({
-  head: () => ({ meta: [
-    { title: "Pisipouk Online Preschool | Watch • Play • Create" },
-    { name: "description", content: "Ένα ολοκληρωμένο online preschool για παιδιά 2–6: επιλεγμένα εκπαιδευτικά βίντεο, παιχνίδια, ζωγραφική, Α4 χειροτεχνίες, κίνηση και εποχιακές δραστηριότητες." },
-  ] }),
+  head: () => ({
+    meta: [
+      { title: "Pisipouk Online Preschool | Watch • Play • Create" },
+      {
+        name: "description",
+        content: "Ένα ολοκληρωμένο online preschool για παιδιά 2–6: θεματικά εκπαιδευτικά παιχνίδια ανά ηλικία, επιλεγμένα βίντεο, ζωγραφική, Α4 χειροτεχνίες, κίνηση και εποχιακές δραστηριότητες.",
+      },
+    ],
+  }),
   component: VirtualPreschool,
 });
 
-type Season = { id:string; emoji:string; title:string; window:string; description:string; activities:string[]; gradient:string };
-const AGES: {id:PreschoolAge; label:string; emoji:string}[] = [
-  {id:"2–3",label:"2–3 ετών",emoji:"🧸"},{id:"4–5",label:"4–5 ετών",emoji:"🌈"},{id:"5–6",label:"5–6 ετών",emoji:"🚀"},
+type Season = {
+  id: string;
+  emoji: string;
+  title: string;
+  window: string;
+  description: string;
+  activities: string[];
+  gradient: string;
+};
+
+const AGES: { id: PreschoolAge; label: string; emoji: string; note: string }[] = [
+  { id: "2–3", label: "2–3 ετών", emoji: "🧸", note: "χρώματα • σχήματα • απλές ρουτίνες" },
+  { id: "4–5", label: "4–5 ετών", emoji: "🌈", note: "μοτίβα • ιστορίες • συναισθήματα" },
+  { id: "5–6", label: "5–6 ετών", emoji: "🚀", note: "γράμματα • αριθμοί • problem solving" },
 ];
+
 const SEASONS: Season[] = [
-  {id:"autumn",emoji:"🍂",title:"Φθινόπωρο",window:"Σεπτέμβριος – Νοέμβριος",description:"Φύλλα, καιρός, χρώματα και πρώτες σχολικές ρουτίνες.",activities:["Κολάζ φύλλων","Κυνήγι χρωμάτων","Παρατήρηση καιρού"],gradient:"from-orange-400 to-amber-200"},
-  {id:"oct28",emoji:"🇬🇷",title:"28η Οκτωβρίου",window:"20–28 Οκτωβρίου",description:"Ειρήνη, σημαία, ιστορίες συνεργασίας και σεβασμού.",activities:["Μπλε-λευκό κολάζ","Περιστέρι ειρήνης","Παρέλαση ρυθμού"],gradient:"from-sky-500 to-blue-200"},
-  {id:"christmas",emoji:"🎄",title:"Χριστούγεννα",window:"1–31 Δεκεμβρίου",description:"Μουσική, μοτίβα, χειροτεχνίες, ιστορίες προσφοράς.",activities:["Δέντρο Α4","Χιονάνθρωπος","Ημερολόγιο καλοσύνης"],gradient:"from-emerald-500 to-red-300"},
-  {id:"carnival",emoji:"🎭",title:"Απόκριες",window:"Κινητή περίοδος",description:"Μεταμφίεση, μουσικοκινητική, χρώματα και θεατρικό παιχνίδι.",activities:["Μάσκα Α4","Freeze dance","Φτιάξε χαρακτήρα"],gradient:"from-fuchsia-500 to-violet-300"},
-  {id:"march25",emoji:"🇬🇷",title:"25η Μαρτίου",window:"18–25 Μαρτίου",description:"Παράδοση, ελληνικά χρώματα και ηλικιακά κατάλληλες πολιτιστικές δραστηριότητες.",activities:["Σημαία με σχήματα","Παραδοσιακό μοτίβο","Άνοιξη & Ελλάδα"],gradient:"from-blue-500 to-cyan-200"},
-  {id:"easter",emoji:"🐣",title:"Πάσχα",window:"Κινητή περίοδος",description:"Άνοιξη, αυγά, λαγουδάκια και δημιουργικές οικογενειακές δραστηριότητες.",activities:["Λαγουδάκι puppet","Αυγό με μοτίβα","Ανοιξιάτικο κυνήγι"],gradient:"from-yellow-300 to-pink-300"},
-  {id:"summer",emoji:"☀️",title:"Καλοκαίρι",window:"Ιούνιος – Αύγουστος",description:"Θάλασσα, ασφάλεια στον ήλιο, φύση και παιχνίδια κίνησης.",activities:["Καραβάκι","Ζωγραφική βυθού","Water movement game"],gradient:"from-cyan-400 to-yellow-200"},
+  { id: "autumn", emoji: "🍂", title: "Φθινόπωρο", window: "Σεπτέμβριος – Νοέμβριος", description: "Φύλλα, καιρός, χρώματα και πρώτες σχολικές ρουτίνες.", activities: ["Κολάζ φύλλων", "Κυνήγι χρωμάτων", "Παρατήρηση καιρού"], gradient: "from-orange-400 to-amber-200" },
+  { id: "oct28", emoji: "🇬🇷", title: "28η Οκτωβρίου", window: "20–28 Οκτωβρίου", description: "Ειρήνη, σημαία, ιστορίες συνεργασίας και σεβασμού.", activities: ["Μπλε-λευκό κολάζ", "Περιστέρι ειρήνης", "Παρέλαση ρυθμού"], gradient: "from-sky-500 to-blue-200" },
+  { id: "christmas", emoji: "🎄", title: "Χριστούγεννα", window: "1–31 Δεκεμβρίου", description: "Μουσική, μοτίβα, χειροτεχνίες και ιστορίες προσφοράς.", activities: ["Δέντρο Α4", "Χιονάνθρωπος", "Ημερολόγιο καλοσύνης"], gradient: "from-emerald-500 to-red-300" },
+  { id: "carnival", emoji: "🎭", title: "Απόκριες", window: "Κινητή περίοδος", description: "Μεταμφίεση, μουσικοκινητική, χρώματα και θεατρικό παιχνίδι.", activities: ["Μάσκα Α4", "Freeze dance", "Φτιάξε χαρακτήρα"], gradient: "from-fuchsia-500 to-violet-300" },
+  { id: "march25", emoji: "🇬🇷", title: "25η Μαρτίου", window: "18–25 Μαρτίου", description: "Παράδοση, ελληνικά χρώματα και ηλικιακά κατάλληλες πολιτιστικές δραστηριότητες.", activities: ["Σημαία με σχήματα", "Παραδοσιακό μοτίβο", "Άνοιξη & Ελλάδα"], gradient: "from-blue-500 to-cyan-200" },
+  { id: "easter", emoji: "🐣", title: "Πάσχα", window: "Κινητή περίοδος", description: "Άνοιξη, αυγά, λαγουδάκια και δημιουργικές οικογενειακές δραστηριότητες.", activities: ["Λαγουδάκι puppet", "Αυγό με μοτίβα", "Ανοιξιάτικο κυνήγι"], gradient: "from-yellow-300 to-pink-300" },
+  { id: "summer", emoji: "☀️", title: "Καλοκαίρι", window: "Ιούνιος – Αύγουστος", description: "Θάλασσα, ασφάλεια στον ήλιο, φύση και παιχνίδια κίνησης.", activities: ["Καραβάκι", "Ζωγραφική βυθού", "Water movement game"], gradient: "from-cyan-400 to-yellow-200" },
 ];
 
 function seasonNow() {
-  const d = new Date(); const m=d.getMonth()+1; const day=d.getDate();
-  if(m===10 && day>=20) return "oct28";
-  if(m===12) return "christmas";
-  if(m===3 && day>=18) return "march25";
-  if(m>=6 && m<=8) return "summer";
-  if(m>=9 && m<=11) return "autumn";
+  const d = new Date();
+  const m = d.getMonth() + 1;
+  const day = d.getDate();
+  if (m === 10 && day >= 20) return "oct28";
+  if (m === 12) return "christmas";
+  if (m === 3 && day >= 18) return "march25";
+  if (m >= 6 && m <= 8) return "summer";
+  if (m >= 9 && m <= 11) return "autumn";
   return "easter";
 }
 
-function VirtualPreschool(){
-  const [age,setAge]=useState<PreschoolAge>("4–5");
-  const [activeGame,setActiveGame]=useState(MINI_GAMES[0]);
-  const [answer,setAnswer]=useState<number|null>(null);
-  const [activeVideo,setActiveVideo]=useState<(typeof CURATED_MEDIA)[number]|null>(null);
-  const [color,setColor]=useState("#ff5f8f");
-  const [paint,setPaint]=useState(["#fff1a8","#ff8fb1","#76d7ff","#87df9b","#c7a8ff"]);
-  const [craftId,setCraftId]=useState(CRAFT_LIBRARY[0]?.id ?? "");
-  const currentSeason=SEASONS.find(s=>s.id===seasonNow()) ?? SEASONS[0];
-  const videos=useMemo(()=>CURATED_MEDIA.filter(v=>v.ages.includes(age)),[age]);
-  const games=useMemo(()=>MINI_GAMES.filter(g=>g.ages.includes(age)),[age]);
-  const coloring=useMemo(()=>COLORING_PAGES.filter(c=>c.ages.includes(age)),[age]);
-  const crafts=useMemo(()=>CRAFT_LIBRARY.filter(c=>c.ages.includes(age)),[age]);
-  const chosenCraft=CRAFT_LIBRARY.find(c=>c.id===craftId) ?? crafts[0];
+function VirtualPreschool() {
+  const [age, setAge] = useState<PreschoolAge>("4–5");
+  const [activeVideo, setActiveVideo] = useState<(typeof CURATED_MEDIA)[number] | null>(null);
+  const [color, setColor] = useState("#ff5f8f");
+  const [paint, setPaint] = useState(["#fff1a8", "#ff8fb1", "#76d7ff", "#87df9b", "#c7a8ff"]);
+  const [craftId, setCraftId] = useState(CRAFT_LIBRARY[0]?.id ?? "");
 
-  function scroll(id:string){ document.getElementById(id)?.scrollIntoView({behavior:"smooth",block:"start"}); }
-  function startGame(g:(typeof MINI_GAMES)[number]){ setActiveGame(g); setAnswer(null); trackEvent("preschool_game_start",{game:g.id,age}); scroll("game-stage"); }
-  function choose(i:number){ setAnswer(i); trackEvent("preschool_game_answer",{game:activeGame.id,correct:i===activeGame.correct}); }
-  function paintPart(i:number){ setPaint(p=>p.map((v,n)=>n===i?color:v)); }
+  const currentSeason = SEASONS.find((s) => s.id === seasonNow()) ?? SEASONS[0];
+  const videos = useMemo(() => CURATED_MEDIA.filter((v) => v.ages.includes(age)), [age]);
+  const coloring = useMemo(() => COLORING_PAGES.filter((c) => c.ages.includes(age)), [age]);
+  const crafts = useMemo(() => CRAFT_LIBRARY.filter((c) => c.ages.includes(age)), [age]);
+  const chosenCraft = CRAFT_LIBRARY.find((c) => c.id === craftId) ?? crafts[0];
 
-  return <SiteLayout><div className="vp min-h-screen overflow-hidden bg-[#fffaf2] text-[#142458]">
-    <style>{`@keyframes floaty{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-12px) rotate(1deg)}}@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}@keyframes shine{0%{transform:translateX(-140%)}100%{transform:translateX(240%)}}@keyframes pop{0%{transform:scale(.86);opacity:.2}70%{transform:scale(1.05)}100%{transform:scale(1);opacity:1}}.vp .floaty{animation:floaty 4.5s ease-in-out infinite}.vp .bob{animation:bob 3s ease-in-out infinite}.vp .pop{animation:pop .45s ease-out}.vp .shine{position:relative;overflow:hidden}.vp .shine:after{content:'';position:absolute;inset:-20%;width:35%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.7),transparent);transform:skewX(-18deg);animation:shine 5.5s infinite}.vp button,.vp a{transition:.2s ease}.vp button:hover,.vp a:hover{transform:translateY(-2px)}@media(prefers-reduced-motion:reduce){.vp *{animation:none!important;scroll-behavior:auto!important}}`}</style>
+  function scroll(id: string) {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 
-    <section className="relative border-b border-white/70 bg-gradient-to-br from-[#eefaff] via-white to-[#fff2df]">
-      <div className="absolute left-[4%] top-14 text-5xl opacity-30 bob">☁️</div><div className="absolute right-[3%] top-16 text-5xl bob">⭐</div>
-      <div className="mx-auto grid max-w-7xl gap-8 px-5 py-12 lg:grid-cols-[.95fr_1.05fr] lg:items-center lg:py-16">
-        <div className="relative z-10">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-black shadow-sm"><Sparkles className="h-4 w-4 text-pink-500"/> PISIPOUK VIRTUAL PRESCHOOL+</div>
-          <h1 className="max-w-2xl text-5xl font-black leading-[.95] tracking-tight md:text-7xl">Μαθαίνουμε.<br/><span className="bg-gradient-to-r from-pink-500 via-orange-400 to-cyan-500 bg-clip-text text-transparent">Παίζουμε. Δημιουργούμε.</span></h1>
-          <p className="mt-5 max-w-xl text-lg font-semibold leading-8 text-slate-600">Μικρές, επιλεγμένες εμπειρίες για παιδιά 2–6 ετών: <b>βλέπω → παίζω → φτιάχνω → κινούμαι</b>. Όχι ατελείωτη οθόνη.</p>
-          <div className="mt-6 flex flex-wrap gap-3">{AGES.map(a=><button key={a.id} onClick={()=>{setAge(a.id);trackEvent("preschool_age",{age:a.id})}} className={`rounded-2xl border-2 px-5 py-3 font-black shadow-sm ${age===a.id?"border-pink-400 bg-pink-50 text-pink-600":"border-white bg-white"}`}>{a.emoji} {a.label}</button>)}</div>
-          <div className="mt-7 flex flex-wrap gap-3"><button onClick={()=>scroll("today")} className="shine rounded-2xl bg-pink-500 px-6 py-4 font-black text-white shadow-lg shadow-pink-200"><Play className="mr-2 inline h-5 w-5 fill-current"/>Ξεκίνα το σημερινό ταξίδι</button><button onClick={()=>scroll("games")} className="rounded-2xl bg-white px-6 py-4 font-black shadow-md"><Gamepad2 className="mr-2 inline h-5 w-5 text-indigo-500"/>Δες τα παιχνίδια</button></div>
-        </div>
-        <div className="relative min-h-[420px] rounded-[40px] bg-gradient-to-br from-cyan-100 via-yellow-50 to-pink-100 p-5 shadow-2xl ring-8 ring-white/70">
-          <div className="absolute inset-5 overflow-hidden rounded-[30px] bg-gradient-to-b from-sky-200 to-emerald-100"><div className="absolute left-8 top-7 text-7xl">☀️</div><div className="absolute bottom-0 left-0 right-0 h-36 bg-amber-100"/><div className="absolute bottom-20 left-8 text-7xl floaty">🌈</div><div className="absolute bottom-16 left-[30%] text-8xl bob">🧒🏻</div><div className="absolute bottom-16 left-[52%] text-8xl floaty">👧🏻</div><div className="absolute bottom-16 right-[4%] text-9xl bob">🦉</div><div className="absolute bottom-6 left-[37%] text-6xl">🧩 🎨 ✂️</div></div>
-          <div className="absolute right-8 top-8 rounded-3xl bg-white/90 px-4 py-3 font-black shadow-lg">✨ Κάθε μέρα κάτι νέο</div>
-        </div>
+  function paintPart(i: number) {
+    setPaint((p) => p.map((v, n) => (n === i ? color : v)));
+  }
+
+  return (
+    <SiteLayout>
+      <div className="vp min-h-screen overflow-hidden bg-[#fffaf2] text-[#142458]">
+        <style>{`@keyframes floaty{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-12px) rotate(1deg)}}@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}@keyframes shine{0%{transform:translateX(-140%)}100%{transform:translateX(240%)}}@keyframes pop{0%{transform:scale(.86);opacity:.2}70%{transform:scale(1.05)}100%{transform:scale(1);opacity:1}}.vp .floaty{animation:floaty 4.5s ease-in-out infinite}.vp .bob{animation:bob 3s ease-in-out infinite}.vp .pop{animation:pop .45s ease-out}.vp .shine{position:relative;overflow:hidden}.vp .shine:after{content:'';position:absolute;inset:-20%;width:35%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.7),transparent);transform:skewX(-18deg);animation:shine 5.5s infinite}.vp button,.vp a{transition:.2s ease}.vp button:hover,.vp a:hover{transform:translateY(-2px)}@media(prefers-reduced-motion:reduce){.vp *{animation:none!important;scroll-behavior:auto!important}}`}</style>
+
+        <section className="relative border-b border-white/70 bg-gradient-to-br from-[#eefaff] via-white to-[#fff2df]">
+          <div className="absolute left-[4%] top-14 text-5xl opacity-30 bob">☁️</div>
+          <div className="absolute right-[3%] top-16 text-5xl bob">⭐</div>
+          <div className="mx-auto grid max-w-7xl gap-8 px-5 py-12 lg:grid-cols-[.95fr_1.05fr] lg:items-center lg:py-16">
+            <div className="relative z-10">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-black shadow-sm"><Sparkles className="h-4 w-4 text-pink-500" /> PISIPOUK VIRTUAL PRESCHOOL+</div>
+              <h1 className="max-w-2xl text-5xl font-black leading-[.95] tracking-tight md:text-7xl">Μαθαίνουμε.<br /><span className="bg-gradient-to-r from-pink-500 via-orange-400 to-cyan-500 bg-clip-text text-transparent">Παίζουμε. Δημιουργούμε.</span></h1>
+              <p className="mt-5 max-w-xl text-lg font-semibold leading-8 text-slate-600">Μικρές ολοκληρωμένες εμπειρίες για παιδιά 2–6 ετών: <b>βλέπω → παίζω → φτιάχνω → κινούμαι</b>, με διαφορετικά παιχνίδια και στόχους ανά ηλικία.</p>
+              <div className="mt-6 grid gap-3 sm:grid-cols-3">{AGES.map((a) => <button key={a.id} onClick={() => { setAge(a.id); trackEvent("preschool_age", { age: a.id }); }} className={`rounded-2xl border-2 p-4 text-left font-black shadow-sm ${age === a.id ? "border-pink-400 bg-pink-50 text-pink-600" : "border-white bg-white"}`}><div>{a.emoji} {a.label}</div><div className="mt-1 text-xs font-semibold text-slate-500">{a.note}</div></button>)}</div>
+              <div className="mt-7 flex flex-wrap gap-3"><button onClick={() => scroll("games")} className="shine rounded-2xl bg-pink-500 px-6 py-4 font-black text-white shadow-lg shadow-pink-200">🎮 Παίξε παιχνίδια για {age}</button><button onClick={() => scroll("today")} className="rounded-2xl bg-white px-6 py-4 font-black shadow-md"><Play className="mr-2 inline h-5 w-5 fill-current text-indigo-500" />Σημερινό ταξίδι</button></div>
+            </div>
+            <div className="relative min-h-[420px] rounded-[40px] bg-gradient-to-br from-cyan-100 via-yellow-50 to-pink-100 p-5 shadow-2xl ring-8 ring-white/70">
+              <div className="absolute inset-5 overflow-hidden rounded-[30px] bg-gradient-to-b from-sky-200 to-emerald-100"><div className="absolute left-8 top-7 text-7xl">☀️</div><div className="absolute bottom-0 left-0 right-0 h-36 bg-amber-100" /><div className="absolute bottom-20 left-8 text-7xl floaty">🌈</div><div className="absolute bottom-16 left-[28%] text-8xl bob">🧒🏻</div><div className="absolute bottom-16 left-[52%] text-8xl floaty">👧🏻</div><div className="absolute bottom-16 right-[4%] text-9xl bob">🦉</div><div className="absolute bottom-6 left-[36%] text-6xl">🧩 🎨 ✂️</div></div>
+              <div className="absolute right-8 top-8 rounded-3xl bg-white/90 px-4 py-3 font-black shadow-lg">✨ Κάθε μέρα κάτι νέο</div>
+            </div>
+          </div>
+        </section>
+
+        <section id="today" className="mx-auto max-w-7xl px-5 py-12">
+          <div className="mb-7 flex flex-wrap items-end justify-between gap-4"><div><div className="text-sm font-black uppercase tracking-[.25em] text-pink-500">Today's learning loop</div><h2 className="mt-2 text-4xl font-black">Το σημερινό 20λεπτο</h2><p className="mt-2 text-slate-600">Μικρή ολοκληρωμένη εμπειρία με αρχή, μέση και επιστροφή στον πραγματικό κόσμο.</p></div><div className="rounded-2xl bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-700"><ShieldCheck className="mr-2 inline h-5 w-5" />γονιός κοντά • μικρά sessions</div></div>
+          <div className="grid gap-4 md:grid-cols-4">{[["1", "👀", "Βλέπω", "5–8′", "Ένα επιλεγμένο εκπαιδευτικό clip"], ["2", "🎮", "Παίζω", "4–7′", "Παιχνίδι προσαρμοσμένο στην ηλικία"], ["3", "🎨", "Δημιουργώ", "8–15′", "Ζωγραφιά ή Α4 χειροτεχνία"], ["4", "🤸", "Κινούμαι", "3–5′", "Μικρή αποστολή μακριά από την οθόνη"]].map((x) => <div key={x[0]} className="rounded-[28px] bg-white p-5 shadow-lg shadow-slate-100"><div className="flex items-center justify-between"><span className="grid h-9 w-9 place-items-center rounded-full bg-[#142458] font-black text-white">{x[0]}</span><span className="text-4xl bob">{x[1]}</span></div><h3 className="mt-5 text-2xl font-black">{x[2]}</h3><div className="mt-1 font-bold text-pink-500">{x[3]}</div><p className="mt-2 text-sm leading-6 text-slate-600">{x[4]}</p></div>)}</div>
+        </section>
+
+        <section id="watch" className="bg-[#142458] py-12 text-white">
+          <div className="mx-auto max-w-7xl px-5">
+            <div className="mb-7"><div className="text-sm font-black uppercase tracking-[.25em] text-cyan-300">Watch → Do</div><h2 className="mt-2 text-4xl font-black">Βίντεο που οδηγεί σε πράξη</h2><p className="mt-2 max-w-3xl text-blue-100">Επιλεγμένες επίσημες πηγές. Μετά από κάθε clip ακολουθεί παιχνίδι, ζωγραφιά, κατασκευή ή κίνηση — το βίντεο δεν είναι ο τελικός προορισμός.</p></div>
+            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">{videos.map((v) => <article key={v.id} className="overflow-hidden rounded-[28px] bg-white text-[#142458] shadow-xl"><div className="relative aspect-video bg-gradient-to-br from-cyan-100 to-pink-100">{v.thumbnail ? <img src={v.thumbnail} alt="" className="h-full w-full object-cover" /> : <div className="grid h-full place-items-center text-7xl">📺</div>}<button onClick={() => { if (v.providerKind === "youtube") setActiveVideo(v); else window.open(v.externalUrl, "_blank", "noopener,noreferrer"); trackEvent("preschool_video_open", { id: v.id }); }} className="absolute inset-0 m-auto grid h-16 w-16 place-items-center rounded-full bg-pink-500 text-white shadow-xl"><Play className="h-7 w-7 fill-current" /></button></div><div className="p-5"><div className="flex items-center justify-between text-xs font-black uppercase text-slate-400"><span>{v.provider}</span><span>{v.minutes}′</span></div><h3 className="mt-2 text-xl font-black">{v.title}</h3><p className="mt-3 text-sm leading-6 text-slate-600">💬 {v.prompt}</p><div className="mt-4 rounded-2xl bg-emerald-50 p-3 text-sm font-bold text-emerald-800">🏃 {v.offlineMission}</div></div></article>)}</div>
+          </div>
+        </section>
+
+        {activeVideo?.videoId && <div className="fixed inset-0 z-[100] grid place-items-center bg-[#07112f]/85 p-5" onClick={() => setActiveVideo(null)}><div className="w-full max-w-4xl rounded-[30px] bg-white p-4 shadow-2xl" onClick={(e) => e.stopPropagation()}><div className="mb-3 flex items-center justify-between"><div><div className="text-xs font-black text-pink-500">WATCH → DO</div><div className="text-lg font-black">{activeVideo.title}</div></div><button className="rounded-full bg-slate-100 px-4 py-2 font-black" onClick={() => setActiveVideo(null)}>✕</button></div><div className="aspect-video overflow-hidden rounded-2xl"><iframe className="h-full w-full" src={`https://www.youtube-nocookie.com/embed/${activeVideo.videoId}?rel=0&modestbranding=1`} title={activeVideo.title} allow="accelerometer; autoplay; encrypted-media; picture-in-picture" allowFullScreen /></div><div className="mt-4 rounded-2xl bg-amber-50 p-4 font-bold text-amber-900">Μετά: {activeVideo.offlineMission}</div></div></div>}
+
+        <PreschoolGameLab age={age} />
+
+        <section id="create" className="bg-gradient-to-b from-[#fff0f7] to-[#fffaf2] py-12">
+          <div className="mx-auto max-w-7xl px-5">
+            <div className="mb-7"><div className="text-sm font-black uppercase tracking-[.25em] text-pink-500">Creative studio</div><h2 className="mt-2 text-4xl font-black">Ζωγραφική & χειροτεχνίες</h2><p className="mt-2 text-slate-600">Περιεχόμενο που συνεχίζει και στο χαρτί: ζωγραφική στην οθόνη, εκτύπωση Α4 και πραγματική κατασκευή.</p></div>
+            <div className="grid gap-6 lg:grid-cols-2">
+              <div className="rounded-[34px] bg-white p-6 shadow-xl"><div className="flex items-center gap-3"><Palette className="h-7 w-7 text-pink-500" /><h3 className="text-2xl font-black">Online Coloring Studio</h3></div><div className="mt-5 grid gap-5 md:grid-cols-[1fr_170px]"><div className="relative aspect-square overflow-hidden rounded-[26px] bg-sky-100"><svg viewBox="0 0 400 400" className="h-full w-full"><rect width="400" height="400" fill="#dff6ff" /><circle cx="320" cy="72" r="42" fill={paint[0]} onClick={() => paintPart(0)} className="cursor-pointer" /><path d="M0 310 Q100 260 200 315 T400 300 V400 H0Z" fill={paint[3]} onClick={() => paintPart(3)} className="cursor-pointer" /><path d="M95 245 C70 145 210 130 222 240 C234 330 95 342 95 245Z" fill={paint[1]} stroke="#142458" strokeWidth="8" onClick={() => paintPart(1)} className="cursor-pointer" /><circle cx="130" cy="220" r="12" fill="#142458" /><circle cx="188" cy="220" r="12" fill="#142458" /><path d="M135 265 Q160 285 188 262" fill="none" stroke="#142458" strokeWidth="8" strokeLinecap="round" /><path d="M95 190 Q45 130 65 90 Q110 110 135 160" fill={paint[2]} stroke="#142458" strokeWidth="8" onClick={() => paintPart(2)} className="cursor-pointer" /><path d="M220 192 Q280 135 270 88 Q220 103 190 155" fill={paint[4]} stroke="#142458" strokeWidth="8" onClick={() => paintPart(4)} className="cursor-pointer" /></svg><div className="absolute left-4 top-4 rounded-full bg-white px-3 py-2 text-xs font-black shadow">Πάτησε την εικόνα 🎨</div></div><div><div className="text-sm font-black">Διάλεξε χρώμα</div><div className="mt-3 grid grid-cols-4 gap-2">{["#ff5f8f", "#ff9d43", "#ffd447", "#61d36e", "#59c9ff", "#7667f5", "#c874e8", "#8c5b3f"].map((c) => <button key={c} onClick={() => setColor(c)} aria-label={`χρώμα ${c}`} className={`h-10 w-10 rounded-full border-4 ${color === c ? "border-[#142458]" : "border-white"}`} style={{ backgroundColor: c }} />)}</div><button onClick={() => window.print()} className="mt-5 w-full rounded-2xl bg-pink-500 px-4 py-3 font-black text-white"><Printer className="mr-2 inline h-4 w-4" />Εκτύπωση Α4</button><button onClick={() => setPaint(["#fff1a8", "#ff8fb1", "#76d7ff", "#87df9b", "#c7a8ff"])} className="mt-2 w-full rounded-2xl bg-slate-100 px-4 py-3 font-black"><RotateCcw className="mr-2 inline h-4 w-4" />Καθαρισμός</button></div></div><div className="mt-5 flex gap-3 overflow-x-auto pb-2">{coloring.map((c) => <div key={c.id} className="min-w-[140px] rounded-2xl bg-slate-50 p-3"><div className="text-4xl">{c.emoji}</div><div className="mt-2 text-sm font-black">{c.title}</div><div className="text-xs text-slate-500">{c.skill}</div></div>)}</div></div>
+              <div className="rounded-[34px] bg-white p-6 shadow-xl"><div className="flex items-center gap-3"><Scissors className="h-7 w-7 text-emerald-500" /><h3 className="text-2xl font-black">A4 Craft Studio</h3></div><div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">{crafts.slice(0, 9).map((c) => <button key={c.id} onClick={() => setCraftId(c.id)} className={`rounded-2xl p-3 text-left ${chosenCraft?.id === c.id ? "bg-emerald-100 ring-2 ring-emerald-400" : "bg-slate-50"}`}><div className="text-4xl">{c.emoji}</div><div className="mt-2 text-sm font-black">{c.title}</div></button>)}</div>{chosenCraft && <div className="pop mt-5 rounded-[24px] bg-emerald-50 p-5"><div className="flex items-center justify-between"><div><div className="text-xl font-black">{chosenCraft.emoji} {chosenCraft.title}</div><div className="mt-1 text-sm font-bold text-emerald-700">{chosenCraft.minutes}′ • {chosenCraft.level} • {chosenCraft.skill}</div></div><button onClick={() => window.print()} className="rounded-xl bg-white px-3 py-2 font-black shadow"><Printer className="h-4 w-4" /></button></div><div className="mt-4 grid gap-4 md:grid-cols-2"><div><div className="font-black">Υλικά</div><ul className="mt-2 space-y-1 text-sm">{chosenCraft.materials.map((x) => <li key={x}>✓ {x}</li>)}</ul></div><div><div className="font-black">Βήματα</div><ol className="mt-2 space-y-1 text-sm">{chosenCraft.steps.map((x, i) => <li key={x}>{i + 1}. {x}</li>)}</ol></div></div></div>}</div>
+            </div>
+          </div>
+        </section>
+
+        <section id="calendar" className="mx-auto max-w-7xl px-5 py-12">
+          <div className="mb-7 flex items-center gap-4"><div className="grid h-14 w-14 place-items-center rounded-2xl bg-amber-100"><CalendarDays className="h-7 w-7 text-amber-600" /></div><div><div className="text-sm font-black uppercase tracking-[.25em] text-amber-600">Seasonal calendar</div><h2 className="text-4xl font-black">Το preschool αλλάζει μαζί με τη χρονιά</h2></div></div>
+          <div className={`mb-6 rounded-[30px] bg-gradient-to-r ${currentSeason.gradient} p-6 text-[#142458] shadow-xl`}><div className="text-sm font-black uppercase">Τώρα προτείνουμε</div><div className="mt-2 flex items-center gap-4"><div className="text-6xl bob">{currentSeason.emoji}</div><div><h3 className="text-3xl font-black">{currentSeason.title}</h3><p className="mt-1 font-semibold">{currentSeason.description}</p></div></div></div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{SEASONS.map((s) => <article key={s.id} className="rounded-[24px] bg-white p-5 shadow-lg"><div className="text-4xl">{s.emoji}</div><h3 className="mt-3 text-xl font-black">{s.title}</h3><div className="mt-1 text-xs font-black text-slate-400">{s.window}</div><p className="mt-3 text-sm leading-6 text-slate-600">{s.description}</p><div className="mt-3 space-y-1 text-sm font-bold">{s.activities.map((a) => <div key={a}>⭐ {a}</div>)}</div></article>)}</div>
+        </section>
+
+        <section className="bg-gradient-to-br from-cyan-50 via-white to-pink-50 py-12"><div className="mx-auto grid max-w-7xl gap-6 px-5 lg:grid-cols-3"><div className="rounded-[28px] bg-white p-6 shadow-lg"><Users className="h-8 w-8 text-pink-500" /><h3 className="mt-4 text-2xl font-black">Για γονείς</h3><p className="mt-3 leading-7 text-slate-600">Κάθε δραστηριότητα δείχνει ηλικία, χρόνο, δεξιότητα και τι κάνουμε μετά χωρίς οθόνη. Στόχος είναι η κοινή εμπειρία, όχι η φύλαξη μέσω οθόνης.</p></div><div className="rounded-[28px] bg-white p-6 shadow-lg"><Heart className="h-8 w-8 text-rose-500" /><h3 className="mt-4 text-2xl font-black">Whole-child learning</h3><p className="mt-3 leading-7 text-slate-600">Γλώσσα, μαθηματικά, λογική, συναίσθημα, κίνηση, τέχνη και φύση σε μικρά επαναλαμβανόμενα loops.</p></div><div className="rounded-[28px] bg-[#142458] p-6 text-white shadow-lg"><Star className="h-8 w-8 text-yellow-300" /><h3 className="mt-4 text-2xl font-black">Από το online στον Πισιπούκ</h3><p className="mt-3 leading-7 text-blue-100">Γνώρισε από κοντά το περιβάλλον, τους παιδαγωγούς και τη φιλοσοφία μας.</p><div className="mt-5 flex gap-2"><a href="/book-visit" className="rounded-xl bg-pink-500 px-4 py-3 font-black">Κλείσε επίσκεψη</a><a href="/contact" className="rounded-xl bg-white/10 px-4 py-3 font-black">Επικοινωνία</a></div></div></div></section>
+
+        <div className="mx-auto max-w-7xl px-5 py-6 text-center text-xs leading-6 text-slate-500">Τα εξωτερικά βίντεο παραμένουν ιδιοκτησία των αντίστοιχων δημιουργών/παρόχων. Χρησιμοποιούμε επίσημες πηγές και privacy-enhanced YouTube embeds όπου είναι διαθέσιμα. Για παιδιά προσχολικής ηλικίας συνιστάται ενήλικας κοντά και συχνή επιστροφή σε offline παιχνίδι.</div>
       </div>
-    </section>
-
-    <section id="today" className="mx-auto max-w-7xl px-5 py-12"><div className="mb-7 flex flex-wrap items-end justify-between gap-4"><div><div className="text-sm font-black uppercase tracking-[.25em] text-pink-500">Today's learning loop</div><h2 className="mt-2 text-4xl font-black">Το σημερινό 20λεπτο</h2><p className="mt-2 text-slate-600">Μια μικρή ολοκληρωμένη εμπειρία με αρχή, μέση και επιστροφή στον πραγματικό κόσμο.</p></div><div className="rounded-2xl bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-700"><ShieldCheck className="mr-2 inline h-5 w-5"/>γονιός κοντά • μικρά sessions</div></div>
-      <div className="grid gap-4 md:grid-cols-4">{[
-        ["1","👀","Βλέπω","5–8′","Ένα επιλεγμένο εκπαιδευτικό clip"],["2","🎮","Παίζω","4–6′","Μία πρόκληση που συνδέεται με το θέμα"],["3","🎨","Δημιουργώ","8–15′","Ζωγραφιά ή Α4 χειροτεχνία"],["4","🤸","Κινούμαι","3–5′","Μικρή αποστολή μακριά από την οθόνη"],
-      ].map(x=><div key={x[0]} className="rounded-[28px] bg-white p-5 shadow-lg shadow-slate-100"><div className="flex items-center justify-between"><span className="grid h-9 w-9 place-items-center rounded-full bg-[#142458] font-black text-white">{x[0]}</span><span className="text-4xl bob">{x[1]}</span></div><h3 className="mt-5 text-2xl font-black">{x[2]}</h3><div className="mt-1 font-bold text-pink-500">{x[3]}</div><p className="mt-2 text-sm leading-6 text-slate-600">{x[4]}</p></div>)}</div>
-    </section>
-
-    <section id="watch" className="bg-[#142458] py-12 text-white"><div className="mx-auto max-w-7xl px-5"><div className="mb-7"><div className="text-sm font-black uppercase tracking-[.25em] text-cyan-300">Watch → Do</div><h2 className="mt-2 text-4xl font-black">Βίντεο που οδηγεί σε πράξη</h2><p className="mt-2 max-w-3xl text-blue-100">Επιλεγμένες επίσημες πηγές. Μετά από κάθε clip υπάρχει παιχνίδι, ζωγραφιά, κατασκευή ή κίνηση — το βίντεο δεν είναι ο τελικός προορισμός.</p></div>
-      <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">{videos.map(v=><article key={v.id} className="overflow-hidden rounded-[28px] bg-white text-[#142458] shadow-xl"><div className="relative aspect-video bg-gradient-to-br from-cyan-100 to-pink-100">{v.thumbnail?<img src={v.thumbnail} alt="" className="h-full w-full object-cover"/>:<div className="grid h-full place-items-center text-7xl">📺</div>}<button onClick={()=>{if(v.providerKind==="youtube")setActiveVideo(v);else window.open(v.externalUrl,"_blank","noopener,noreferrer");trackEvent("preschool_video_open",{id:v.id})}} className="absolute inset-0 m-auto grid h-16 w-16 place-items-center rounded-full bg-pink-500 text-white shadow-xl"><Play className="h-7 w-7 fill-current"/></button></div><div className="p-5"><div className="flex items-center justify-between text-xs font-black uppercase text-slate-400"><span>{v.provider}</span><span>{v.minutes}′</span></div><h3 className="mt-2 text-xl font-black">{v.title}</h3><p className="mt-3 text-sm leading-6 text-slate-600">💬 {v.prompt}</p><div className="mt-4 rounded-2xl bg-emerald-50 p-3 text-sm font-bold text-emerald-800">🏃 {v.offlineMission}</div></div></article>)}</div></div></section>
-
-    {activeVideo?.videoId && <div className="fixed inset-0 z-[100] grid place-items-center bg-[#07112f]/85 p-5" onClick={()=>setActiveVideo(null)}><div className="w-full max-w-4xl rounded-[30px] bg-white p-4 shadow-2xl" onClick={e=>e.stopPropagation()}><div className="mb-3 flex items-center justify-between"><div><div className="text-xs font-black text-pink-500">WATCH → DO</div><div className="text-lg font-black">{activeVideo.title}</div></div><button className="rounded-full bg-slate-100 px-4 py-2 font-black" onClick={()=>setActiveVideo(null)}>✕</button></div><div className="aspect-video overflow-hidden rounded-2xl"><iframe className="h-full w-full" src={`https://www.youtube-nocookie.com/embed/${activeVideo.videoId}?rel=0&modestbranding=1`} title={activeVideo.title} allow="accelerometer; autoplay; encrypted-media; picture-in-picture" allowFullScreen/></div><div className="mt-4 rounded-2xl bg-amber-50 p-4 font-bold text-amber-900">Μετά: {activeVideo.offlineMission}</div></div></div>}
-
-    <section id="games" className="mx-auto max-w-7xl px-5 py-12"><div className="mb-7 flex items-end justify-between gap-4"><div><div className="text-sm font-black uppercase tracking-[.25em] text-indigo-500">Playground</div><h2 className="mt-2 text-4xl font-black">Πολλά μικρά παιχνίδια, όχι ένα μεγάλο</h2></div><div className="hidden rounded-2xl bg-indigo-50 px-4 py-3 font-bold text-indigo-700 md:block">🧠 λογική • γλώσσα • μαθηματικά • συναισθήματα</div></div><div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{games.map(g=><button key={g.id} onClick={()=>startGame(g)} className="group rounded-[26px] border-2 border-white bg-white p-5 text-left shadow-lg hover:border-indigo-200"><div className="text-5xl group-hover:scale-110 transition-transform">{g.emoji}</div><h3 className="mt-4 text-xl font-black">{g.title}</h3><p className="mt-2 text-sm text-slate-500">{g.instruction}</p><div className="mt-4 flex items-center justify-between text-xs font-black text-indigo-500"><span>{g.domain}</span><span>{g.minutes}′ →</span></div></button>)}</div>
-      <div id="game-stage" className="mt-8 overflow-hidden rounded-[34px] bg-gradient-to-br from-indigo-600 via-violet-600 to-pink-500 p-1 shadow-2xl"><div className="rounded-[31px] bg-white p-6 md:p-9"><div className="grid gap-6 lg:grid-cols-[1fr_.9fr] lg:items-center"><div><div className="text-6xl">{activeGame.emoji}</div><div className="mt-4 text-sm font-black uppercase tracking-widest text-indigo-500">Παιχνίδι • {activeGame.minutes} λεπτά</div><h3 className="mt-2 text-3xl font-black">{activeGame.title}</h3><p className="mt-4 text-xl font-bold">{activeGame.question}</p><div className="mt-5 grid gap-3">{activeGame.options.map((o,i)=><button key={i} onClick={()=>choose(i)} className={`rounded-2xl border-2 px-5 py-4 text-left text-lg font-black ${answer===i?(i===activeGame.correct?"border-emerald-400 bg-emerald-50":"border-rose-400 bg-rose-50"):"border-slate-100 bg-slate-50 hover:border-indigo-300"}`}>{o}</button>)}</div>{answer!==null&&<div className={`pop mt-4 rounded-2xl p-4 font-black ${answer===activeGame.correct?"bg-emerald-100 text-emerald-800":"bg-amber-100 text-amber-900"}`}>{answer===activeGame.correct?`⭐ ${activeGame.reward}`:"Δοκίμασε ξανά — κοίτα προσεκτικά!"}</div>}<button onClick={()=>setAnswer(null)} className="mt-4 rounded-xl bg-slate-100 px-4 py-2 font-bold"><RotateCcw className="mr-2 inline h-4 w-4"/>Ξανά</button></div><div className="relative min-h-[300px] rounded-[30px] bg-gradient-to-b from-sky-200 to-green-100 p-6"><div className="absolute left-8 top-8 text-7xl bob">☀️</div><div className="absolute bottom-7 left-8 text-8xl floaty">🦁</div><div className="absolute bottom-8 right-8 grid grid-cols-3 gap-3 text-5xl"><span>🔴</span><span>🔺</span><span>🟦</span><span>⭐</span><span>💜</span><span>⬡</span></div></div></div></div></div>
-    </section>
-
-    <section id="create" className="bg-gradient-to-b from-[#fff0f7] to-[#fffaf2] py-12"><div className="mx-auto max-w-7xl px-5"><div className="mb-7"><div className="text-sm font-black uppercase tracking-[.25em] text-pink-500">Creative studio</div><h2 className="mt-2 text-4xl font-black">Ζωγραφική & χειροτεχνίες</h2><p className="mt-2 text-slate-600">Περιεχόμενο που συνεχίζει και στο χαρτί: ζωγραφική στην οθόνη, εκτύπωση Α4 και πραγματική κατασκευή.</p></div>
-      <div className="grid gap-6 lg:grid-cols-2"><div className="rounded-[34px] bg-white p-6 shadow-xl"><div className="flex items-center gap-3"><Palette className="h-7 w-7 text-pink-500"/><h3 className="text-2xl font-black">Online Coloring Studio</h3></div><div className="mt-5 grid gap-5 md:grid-cols-[1fr_170px]"><div className="relative aspect-square overflow-hidden rounded-[26px] bg-sky-100"><svg viewBox="0 0 400 400" className="h-full w-full"><rect width="400" height="400" fill="#dff6ff"/><circle cx="320" cy="72" r="42" fill={paint[0]} onClick={()=>paintPart(0)} className="cursor-pointer"/><path d="M0 310 Q100 260 200 315 T400 300 V400 H0Z" fill={paint[3]} onClick={()=>paintPart(3)} className="cursor-pointer"/><path d="M95 245 C70 145 210 130 222 240 C234 330 95 342 95 245Z" fill={paint[1]} stroke="#142458" strokeWidth="8" onClick={()=>paintPart(1)} className="cursor-pointer"/><circle cx="130" cy="220" r="12" fill="#142458"/><circle cx="188" cy="220" r="12" fill="#142458"/><path d="M135 265 Q160 285 188 262" fill="none" stroke="#142458" strokeWidth="8" strokeLinecap="round"/><path d="M95 190 Q45 130 65 90 Q110 110 135 160" fill={paint[2]} stroke="#142458" strokeWidth="8" onClick={()=>paintPart(2)} className="cursor-pointer"/><path d="M220 192 Q280 135 270 88 Q220 103 190 155" fill={paint[4]} stroke="#142458" strokeWidth="8" onClick={()=>paintPart(4)} className="cursor-pointer"/></svg><div className="absolute left-4 top-4 rounded-full bg-white px-3 py-2 text-xs font-black shadow">Πάτησε την εικόνα 🎨</div></div><div><div className="text-sm font-black">Διάλεξε χρώμα</div><div className="mt-3 grid grid-cols-4 gap-2">{["#ff5f8f","#ff9d43","#ffd447","#61d36e","#59c9ff","#7667f5","#c874e8","#8c5b3f"].map(c=><button key={c} onClick={()=>setColor(c)} aria-label={`χρώμα ${c}`} className={`h-10 w-10 rounded-full border-4 ${color===c?"border-[#142458]":"border-white"}`} style={{backgroundColor:c}}/>)}</div><button onClick={()=>window.print()} className="mt-5 w-full rounded-2xl bg-pink-500 px-4 py-3 font-black text-white"><Printer className="mr-2 inline h-4 w-4"/>Εκτύπωση Α4</button><button onClick={()=>setPaint(["#fff1a8","#ff8fb1","#76d7ff","#87df9b","#c7a8ff"])} className="mt-2 w-full rounded-2xl bg-slate-100 px-4 py-3 font-black"><RotateCcw className="mr-2 inline h-4 w-4"/>Καθαρισμός</button></div></div><div className="mt-5 flex gap-3 overflow-x-auto pb-2">{coloring.map(c=><div key={c.id} className="min-w-[140px] rounded-2xl bg-slate-50 p-3"><div className="text-4xl">{c.emoji}</div><div className="mt-2 text-sm font-black">{c.title}</div><div className="text-xs text-slate-500">{c.skill}</div></div>)}</div></div>
-      <div className="rounded-[34px] bg-white p-6 shadow-xl"><div className="flex items-center gap-3"><Scissors className="h-7 w-7 text-emerald-500"/><h3 className="text-2xl font-black">A4 Craft Studio</h3></div><div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">{crafts.slice(0,9).map(c=><button key={c.id} onClick={()=>setCraftId(c.id)} className={`rounded-2xl p-3 text-left ${chosenCraft?.id===c.id?"bg-emerald-100 ring-2 ring-emerald-400":"bg-slate-50"}`}><div className="text-4xl">{c.emoji}</div><div className="mt-2 text-sm font-black">{c.title}</div></button>)}</div>{chosenCraft&&<div className="pop mt-5 rounded-[24px] bg-emerald-50 p-5"><div className="flex items-center justify-between"><div><div className="text-xl font-black">{chosenCraft.emoji} {chosenCraft.title}</div><div className="mt-1 text-sm font-bold text-emerald-700">{chosenCraft.minutes}′ • {chosenCraft.level} • {chosenCraft.skill}</div></div><button onClick={()=>window.print()} className="rounded-xl bg-white px-3 py-2 font-black shadow"><Printer className="h-4 w-4"/></button></div><div className="mt-4 grid gap-4 md:grid-cols-2"><div><div className="font-black">Υλικά</div><ul className="mt-2 space-y-1 text-sm">{chosenCraft.materials.map(x=><li key={x}>✓ {x}</li>)}</ul></div><div><div className="font-black">Βήματα</div><ol className="mt-2 space-y-1 text-sm">{chosenCraft.steps.map((x,i)=><li key={x}>{i+1}. {x}</li>)}</ol></div></div></div>}</div></div></div></section>
-
-    <section id="calendar" className="mx-auto max-w-7xl px-5 py-12"><div className="mb-7 flex items-center gap-4"><div className="grid h-14 w-14 place-items-center rounded-2xl bg-amber-100"><CalendarDays className="h-7 w-7 text-amber-600"/></div><div><div className="text-sm font-black uppercase tracking-[.25em] text-amber-600">Seasonal calendar</div><h2 className="text-4xl font-black">Το preschool αλλάζει μαζί με τη χρονιά</h2></div></div><div className={`mb-6 rounded-[30px] bg-gradient-to-r ${currentSeason.gradient} p-6 text-[#142458] shadow-xl`}><div className="text-sm font-black uppercase">Τώρα προτείνουμε</div><div className="mt-2 flex items-center gap-4"><div className="text-6xl bob">{currentSeason.emoji}</div><div><h3 className="text-3xl font-black">{currentSeason.title}</h3><p className="mt-1 font-semibold">{currentSeason.description}</p></div></div></div><div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{SEASONS.map(s=><article key={s.id} className="rounded-[24px] bg-white p-5 shadow-lg"><div className="text-4xl">{s.emoji}</div><h3 className="mt-3 text-xl font-black">{s.title}</h3><div className="mt-1 text-xs font-black text-slate-400">{s.window}</div><p className="mt-3 text-sm leading-6 text-slate-600">{s.description}</p><div className="mt-3 space-y-1 text-sm font-bold">{s.activities.map(a=><div key={a}>⭐ {a}</div>)}</div></article>)}</div></section>
-
-    <section className="bg-gradient-to-br from-cyan-50 via-white to-pink-50 py-12"><div className="mx-auto grid max-w-7xl gap-6 px-5 lg:grid-cols-3"><div className="rounded-[28px] bg-white p-6 shadow-lg"><Users className="h-8 w-8 text-pink-500"/><h3 className="mt-4 text-2xl font-black">Για γονείς</h3><p className="mt-3 leading-7 text-slate-600">Κάθε δραστηριότητα δείχνει ηλικία, χρόνο, δεξιότητα και τι κάνουμε μετά χωρίς οθόνη. Στόχος είναι η κοινή εμπειρία, όχι η φύλαξη μέσω οθόνης.</p></div><div className="rounded-[28px] bg-white p-6 shadow-lg"><Heart className="h-8 w-8 text-rose-500"/><h3 className="mt-4 text-2xl font-black">Whole-child learning</h3><p className="mt-3 leading-7 text-slate-600">Γλώσσα, μαθηματικά, λογική, συναίσθημα, κίνηση, τέχνη και φύση σε μικρά επαναλαμβανόμενα loops.</p></div><div className="rounded-[28px] bg-[#142458] p-6 text-white shadow-lg"><Star className="h-8 w-8 text-yellow-300"/><h3 className="mt-4 text-2xl font-black">Από το online στον Πισιπούκ</h3><p className="mt-3 leading-7 text-blue-100">Γνώρισε από κοντά το περιβάλλον, τους παιδαγωγούς και τη φιλοσοφία μας.</p><div className="mt-5 flex gap-2"><a href="/book-visit" className="rounded-xl bg-pink-500 px-4 py-3 font-black">Κλείσε επίσκεψη</a><a href="/contact" className="rounded-xl bg-white/10 px-4 py-3 font-black">Επικοινωνία</a></div></div></div></section>
-
-    <div className="mx-auto max-w-7xl px-5 py-6 text-center text-xs leading-6 text-slate-500">Τα εξωτερικά βίντεο παραμένουν ιδιοκτησία των αντίστοιχων δημιουργών/παρόχων. Χρησιμοποιούμε επίσημες πηγές και privacy-enhanced YouTube embeds όπου είναι διαθέσιμα. Για παιδιά προσχολικής ηλικίας συνιστάται ενήλικας κοντά και συχνή επιστροφή σε offline παιχνίδι.</div>
-  </div></SiteLayout>
+    </SiteLayout>
+  );
 }
