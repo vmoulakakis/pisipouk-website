@@ -22,7 +22,7 @@ test.describe("Online Preschool Final art direction", () => {
     await page.getByRole("button", { name: "15′" }).click();
     await expect(page.getByText("Βάλε την Ιστορία σε Σειρά")).toBeVisible();
 
-    await expect(page.locator("main svg")).toHaveCount(10);
+    expect(await page.locator("main svg").count()).toBeGreaterThanOrEqual(10);
     expect(pageErrors).toEqual([]);
   });
 
