@@ -21,6 +21,20 @@ jobs:
       - run: npm ci
       - name: Validate scoped preschool content
         run: node scripts/validate_preschool_content.mjs
+      - name: Dry-run weekly rotation engine
+        shell: bash
+        run: |
+          cp public/preschool-weekly.json /tmp/preschool-weekly.before.json
+          node scripts/weekly_preschool_refresh.mjs
+          node scripts/validate_preschool_content.mjs
+          mapfile -t changed < <(git diff --name-only)
+          if [ ${#changed[@]} -ne 1 ] || [ "${changed[0]}" != "public/preschool-weekly.json" ]; then
+            echo "Weekly engine changed an unexpected file:"
+            printf '%s\n' "${changed[@]}"
+            exit 1
+          fi
+          git checkout -- public/preschool-weekly.json
+          cmp -s public/preschool-weekly.json /tmp/preschool-weekly.before.json
       - name: Type/build gate
         run: npm run build
       - name: Install Chromium for scoped browser test
