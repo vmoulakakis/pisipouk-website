@@ -32,7 +32,18 @@ export function SiteLayout({ children }: { children: ReactNode }) {
   }, [loc.pathname, loc.search]);
 
   if (isPreschoolKidWorld) {
-    return <main className="min-h-screen">{children}</main>;
+    return (
+      <div className="preschool-kid-shell min-h-screen">
+        <div className="preschool-kid-chrome" aria-label="Πλοήγηση παιδικού κόσμου">
+          <a href="/" className="preschool-kid-home" aria-label="Επιστροφή στον Πισιπούκ">
+            <span aria-hidden="true">←</span><span className="preschool-kid-home-label">Πισιπούκ</span><span aria-hidden="true">🦉</span>
+          </a>
+          <div className="preschool-kid-brand">Ο Κόσμος του Πισιπούκ</div>
+          <a href="/parent-zone" className="preschool-kid-parent">🔒 <span>Γονείς</span></a>
+        </div>
+        <main className="min-h-screen pt-[68px]">{children}</main>
+      </div>
+    );
   }
 
   return (
