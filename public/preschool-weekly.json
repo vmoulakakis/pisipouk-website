@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "week": "2026-W40",
+  "updatedAt": "2026-10-02T09:45:00+03:00",
+  "source": "initial-curation",
+  "items": [
+    "game-memory",
+    "game-colors-shapes",
+    "print-dot-pattern",
+    "print-trace-paths",
+    "craft-owl",
+    "craft-rocket"
+  ],
+  "rotationHistory": []
+}
