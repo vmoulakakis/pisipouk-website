@@ -1,0 +1,52 @@
+name: Feature Preschool Lock Sync
+
+on:
+  push:
+    branches:
+      - feature/online-preschool-grace-2026-10-02
+    paths:
+      - package.json
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync-lock:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/online-preschool-grace-2026-10-02
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Regenerate lockfile from declared patched dependencies
+        run: npm install --package-lock-only
+      - name: Verify patched TanStack resolutions
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const lock = require('./package-lock.json')
+          const start = lock.packages?.['node_modules/@tanstack/react-start']?.version
+          const core = lock.packages?.['node_modules/@tanstack/start-server-core']?.version
+          console.log({ reactStart: start, startServerCore: core })
+          const parts = (v) => String(v || '').split('.').map(Number)
+          const gte = (a,b) => { const A=parts(a),B=parts(b); for(let i=0;i<3;i++){ if((A[i]||0)>(B[i]||0)) return true; if((A[i]||0)<(B[i]||0)) return false; } return true }
+          if (!gte(start, '1.168.60')) throw new Error('react-start is still vulnerable')
+          if (!gte(core, '1.169.39')) throw new Error('start-server-core is still vulnerable')
+          NODE
+      - name: Commit lockfile only
+        shell: bash
+        run: |
+          if git diff --quiet -- package-lock.json; then
+            echo "Lockfile already synchronized."
+            exit 0
+          fi
+          test "$(git diff --name-only | tr '\n' ' ')" = "package-lock.json " || { echo "Unexpected changed file"; git diff --name-only; exit 1; }
+          git config user.name "pisipouk-security-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add package-lock.json
+          git commit -m "security: refresh lockfile for patched TanStack Start"
+          git push origin HEAD:feature/online-preschool-grace-2026-10-02
