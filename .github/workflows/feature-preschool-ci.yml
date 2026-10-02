@@ -45,7 +45,7 @@ jobs:
           npm run dev -- --host 127.0.0.1 --port 4173 > /tmp/pisipouk-vite.log 2>&1 &
           echo $! > /tmp/pisipouk-vite.pid
           for i in {1..45}; do
-            if curl -fsS http://127.0.0.1:4173/virtual-preschool-grace >/dev/null; then
+            if curl -fsS http://127.0.0.1:4173/virtual-preschool-world >/dev/null; then
               exit 0
             fi
             sleep 1
@@ -55,4 +55,4 @@ jobs:
       - name: Browser smoke tests
         env:
           PRESCHOOL_BASE_URL: http://127.0.0.1:4173
-        run: npx playwright test tests/e2e/preschool-grace.spec.ts
+        run: npx playwright test tests/e2e/preschool-grace.spec.ts tests/e2e/preschool-world.spec.ts
