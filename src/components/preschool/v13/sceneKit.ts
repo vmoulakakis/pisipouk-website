@@ -47,14 +47,28 @@ export function sparkle(B: any, scene: any, pos: any, rng: () => number) {
   }
 }
 
-export function clickAction(B: any, scene: any, mesh: any, fn: () => void) {
+function bindPick(B: any, scene: any, mesh: any, fn: () => void) {
   mesh.isPickable = true;
   mesh.actionManager = new B.ActionManager(scene);
   mesh.actionManager.registerAction(new B.ExecuteCodeAction(B.ActionManager.OnPickTrigger, fn));
+}
+
+export function clickAction(B: any, scene: any, mesh: any, fn: () => void) {
+  // Children such as a drum skin, fruit stem or turtle head are visually part of
+  // the same preschool object. A child should never become a dead tap target.
+  bindPick(B, scene, mesh, fn);
+  if (mesh && typeof mesh.getChildMeshes === "function") {
+    for (const child of mesh.getChildMeshes(false) || []) bindPick(B, scene, child, fn);
+  }
   return mesh;
 }
 
 export function groundDrag(B: any, mesh: any, onEnd: (mesh: any) => void) {
+  // PointerDragBehavior belongs to the semantic root object. Decorative child
+  // meshes are made non-pickable so a child can grab any visible part of it.
+  if (mesh && typeof mesh.getChildMeshes === "function") {
+    for (const child of mesh.getChildMeshes(false) || []) child.isPickable = false;
+  }
   const behavior = new B.PointerDragBehavior({ dragPlaneNormal: new B.Vector3(0, 1, 0) });
   behavior.useObjectOrientationForDragging = false;
   behavior.moveAttached = true;
