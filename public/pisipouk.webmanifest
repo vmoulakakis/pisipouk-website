@@ -1,0 +1,44 @@
+{
+  "id": "/virtual-preschool",
+  "name": "Ο Κόσμος του Πισιπούκ",
+  "short_name": "Πισιπούκ",
+  "description": "Ελληνικό διαδραστικό preschool για παιδιά 2–6 ετών: παιχνίδι, δημιουργία, ιστορίες, κίνηση και εξερεύνηση.",
+  "lang": "el",
+  "dir": "ltr",
+  "start_url": "/virtual-preschool?app=1&utm_source=homescreen",
+  "scope": "/virtual-preschool",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#eef9ff",
+  "theme_color": "#6846f3",
+  "categories": ["education", "kids", "games"],
+  "icons": [
+    {
+      "src": "/favicon.webp",
+      "sizes": "720x720",
+      "type": "image/webp",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Παιχνίδια",
+      "short_name": "Παιχνίδια",
+      "description": "Άνοιξε τα διαδραστικά παιχνίδια",
+      "url": "/virtual-preschool?app=1&open=games"
+    },
+    {
+      "name": "Σήμερα",
+      "short_name": "Σήμερα",
+      "description": "Η σημερινή αποστολή του Πισιπούκ",
+      "url": "/virtual-preschool?app=1&open=today"
+    },
+    {
+      "name": "Ζωγραφική",
+      "short_name": "Ζωγραφική",
+      "description": "Άνοιξε το εργαστήρι ζωγραφικής",
+      "url": "/virtual-preschool?app=1&open=color"
+    }
+  ]
+}
