@@ -5,7 +5,7 @@
   "description": "Ελληνικό διαδραστικό preschool για παιδιά 2–6 ετών: παιχνίδι, δημιουργία, ιστορίες, κίνηση και εξερεύνηση.",
   "lang": "el",
   "dir": "ltr",
-  "start_url": "/virtual-preschool?app=1&utm_source=homescreen",
+  "start_url": "/virtual-preschool?app=1&open=games&utm_source=homescreen",
   "scope": "/virtual-preschool",
   "display": "standalone",
   "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
