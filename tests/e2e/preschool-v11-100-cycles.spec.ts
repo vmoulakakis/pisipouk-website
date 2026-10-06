@@ -21,17 +21,18 @@ test("100 child-parent adaptive preschool cycles stay healthy",async({page})=>{
     const adaptive=page.getByText("Adaptive Adventures").first();
     await expect(adaptive,`cycle ${i+1} adaptive launch`).toBeVisible();
     await adaptive.click();
-    await expect(page.getByText(/Κάθε φορά μια/),`cycle ${i+1} hero`).toBeVisible();
-    await page.getByRole("button",{name:new RegExp(ages[i%ages.length])}).click();
-    const cards=page.locator(".v11-grid > button");
+    const shell=page.locator(".v11-shell");
+    await expect(shell.getByText(/Κάθε φορά μια/),`cycle ${i+1} hero`).toBeVisible();
+    await shell.getByRole("button",{name:ages[i%ages.length],exact:true}).click();
+    const cards=shell.locator(".v11-grid > button");
     expect(await cards.count(),`cycle ${i+1} playable cards`).toBeGreaterThan(0);
     await expect(cards.first(),`cycle ${i+1} first card`).toBeVisible();
     if(i%5===0){
       await cards.first().click();
-      await expect(page.locator(".v11-modal"),`cycle ${i+1} player`).toBeVisible();
-      await page.locator(".v11-close").click();
+      await expect(shell.locator(".v11-modal"),`cycle ${i+1} player`).toBeVisible();
+      await shell.locator(".v11-close").click();
     }
-    await page.getByRole("button",{name:/Κλείσιμο/}).click();
+    await shell.getByRole("button",{name:/Κλείσιμο/}).click();
   }
   expect(errors,"page errors across 100 cycles").toEqual([]);
 });
