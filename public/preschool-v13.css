@@ -1,0 +1,26 @@
+/* V13 game usability layer: informational overlays must never steal touches from the 3D canvas. */
+.v13-guide,
+.v13-parent-prompt,
+.v13-title-pill {
+  pointer-events: none !important;
+}
+
+.v13-game-top > button,
+.v13-done button,
+.v13-close,
+.v13-back-library {
+  pointer-events: auto;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+@media (pointer: coarse) {
+  .v13-play canvas {
+    touch-action: none;
+  }
+
+  .v13-game-top > button {
+    min-width: 52px;
+    min-height: 48px;
+  }
+}
