@@ -38,6 +38,10 @@ jobs:
           done
           cat /tmp/pisipouk-v13.log
           exit 1
+      - name: V13 toddler pointer diagnostics
+        env:
+          PRESCHOOL_BASE_URL: http://127.0.0.1:4173
+        run: npx playwright test tests/e2e/preschool-v13-debug-toddler.spec.ts
       - name: V13 real-pointer age-specific games QA
         env:
           PRESCHOOL_BASE_URL: http://127.0.0.1:4173
