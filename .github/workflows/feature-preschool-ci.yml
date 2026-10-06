@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - redesign/virtual-preschool-v9-content-universe
+      - feature/preschool-v10-all-techniques
   workflow_dispatch:
 
 permissions:
@@ -37,7 +38,11 @@ jobs:
           done
           cat /tmp/pisipouk-vite.log
           exit 1
-      - name: V9 interactive smoke tests
+      - name: Legacy V9 content regression
         env:
           PRESCHOOL_BASE_URL: http://127.0.0.1:4173
         run: npx playwright test tests/e2e/preschool-v9-content.spec.ts
+      - name: V11 adaptive interaction tests
+        env:
+          PRESCHOOL_BASE_URL: http://127.0.0.1:4173
+        run: npx playwright test tests/e2e/preschool-v11.spec.ts
