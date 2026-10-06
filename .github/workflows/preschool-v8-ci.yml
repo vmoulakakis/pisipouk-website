@@ -12,6 +12,7 @@ on:
       - "public/pisipouk-sw.js"
       - "public/preschool-*.json"
       - "tests/e2e/preschool-v8-100.spec.ts"
+      - "playwright.v8.config.ts"
       - "index.html"
       - ".github/workflows/preschool-v8-ci.yml"
   workflow_dispatch:
@@ -22,7 +23,7 @@ permissions:
 jobs:
   build-and-100-scenarios:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -48,11 +49,15 @@ jobs:
           done
           cat /tmp/pisipouk-v8.log
           exit 1
-      - name: Run 100 strict child and parent scenarios in Chromium
+      - name: Android Chromium · full 100-scenario suite
         env:
           PRESCHOOL_BASE_URL: http://127.0.0.1:4173
-        run: npx playwright test tests/e2e/preschool-v8-100.spec.ts --project=chromium || npx playwright test tests/e2e/preschool-v8-100.spec.ts
-      - name: WebKit iPhone-style smoke
+        run: npx playwright test tests/e2e/preschool-v8-100.spec.ts --config=playwright.v8.config.ts --project=android-chromium
+      - name: Apple WebKit · critical child parent install suite
         env:
           PRESCHOOL_BASE_URL: http://127.0.0.1:4173
-        run: npx playwright test tests/e2e/preschool-v8-100.spec.ts --grep "PWA|strict parent|iPhone portrait" --project=webkit || true
+        run: npx playwright test tests/e2e/preschool-v8-100.spec.ts --config=playwright.v8.config.ts --project=apple-webkit --grep "PWA|strict parent|iPhone portrait|navigation 390px"
+      - name: iPad WebKit · tablet interaction suite
+        env:
+          PRESCHOOL_BASE_URL: http://127.0.0.1:4173
+        run: npx playwright test tests/e2e/preschool-v8-100.spec.ts --config=playwright.v8.config.ts --project=ipad-webkit --grep "tablet|creative|stories|move"
