@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { PreschoolV12 } from "@/components/preschool/PreschoolV12";
+import { PreschoolGamesV13 } from "@/components/preschool/PreschoolGamesV13";
 
 function patchBabylon(B: any) {
   const proto = B?.ShadowGenerator?.prototype;
@@ -73,8 +73,8 @@ export function PreschoolV12Runtime() {
       <main style={{ minHeight: "100svh", display: "grid", placeItems: "center", padding: 24, background: "#eef9ff", color: "#17205b", textAlign: "center" }}>
         <div>
           <div style={{ fontSize: 64 }}>🧸</div>
-          <h1>Ο Πισιπούκ δεν μπόρεσε να ανοίξει τον 3D κόσμο</h1>
-          <p>Έλεγξε τη σύνδεση και ανανέωσε τη σελίδα. Η υπόλοιπη βιβλιοθήκη του Preschool παραμένει διαθέσιμη.</p>
+          <h1>Ο Πισιπούκ δεν μπόρεσε να ανοίξει τα 3D παιχνίδια</h1>
+          <p>Έλεγξε τη σύνδεση και ανανέωσε τη σελίδα.</p>
           <button onClick={() => location.reload()} style={{ border: 0, borderRadius: 16, padding: "12px 18px", fontWeight: 900, background: "#6848e8", color: "white" }}>Δοκιμάζω ξανά</button>
         </div>
       </main>
@@ -83,15 +83,15 @@ export function PreschoolV12Runtime() {
 
   if (!ready) {
     return (
-      <main style={{ minHeight: "100svh", display: "grid", placeItems: "center", background: "linear-gradient(180deg,#e6f8ff,#fff8df)", color: "#17205b" }} aria-label="Φόρτωση 3D PlayWorld">
+      <main style={{ minHeight: "100svh", display: "grid", placeItems: "center", background: "linear-gradient(180deg,#e6f8ff,#fff8df)", color: "#17205b" }} aria-label="Φόρτωση 3D παιχνιδιών">
         <div style={{ textAlign: "center" }}>
           <div style={{ fontSize: 72, animation: "pisipoukLoad 1.6s ease-in-out infinite" }}>🧸</div>
-          <b>Ο Πισιπούκ ετοιμάζει τον 3D κόσμο…</b>
+          <b>Ο Πισιπούκ ετοιμάζει τα παιχνίδια…</b>
           <style>{`@keyframes pisipoukLoad{50%{transform:translateY(-8px) scale(1.04)}}`}</style>
         </div>
       </main>
     );
   }
 
-  return <PreschoolV12 />;
+  return <PreschoolGamesV13 />;
 }
