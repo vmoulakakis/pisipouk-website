@@ -1,0 +1,30 @@
+{
+  "id": "/virtual-preschool",
+  "name": "Ο Κόσμος του Πισιπούκ",
+  "short_name": "Πισιπούκ",
+  "description": "Ελληνικός διαδραστικός κόσμος 2–6 ετών: παιχνίδι, δημιουργία, ιστορίες, εξερεύνηση, μουσική και κίνηση.",
+  "lang": "el",
+  "dir": "ltr",
+  "start_url": "/virtual-preschool?app=1&open=games&utm_source=homescreen",
+  "scope": "/virtual-preschool",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#e8f8ff",
+  "theme_color": "#6848ef",
+  "categories": ["education", "kids", "games"],
+  "icons": [
+    {
+      "src": "/favicon.webp",
+      "sizes": "720x720",
+      "type": "image/webp",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {"name":"Παίζω","short_name":"Παίζω","description":"Άνοιξε τα παιχνίδια","url":"/virtual-preschool?app=1&open=games"},
+    {"name":"Δημιουργώ","short_name":"Δημιουργώ","description":"Ζωγραφική και κατασκευές","url":"/virtual-preschool?app=1&open=create"},
+    {"name":"Ιστορίες","short_name":"Ιστορίες","description":"Ιστορίες του Πισιπούκ","url":"/virtual-preschool?app=1&open=stories"},
+    {"name":"Εξερευνώ","short_name":"Εξερευνώ","description":"Φύση και STEM","url":"/virtual-preschool?app=1&open=stem"}
+  ]
+}
