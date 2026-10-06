@@ -6,6 +6,7 @@ import { SocialShareBar } from "./SocialShareBar";
 import { useLocation } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 import { PreschoolV7 } from "@/components/preschool/PreschoolV7";
+import { PreschoolInstall } from "@/components/preschool/PreschoolInstall";
 import {
   excludeThisBrowserFromAnalytics,
   includeThisBrowserInAnalytics,
@@ -33,7 +34,12 @@ export function SiteLayout({ children }: { children: ReactNode }) {
   }, [loc.pathname, loc.search]);
 
   if (isPreschoolKidWorld) {
-    return <PreschoolV7 />;
+    return (
+      <>
+        <PreschoolV7 />
+        <PreschoolInstall />
+      </>
+    );
   }
 
   return (
