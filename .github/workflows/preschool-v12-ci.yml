@@ -43,10 +43,14 @@ jobs:
         env:
           PRESCHOOL_BASE_URL: http://127.0.0.1:4173
         run: npx playwright test tests/e2e/preschool-v12-3d.spec.ts
-      - name: V12 strict gameplay and 100-session QA
+      - name: V12 strict gameplay mechanics QA
         env:
           PRESCHOOL_BASE_URL: http://127.0.0.1:4173
-        run: npx playwright test tests/e2e/preschool-v12-gameplay-matrix.spec.ts
+        run: npx playwright test tests/e2e/preschool-v12-gameplay-matrix.spec.ts --grep-invert "100 child/parent sessions"
+      - name: V12 100-session mount-dispose stress QA
+        env:
+          PRESCHOOL_BASE_URL: http://127.0.0.1:4173
+        run: npx playwright test tests/e2e/preschool-v12-100-fast.spec.ts
       - name: Upload V12 visual QA captures
         if: always()
         uses: actions/upload-artifact@v4
