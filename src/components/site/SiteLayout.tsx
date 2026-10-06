@@ -5,7 +5,7 @@ import { Chatbot } from "../chatbot/Chatbot";
 import { SocialShareBar } from "./SocialShareBar";
 import { useLocation } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
-import { PreschoolV12 } from "@/components/preschool/PreschoolV12";
+import { PreschoolV12Runtime } from "@/components/preschool/PreschoolV12Runtime";
 import { PreschoolInstallV9 } from "@/components/preschool/PreschoolInstallV9";
 import {
   excludeThisBrowserFromAnalytics,
@@ -34,7 +34,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
   }, [loc.pathname, loc.search]);
 
   if (isPreschoolKidWorld) {
-    return <><PreschoolV12 /><PreschoolInstallV9 /></>;
+    return <><PreschoolV12Runtime /><PreschoolInstallV9 /></>;
   }
 
   return (
