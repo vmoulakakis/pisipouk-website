@@ -157,8 +157,8 @@ test.describe.serial("Pisipouk V12 strict gameplay matrix", () => {
     await exitGame(page);
 
     await page.getByRole("button", { name: /Γονείς/ }).click();
-    await expect(page.getByText(/Ο φάρος των μοτίβων/)).toBeVisible();
-    await expect(page.getByText(/1 επαναπροσπάθειες/)).toBeVisible();
+    await expect(page.locator(".v12-stats").getByText(/Ο φάρος των μοτίβων/)).toBeVisible();
+    await expect(page.locator(".v12-stats").getByText(/1 επαναπροσπάθειες/)).toBeVisible();
     await expect(page.getByText(/ΧΩΡΙΣ ΟΝΟΜΑ ΠΑΙΔΙΟΥ/)).toBeVisible();
   });
 
