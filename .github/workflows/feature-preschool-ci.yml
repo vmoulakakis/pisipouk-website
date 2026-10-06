@@ -46,3 +46,7 @@ jobs:
         env:
           PRESCHOOL_BASE_URL: http://127.0.0.1:4173
         run: npx playwright test tests/e2e/preschool-v11.spec.ts
+      - name: V11 100-cycle child-parent stress regression
+        env:
+          PRESCHOOL_BASE_URL: http://127.0.0.1:4173
+        run: npx playwright test tests/e2e/preschool-v11-100-cycles.spec.ts
