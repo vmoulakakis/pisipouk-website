@@ -1,0 +1,44 @@
+name: Preschool V12 3D CI
+
+on:
+  push:
+    branches:
+      - feature/preschool-v12-babylon-age-worlds
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  v12-build-and-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Validate existing preschool content
+        run: node scripts/validate_preschool_content.mjs
+      - name: Production build
+        run: npm run build
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Start local app
+        shell: bash
+        run: |
+          npm run dev -- --host 127.0.0.1 --port 4173 > /tmp/pisipouk-v12.log 2>&1 &
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:4173/virtual-preschool >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/pisipouk-v12.log
+          exit 1
+      - name: V12 age-separated Babylon 3D QA
+        env:
+          PRESCHOOL_BASE_URL: http://127.0.0.1:4173
+        run: npx playwright test tests/e2e/preschool-v12-3d.spec.ts
