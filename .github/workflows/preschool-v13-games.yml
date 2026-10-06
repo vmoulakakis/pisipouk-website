@@ -1,0 +1,44 @@
+name: Preschool V13 Games CI
+
+on:
+  push:
+    branches:
+      - feature/preschool-v13-games-only
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  games-build-and-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Validate existing preschool content
+        run: node scripts/validate_preschool_content.mjs
+      - name: Production build
+        run: npm run build
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Start local app
+        shell: bash
+        run: |
+          npm run dev -- --host 127.0.0.1 --port 4173 > /tmp/pisipouk-v13.log 2>&1 &
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:4173/virtual-preschool >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/pisipouk-v13.log
+          exit 1
+      - name: V13 real-pointer age-specific games QA
+        env:
+          PRESCHOOL_BASE_URL: http://127.0.0.1:4173
+        run: npx playwright test tests/e2e/preschool-v13-games.spec.ts
