@@ -11,14 +11,21 @@ const views=[
 const ages=["2–3 ετών","4–5 ετών","5–6 ετών"];
 
 test("100 child-parent adaptive preschool cycles stay healthy",async({page})=>{
-  test.setTimeout(240_000);
+  test.setTimeout(180_000);
   const errors:string[]=[];
   page.on("pageerror",e=>errors.push(e.message));
+  let r=await page.goto(`${BASE_URL}/virtual-preschool?analytics=off&qa=0`,{waitUntil:"domcontentloaded"});
+  expect(r?.ok(),"initial route").toBeTruthy();
+
   for(let i=0;i<100;i++){
     await page.setViewportSize(views[i%views.length]);
-    const r=await page.goto(`${BASE_URL}/virtual-preschool?analytics=off&qa=${i}`,{waitUntil:"domcontentloaded"});
-    expect(r?.ok(),`cycle ${i+1} route`).toBeTruthy();
-    const adaptive=page.getByText("Adaptive Adventures").first();
+    // Reload every 20 cycles so navigation/hydration is repeatedly exercised without
+    // spending most of the stress budget on network/page boot time.
+    if(i>0&&i%20===0){
+      r=await page.goto(`${BASE_URL}/virtual-preschool?analytics=off&qa=${i}`,{waitUntil:"domcontentloaded"});
+      expect(r?.ok(),`cycle ${i+1} route`).toBeTruthy();
+    }
+    const adaptive=page.locator(".v11-launch");
     await expect(adaptive,`cycle ${i+1} adaptive launch`).toBeVisible();
     await adaptive.click();
     const shell=page.locator(".v11-shell");
