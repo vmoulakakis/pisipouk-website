@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - feature/preschool-v12-babylon-age-worlds
+      - feature/preschool-v12-gameplay-qa
   workflow_dispatch:
 
 permissions:
@@ -12,7 +13,7 @@ permissions:
 jobs:
   v12-build-and-browser:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -42,3 +43,15 @@ jobs:
         env:
           PRESCHOOL_BASE_URL: http://127.0.0.1:4173
         run: npx playwright test tests/e2e/preschool-v12-3d.spec.ts
+      - name: V12 strict gameplay and 100-session QA
+        env:
+          PRESCHOOL_BASE_URL: http://127.0.0.1:4173
+        run: npx playwright test tests/e2e/preschool-v12-gameplay-matrix.spec.ts
+      - name: Upload V12 visual QA captures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v12-visual-qa
+          path: test-results/v12-visuals/*.png
+          if-no-files-found: ignore
+          retention-days: 7
