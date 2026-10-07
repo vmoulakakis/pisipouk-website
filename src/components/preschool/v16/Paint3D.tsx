@@ -57,7 +57,7 @@ function PaintableFish({
     ctx.beginPath();ctx.arc(x,y,radius,0,Math.PI*2);ctx.fill();
     texture.needsUpdate=true;
     strokes.current+=1;
-    if(strokes.current%4===0)onPaint(strokes.current);
+    onPaint(strokes.current);
   };
 
   useFrame(({clock},delta)=>{
@@ -77,18 +77,20 @@ function PaintableFish({
   });
 
   return <group ref={group}>
+    <mesh castShadow receiveShadow scale={[2.15,1.22,.92]}>
+      <sphereGeometry args={[1,96,64]}/>
+      <meshPhysicalMaterial map={texture||undefined} color={texture?"#ffffff":"#e8ca94"} roughness={.55} clearcoat={.22} clearcoatRoughness={.65} sheen={.25} sheenColor={new THREE.Color("#fff0d6")}/>
+    </mesh>
     <mesh
-      castShadow
-      receiveShadow
-      scale={[2.15,1.22,.92]}
+      scale={[2.34,1.39,1.08]}
       onPointerDown={e=>{painting.current=true;paint(e)}}
       onPointerMove={paint}
       onPointerUp={()=>painting.current=false}
       onPointerOut={()=>painting.current=false}
       onPointerCancel={()=>painting.current=false}
     >
-      <sphereGeometry args={[1,96,64]}/>
-      <meshPhysicalMaterial map={texture||undefined} color={texture?"#ffffff":"#e8ca94"} roughness={.55} clearcoat={.22} clearcoatRoughness={.65} sheen={.25} sheenColor={new THREE.Color("#fff0d6")}/>
+      <sphereGeometry args={[1,64,42]}/>
+      <meshBasicMaterial transparent opacity={0} depthWrite={false}/>
     </mesh>
     <mesh position={[-2.05,0,0]} rotation={[0,0,Math.PI/2]} castShadow>
       <coneGeometry args={[.92,1.45,4]}/>
@@ -139,7 +141,7 @@ export function Paint3D(){
   const [awake,setAwake]=useState(false);
   const [strokes,setStrokes]=useState(0);
   useEffect(()=>setMounted(true),[]);
-  const canWake=strokes>=8;
+  const canWake=strokes>=3;
 
   return <section className="pv16-module">
     <div className="pv16-module-copy">
