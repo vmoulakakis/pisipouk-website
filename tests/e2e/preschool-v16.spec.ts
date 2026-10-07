@@ -13,9 +13,9 @@ test.describe.serial("Pisipouk V16 R3F preschool",()=>{
     await openApp(page);
     for(const age of ["2–3","3–4","4–5","5–6"]) await expect(page.getByRole("button",{name:new RegExp(age)}).first()).toBeVisible();
     await page.getByRole("button",{name:/2–3/}).first().click();
-    await expect(page.getByRole("button",{name:"3D Atelier"})).toHaveCount(0);
-    await expect(page.getByRole("button",{name:"Ζωντανή Ζωγραφική"})).toBeVisible();
-    await expect(page.getByRole("button",{name:"Μαγικό Νησί"})).toBeVisible();
+    await expect(page.getByRole("button",{name:"3D Atelier",exact:true})).toHaveCount(0);
+    await expect(page.getByRole("button",{name:"Ζωντανή Ζωγραφική",exact:true})).toBeVisible();
+    await expect(page.getByRole("button",{name:"Μαγικό Νησί",exact:true})).toBeVisible();
   });
 
   test("physical atelier boots a real WebGL canvas and tool tray",async({page})=>{
@@ -23,7 +23,7 @@ test.describe.serial("Pisipouk V16 R3F preschool",()=>{
     page.on("pageerror",e=>errors.push(e.message));
     await openApp(page);
     await page.getByRole("button",{name:/3–4/}).first().click();
-    await page.getByRole("button",{name:"3D Atelier"}).click();
+    await page.getByRole("button",{name:"3D Atelier",exact:true}).click();
     const shell=page.getByTestId("atelier-3d");
     await expect(shell.locator("canvas")).toBeVisible({timeout:30_000});
     await expect(page.getByRole("button",{name:"Κύβος"})).toBeVisible();
@@ -35,7 +35,7 @@ test.describe.serial("Pisipouk V16 R3F preschool",()=>{
 
   test("3D painting accepts pointer strokes and unlocks bring-art-to-life",async({page})=>{
     await openApp(page);
-    await page.getByRole("button",{name:"Ζωντανή Ζωγραφική"}).click();
+    await page.getByRole("button",{name:"Ζωντανή Ζωγραφική",exact:true}).click();
     const canvas=page.getByTestId("paint-3d").locator("canvas");
     await expect(canvas).toBeVisible({timeout:30_000});
     const box=await canvas.boundingBox();
@@ -55,7 +55,7 @@ test.describe.serial("Pisipouk V16 R3F preschool",()=>{
 
   test("micro world supports calm weather changes and loads 3D scene",async({page})=>{
     await openApp(page);
-    await page.getByRole("button",{name:"Μαγικό Νησί"}).click();
+    await page.getByRole("button",{name:"Μαγικό Νησί",exact:true}).click();
     const canvas=page.getByTestId("micro-world-3d").locator("canvas");
     await expect(canvas).toBeVisible({timeout:30_000});
     await page.getByRole("button",{name:"Βροχή"}).click();
@@ -67,9 +67,9 @@ test.describe.serial("Pisipouk V16 R3F preschool",()=>{
 
   test("parent insight stays local and reflects anonymous child choices",async({page})=>{
     await openApp(page);
-    await page.getByRole("button",{name:"Ζωντανή Ζωγραφική"}).click();
+    await page.getByRole("button",{name:"Ζωντανή Ζωγραφική",exact:true}).click();
     await page.getByRole("button",{name:"Πίσω στην αρχική"}).click();
-    await page.getByRole("button",{name:"Μαγικό Νησί"}).click();
+    await page.getByRole("button",{name:"Μαγικό Νησί",exact:true}).click();
     await page.getByRole("button",{name:"Πίσω στην αρχική"}).click();
     await page.getByRole("button",{name:"Γονείς"}).click();
     await expect(page.getByText("Ενδιαφέροντα, όχι βαθμοί.")).toBeVisible();
@@ -82,7 +82,7 @@ test.describe.serial("Pisipouk V16 R3F preschool",()=>{
   test("mobile child UI keeps touch-size portals and 3D canvas",async({page})=>{
     await page.setViewportSize({width:390,height:844});
     await openApp(page);
-    await page.getByRole("button",{name:"Ζωντανή Ζωγραφική"}).click();
+    await page.getByRole("button",{name:"Ζωντανή Ζωγραφική",exact:true}).click();
     await expect(page.getByTestId("paint-3d").locator("canvas")).toBeVisible({timeout:30_000});
     await expect(page.getByRole("button",{name:"Πίσω στην αρχική"})).toBeVisible();
   });
