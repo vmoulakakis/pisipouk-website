@@ -42,9 +42,9 @@ function StudioLights(){
 function Material({color,wood=false}:{color:string;wood?:boolean}){
   return <meshPhysicalMaterial
     color={color}
-    roughness={wood?.72:.52}
+    roughness={wood ? 0.72 : 0.52}
     metalness={0.02}
-    clearcoat={wood?.0.08:0.16}
+    clearcoat={wood ? 0.08 : 0.16}
     clearcoatRoughness={0.55}
     sheen={wood?0.14:0.32}
     sheenColor={new THREE.Color("#fff4df")}
