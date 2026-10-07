@@ -133,10 +133,12 @@ function PaintScene({color,brush,awake,onPaint}:{color:string;brush:number;awake
 }
 
 export function Paint3D(){
+  const [mounted,setMounted]=useState(false);
   const [color,setColor]=useState(PALETTE[0]);
   const [brush,setBrush]=useState(2);
   const [awake,setAwake]=useState(false);
   const [strokes,setStrokes]=useState(0);
+  useEffect(()=>setMounted(true),[]);
   const canWake=strokes>=8;
 
   return <section className="pv16-module">
@@ -147,9 +149,9 @@ export function Paint3D(){
     </div>
     <div className="pv16-paint-shell">
       <div className="pv16-canvas" data-testid="paint-3d">
-        <Canvas shadows dpr={[1,1.65]} camera={{position:[0,1.1,7.1],fov:39}}>
+        {mounted ? <Canvas shadows dpr={[1,1.65]} camera={{position:[0,1.1,7.1],fov:39}}>
           <Suspense fallback={null}><PaintScene color={color} brush={brush} awake={awake} onPaint={setStrokes}/></Suspense>
-        </Canvas>
+        </Canvas> : <div className="pv16-3d-loading">Ετοιμάζω τη ζωντανή ζωγραφική…</div>}
       </div>
       <div className="pv16-paint-tools">
         <div className="pv16-swatches">{PALETTE.map(c=><button key={c} aria-label={"Χρώμα "+c} className={c===color?"on":""} style={{background:c}} onClick={()=>setColor(c)}/>)}</div>
