@@ -44,7 +44,7 @@ test.describe.serial("Pisipouk V16 R3F preschool",()=>{
     for(let pass=0;pass<3;pass++){
       await page.mouse.move(cx-80,cy-20+pass*8);
       await page.mouse.down();
-      await page.mouse.move(cx+80,cy+20+pass*8,{steps:18});
+      await page.mouse.move(cx+80,cy+20+pass*8,{steps:5});
       await page.mouse.up();
     }
     const wake=page.getByRole("button",{name:/Ζωντανεύω/});
