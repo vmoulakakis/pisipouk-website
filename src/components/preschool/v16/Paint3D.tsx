@@ -25,14 +25,14 @@ function PaintableFish({
 
   useEffect(()=>{
     const c=document.createElement("canvas");
-    c.width=1024;c.height=1024;
+    c.width=512;c.height=512;
     const ctx=c.getContext("2d");
     if(ctx){
       const g=ctx.createLinearGradient(0,0,1024,1024);
       g.addColorStop(0,"#f5dfb8");g.addColorStop(.55,"#e8c88e");g.addColorStop(1,"#d8b379");
       ctx.fillStyle=g;ctx.fillRect(0,0,1024,1024);
       ctx.globalAlpha=.12;ctx.fillStyle="#7f603d";
-      for(let i=0;i<28;i++){ctx.beginPath();ctx.arc((i*137)%1024,(i*271)%1024,7+(i%5)*2,0,Math.PI*2);ctx.fill()}
+      for(let i=0;i<20;i++){ctx.beginPath();ctx.arc((i*137)%512,(i*271)%512,4+(i%5),0,Math.PI*2);ctx.fill()}
       ctx.globalAlpha=1;
     }
     const t=new THREE.CanvasTexture(c);
@@ -55,9 +55,9 @@ function PaintableFish({
     grad.addColorStop(1,color+"99");
     ctx.fillStyle=grad;
     ctx.beginPath();ctx.arc(x,y,radius,0,Math.PI*2);ctx.fill();
-    texture.needsUpdate=true;
     strokes.current+=1;
-    onPaint(strokes.current);
+    if(strokes.current % 2 === 0) texture.needsUpdate=true;
+    if(strokes.current === 1 || strokes.current % 3 === 0) onPaint(strokes.current);
   };
 
   useFrame(({clock},delta)=>{
@@ -78,7 +78,7 @@ function PaintableFish({
 
   return <group ref={group}>
     <mesh castShadow receiveShadow scale={[2.15,1.22,.92]}>
-      <sphereGeometry args={[1,96,64]}/>
+      <sphereGeometry args={[1,64,44]}/>
       <meshPhysicalMaterial map={texture||undefined} color={texture?"#ffffff":"#e8ca94"} roughness={.55} clearcoat={.22} clearcoatRoughness={.65} sheen={.25} sheenColor={new THREE.Color("#fff0d6")}/>
     </mesh>
     <mesh
@@ -89,7 +89,7 @@ function PaintableFish({
       onPointerOut={()=>painting.current=false}
       onPointerCancel={()=>painting.current=false}
     >
-      <sphereGeometry args={[1,64,42]}/>
+      <sphereGeometry args={[1,48,32]}/>
       <meshBasicMaterial transparent opacity={0} depthWrite={false}/>
     </mesh>
     <mesh position={[-2.05,0,0]} rotation={[0,0,Math.PI/2]} castShadow>
