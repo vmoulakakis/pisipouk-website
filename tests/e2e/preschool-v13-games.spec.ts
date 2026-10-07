@@ -97,7 +97,7 @@ async function dragMeshToMesh(page: Page, from: string, fromIndex: number, to: s
   await page.mouse.down();
   await page.mouse.move(b.x, b.y, { steps: 12 });
   await page.mouse.up();
-  await page.waitForTimeout(180);
+  await page.waitForTimeout(400);
 }
 
 async function dragMeshToWorld(page: Page, from: string, fromIndex: number, target: [number, number, number]) {
