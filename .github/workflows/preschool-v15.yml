@@ -1,0 +1,38 @@
+name: Preschool V15 Brand World CI
+
+on:
+  push:
+    branches:
+      - feature/preschool-v15-brand-world
+  workflow_dispatch:
+
+jobs:
+  v15:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PRESCHOOL_BASE_URL: http://127.0.0.1:4173
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Validate preschool content
+        run: node scripts/validate_preschool_content.mjs
+      - name: Build
+        run: npm run build
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Start app
+        run: |
+          npm run dev -- --host 127.0.0.1 --port 4173 > /tmp/pisipouk-v15.log 2>&1 &
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:4173/virtual-preschool >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/pisipouk-v15.log
+          exit 1
+      - name: V15 child interaction QA
+        run: npx playwright test tests/e2e/preschool-v15.spec.ts --workers=1
