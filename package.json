@@ -11,7 +11,8 @@
     "preview": "vite preview",
     "test:e2e": "playwright test",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "test:preschool:v16": "playwright test tests/e2e/preschool-v16.spec.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
