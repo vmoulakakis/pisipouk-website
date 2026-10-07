@@ -73,7 +73,7 @@ test.describe.serial("Pisipouk V15 from-scratch preschool",()=>{
 
   test("atelier canvas stories and micro-world are interactive",async({page})=>{
     await openApp(page);
-    await page.getByRole("button",{name:/Δημιουργώ/}).first().click();
+    await page.getByRole("button",{name:"Atelier"}).first().click();
     const canvas=page.getByLabel("Καμβάς δημιουργίας");
     const b=await canvas.boundingBox();if(!b)throw new Error("canvas missing");
     await page.mouse.move(b.x+120,b.y+120);await page.mouse.down();await page.mouse.move(b.x+260,b.y+230,{steps:8});await page.mouse.up();
