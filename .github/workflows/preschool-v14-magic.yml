@@ -1,0 +1,40 @@
+name: Preschool V14 Magic CI
+
+on:
+  push:
+    branches:
+      - feature/preschool-v14-magic-clean
+  workflow_dispatch:
+
+jobs:
+  magic-preschool:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    env:
+      PRESCHOOL_BASE_URL: http://127.0.0.1:4173
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Validate existing preschool content
+        run: node scripts/validate_preschool_content.mjs
+      - name: Production build
+        run: npm run build
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Start local app
+        run: |
+          npm run dev -- --host 127.0.0.1 --port 4173 > /tmp/pisipouk-v14.log 2>&1 &
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:4173/virtual-preschool >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/pisipouk-v14.log
+          exit 1
+      - name: Magical V14 browser QA
+        run: npx playwright test tests/e2e/preschool-v14-magic.spec.ts --workers=1
