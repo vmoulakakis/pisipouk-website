@@ -72,7 +72,7 @@ export function groundDrag(B: any, mesh: any, onEnd: (mesh: any) => void) {
   const behavior = new B.PointerDragBehavior({ dragPlaneNormal: new B.Vector3(0, 1, 0) });
   behavior.useObjectOrientationForDragging = false;
   behavior.moveAttached = true;
-  behavior.dragDeltaRatio = 0.45;
+  behavior.dragDeltaRatio = 1.0;
   behavior.onDragEndObservable.add(() => onEnd(mesh));
   mesh.addBehavior(behavior);
   mesh.isPickable = true;
