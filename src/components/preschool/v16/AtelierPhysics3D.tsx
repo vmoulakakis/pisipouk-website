@@ -1,4 +1,4 @@
-import { Suspense, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, type ThreeEvent, useFrame } from "@react-three/fiber";
 import { ContactShadows, Float, RoundedBox } from "@react-three/drei";
 import { Physics, RigidBody, type RapierRigidBody } from "@react-three/rapier";
@@ -153,9 +153,11 @@ const START:Piece[]=[
 ];
 
 export function AtelierPhysics3D(){
+  const [mounted,setMounted]=useState(false);
   const [pieces,setPieces]=useState<Piece[]>(START);
   const [next,setNext]=useState(10);
   const [quality,setQuality]=useState<"high"|"eco">("high");
+  useEffect(()=>setMounted(true),[]);
 
   const add=(kind:ShapeKind)=>{
     const color=(kind==="cube"||kind==="plank"?WOOD:CALM)[next%(kind==="cube"||kind==="plank"?WOOD.length:CALM.length)];
@@ -171,14 +173,14 @@ export function AtelierPhysics3D(){
     </div>
     <div className="pv16-atelier-shell">
       <div className="pv16-canvas" data-testid="atelier-3d">
-        <Canvas
+        {mounted ? <Canvas
           shadows
           dpr={quality==="high"?[1,1.7]:1}
           camera={{position:[0,6.4,8.8],fov:42,near:.1,far:40}}
           gl={{antialias:true,powerPreference:"high-performance"}}
         >
           <Suspense fallback={null}><AtelierRoom pieces={pieces}/></Suspense>
-        </Canvas>
+        </Canvas> : <div className="pv16-3d-loading">Ετοιμάζω το 3D atelier…</div>}
       </div>
       <div className="pv16-tool-tray" aria-label="Υλικά κατασκευής">
         <button onClick={()=>add("cube")}><i className="cube"/>Κύβος</button>
