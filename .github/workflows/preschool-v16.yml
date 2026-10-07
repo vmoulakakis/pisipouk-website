@@ -1,0 +1,40 @@
+name: Preschool V16 R3F CI
+
+on:
+  push:
+    branches:
+      - feature/preschool-v16-r3f
+  workflow_dispatch:
+
+jobs:
+  preschool-v16:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    env:
+      PRESCHOOL_BASE_URL: http://127.0.0.1:4173
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Validate preschool content
+        run: node scripts/validate_preschool_content.mjs
+      - name: Verify approved CC0 asset source
+        run: curl -fsSL --range 0-64 https://raw.githubusercontent.com/shorepine/kenney/main/3d/cube-pets/animal-bunny.glb >/dev/null
+      - name: Production build
+        run: npm run build
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Start local app
+        run: |
+          npm run dev -- --host 127.0.0.1 --port 4173 > /tmp/pisipouk-v16.log 2>&1 &
+          for i in {1..75}; do
+            if curl -fsS http://127.0.0.1:4173/virtual-preschool >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/pisipouk-v16.log
+          exit 1
+      - name: V16 3D browser QA
+        run: npm run test:preschool:v16 -- --workers=1
