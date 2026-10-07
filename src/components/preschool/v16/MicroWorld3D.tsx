@@ -1,4 +1,4 @@
-import { Suspense, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { ContactShadows, Float, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
@@ -73,8 +73,10 @@ function World({mode,onDiscover}:{mode:"sun"|"rain"|"night"|"wind";onDiscover:(x
 }
 
 export function MicroWorld3D(){
+  const [mounted,setMounted]=useState(false);
   const [mode,setMode]=useState<"sun"|"rain"|"night"|"wind">("sun");
   const [found,setFound]=useState<string[]>([]);
+  useEffect(()=>setMounted(true),[]);
   const discover=(name:string)=>setFound(v=>v.includes(name)?v:[...v,name]);
 
   return <section className="pv16-module">
@@ -85,9 +87,9 @@ export function MicroWorld3D(){
     </div>
     <div className="pv16-world-shell">
       <div className="pv16-canvas" data-testid="micro-world-3d">
-        <Canvas shadows dpr={[1,1.6]} camera={{position:[0,5.8,9.7],fov:39}} gl={{antialias:true,powerPreference:"high-performance"}}>
+        {mounted ? <Canvas shadows dpr={[1,1.6]} camera={{position:[0,5.8,9.7],fov:39}} gl={{antialias:true,powerPreference:"high-performance"}}>
           <Suspense fallback={null}><World mode={mode} onDiscover={discover}/></Suspense>
-        </Canvas>
+        </Canvas> : <div className="pv16-3d-loading">Ετοιμάζω το μαγικό νησί…</div>}
       </div>
       <div className="pv16-weather" aria-label="Αλλάζω τον κόσμο">
         <button className={mode==="sun"?"on":""} onClick={()=>setMode("sun")} aria-label="Ήλιος"><Sun/></button>
@@ -101,10 +103,3 @@ export function MicroWorld3D(){
   </section>;
 }
 
-useGLTF.preload(ASSETS.bunny);
-useGLTF.preload(ASSETS.fish);
-useGLTF.preload(ASSETS.tree);
-useGLTF.preload(ASSETS.plant);
-useGLTF.preload(ASSETS.rocks);
-useGLTF.preload(ASSETS.flower);
-useGLTF.preload(ASSETS.boat);
