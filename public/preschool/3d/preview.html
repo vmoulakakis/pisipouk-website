@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="el"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>PISIPOUK — 3D Character Studio QA</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#fff9f0;color:#244e42;font-family:system-ui,sans-serif}main{max-width:1160px;margin:auto;padding:25px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px}.top a{color:#24694e}.chip{display:inline-block;border-radius:30px;background:#edf4e9;padding:7px 15px;font-weight:800;font-size:12px}h1{font-size:clamp(28px,5vw,56px);margin:15px 0}.sub{max-width:700px;line-height:1.7;font-size:16px}.viewport{height:min(70vh,650px);min-height:350px;margin:24px auto;border-radius:32px;background:radial-gradient(ellipse at 50% 25%,#fff9e9,#cee2ce 72%,#acd0bf);overflow:hidden;box-shadow:0 15px 50px #34604b20;position:relative}model-viewer{display:block;width:100%;height:100%;--poster-color:transparent}.empty{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:24px;line-height:1.7}.empty div{max-width:520px}.controls{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}.controls button{border:2px solid #d2e5d9;border-radius:15px;padding:13px 18px;background:#fff;font-weight:850;color:#33624f;cursor:pointer}.controls button.active{background:#2f7454;color:white}.controls button:disabled{opacity:.4;cursor:not-allowed}.note{background:white;border-radius:20px;padding:19px;margin-top:20px;line-height:1.6}button:focus-visible,a:focus-visible{outline:4px solid #d69d55;outline-offset:2px}
+</style><script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.1.0/model-viewer.min.js"></script></head>
+<body><main><div class="top"><span class="chip">3D PRODUCTION • INTERNAL QA ONLY</span><a href="/virtual-preschool">← Online Preschool</a></div>
+<h1>Ο Πισιπούκ σε πραγματικό 3D</h1><p class="sub">Ο τελικός animated χαρακτήρας θα προέρχεται από το εγκεκριμένο GLB, όχι από επίπεδη εικόνα. Περιστρέφεις την κάμερα, μεγεθύνεις και επιλέγεις πραγματικά clips.</p>
+<div class="viewport"><div class="empty" id="empty"><div><h2>Αναμονή εγκεκριμένου 3D χαρακτήρα</h2><p>Το pipeline TRELLIS.2 → UniRig → Blender πρέπει πρώτα να παραδώσει GLB με σκελετό και πραγματικά animation clips. Δεν εμφανίζουμε ψεύτικο 3D ως τελικό.</p></div></div><model-viewer id="viewer" style="display:none" alt="Τρισδιάστατος Πισιπούκ με λευκό μπλουζάκι και κόκκινη καρδιά" camera-controls touch-action="pan-y" shadow-intensity="1" exposure="1.08" environment-image="neutral" interaction-prompt="auto" animation-crossfade-duration="350" ar="false"></model-viewer></div>
+<div class="controls" id="controls" aria-label="Ενέργειες του Πισιπούκ"></div><div id="status" class="note" role="status">Έλεγχος του εγκεκριμένου 3D αρχείου…</div>
+<div class="note">Οι εικόνες που μοιάζουν 3D δεν θεωρούνται αποδεκτό αποτέλεσμα. Απαιτούνται skinned mesh, bones, 6 animation clips, σωστή κίνηση, και απόδοση κατάλληλη για κινητό.</div>
+</main><script>
+const url="./pisipouk_animated.glb";
+const clips=[["Idle","Αναπνέω"],["Walk","Περπατάω"],["Wave","Χαιρετάω"],["Point","Δείχνω"],["Celebrate","Χαίρομαι"],["Listen","Ακούω"]];
+const viewer=document.getElementById("viewer"),empty=document.getElementById("empty"),status=document.getElementById("status"),controls=document.getElementById("controls");
+(async()=>{
+ try{
+  const res=await fetch(url,{method:"HEAD",cache:"no-store"});
+  if(!res.ok)throw Error("Δεν έχει παραδοθεί εγκεκριμένο animated GLB (HTTP "+res.status+").");
+  viewer.setAttribute("src",url);viewer.style.display="block";empty.style.display="none";
+  viewer.addEventListener("load",()=>{
+   const available=viewer.availableAnimations||[];
+   if(!available.length){status.textContent="ΑΠΟΡΡΙΨΗ: Το μοντέλο δεν περιέχει animation clips.";return}
+   for(const [clip,label] of clips){
+    const button=document.createElement("button");button.textContent=label;button.disabled=!available.includes(clip);
+    button.addEventListener("click",()=>{viewer.animationName=clip;viewer.play();for(const b of controls.children)b.classList.remove("active");button.classList.add("active")});
+    controls.append(button)
+   }
+   status.textContent="Φορτώθηκαν "+available.length+" animation clips. Ελέγξτε κάθε δράση και τις παραμορφώσεις σε πραγματική συσκευή.";
+   const idle=controls.querySelector("button:not(:disabled)");if(idle)idle.click();
+  },{once:true});
+  viewer.addEventListener("error",()=>{status.textContent="ΑΠΟΡΡΙΨΗ: Το 3D αρχείο δεν μπόρεσε να φορτωθεί."});
+ }catch(err){status.textContent=String(err.message||err)}
+})();
+</script></body></html>
