@@ -124,8 +124,10 @@ function draw(ctx:CanvasRenderingContext2D,id:Kind,scene:Scene,t:number,reduced:
    if(id==="water"&&!p.done)shine(ctx,p.x+10,p.y-110,10,t);
   }
   if(id==="water"){
-   for(let i=0;i<4;i++){let x=185+i*195,y=160+(scene.drag===i?20:0);
-    if(scene.drag===i){const p=scene.pieces[i];x=p.x;y=p.y;}
+   for(let i=0;i<4;i++){
+    if(scene.pieces[i].done)continue;
+    const x=scene.drag===i?scene.pieces[i].x:185+i*195;
+    const y=scene.drag===i?scene.pieces[i].y:160;
     oval(ctx,x,y,26,35,"#63c4e3");oval(ctx,x-7,y-9,7,14,"#daf7fa");
    }
   }
@@ -249,8 +251,8 @@ export function AnimatedArcade({age,world,onExit}:{age:V15Age;world?:string;onEx
  const start=(e:ReactPointerEvent<HTMLCanvasElement>)=>{
   if(!selected||!scene.current)return;const p=pointer(e),s=scene.current;
   if(["bloom","constellation","music","sail"].includes(selected)){handleAction(p.x,p.y);return;}
-  const target=s.pieces.find(piece=>!piece.done&&Math.hypot(p.x-piece.x,p.y-piece.y)<68);
-  if(!target)return;s.drag=target.id;e.currentTarget.setPointerCapture(e.pointerId);
+  const target=s.pieces.find(piece=>!piece.done&&Math.hypot(p.x-(selected==="water"?185+piece.id*195:piece.x),p.y-(selected==="water"?160:piece.y))<68);
+  if(!target)return;s.drag=target.id;if(selected==="water"){target.x=185+target.id*195;target.y=160;}e.currentTarget.setPointerCapture(e.pointerId);
  };
  const move=(e:ReactPointerEvent<HTMLCanvasElement>)=>{
   const s=scene.current;if(!s||s.drag===null)return;const p=pointer(e),piece=s.pieces[s.drag];
