@@ -2,7 +2,7 @@
 A bone_map JSON is mandatory. Fails rather than silently animating the wrong joints.
 Requires Blender, not runnable inside the browser; exports real skinned glTF animation clips.
 """
-import argparse,json,math
+import argparse,json,math,sys
 from pathlib import Path
 import bpy
 
@@ -10,7 +10,7 @@ p=argparse.ArgumentParser()
 p.add_argument("--input",required=True)
 p.add_argument("--output",required=True)
 p.add_argument("--bone-map",required=True,help="JSON mapping role to actual rig bone name")
-a=p.parse_args()
+a=p.parse_args(sys.argv[sys.argv.index("--")+1:] if "--" in sys.argv else None)
 bone_map=json.loads(Path(a.bone_map).read_text(encoding="utf-8"))
 required=["hips","spine","head","arm_left","arm_right","leg_left","leg_right","neck"]
 for role in required:
