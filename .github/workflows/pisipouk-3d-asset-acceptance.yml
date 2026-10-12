@@ -1,0 +1,33 @@
+name: PISIPOUK 3D Asset Acceptance
+on:
+  workflow_dispatch:
+    inputs:
+      animated_asset:
+        description: "Path to uploaded approved GLB within repository"
+        required: true
+        default: "public/preschool/3d/pisipouk_animated.glb"
+        type: string
+permissions:
+  contents: read
+jobs:
+  validate-3d:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check production asset path
+        env:
+          ASSET_PATH: ${{ inputs.animated_asset }}
+        run: |
+          if [[ "$ASSET_PATH" != public/preschool/3d/* || "$ASSET_PATH" != *.glb ]]; then
+            echo "::error::Only GLB under public/preschool/3d/ is allowed"
+            exit 1
+          fi
+          if [[ ! -f "$ASSET_PATH" ]]; then
+            echo "::error::3D GLB has not been created and committed yet; no false success"
+            exit 1
+          fi
+      - name: Inspect skeleton and motion clips
+        env:
+          ASSET_PATH: ${{ inputs.animated_asset }}
+        run: python scripts/3d/validate_glb.py "$ASSET_PATH" --stage animated
