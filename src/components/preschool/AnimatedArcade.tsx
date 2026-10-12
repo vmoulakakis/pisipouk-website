@@ -116,12 +116,12 @@ function draw(ctx:CanvasRenderingContext2D,id:Kind,scene:Scene,t:number,reduced:
  const game=ANIMATED_GAMES.find(g=>g.id===id)!;paintSky(ctx,game.scene,t,reduced);
  if(id==="bloom"||id==="water"){
   if(id==="water")for(const p of scene.pieces) {
-   oval(ctx,p.x,420,55,20,"#975b46");roundRect(ctx,p.x-42,386,84,39,9,"#bc7858");
+   oval(ctx,p.ox,420,55,20,"#975b46");roundRect(ctx,p.ox-42,386,84,39,9,"#bc7858");
   }
   for(const p of scene.pieces) {
    const grown=p.done?1:id==="water"?.25:0;
-   plant(ctx,p.x,p.y,PALETTE[p.color],grown,t);
-   if(id==="water"&&!p.done)shine(ctx,p.x+10,p.y-110,10,t);
+   plant(ctx,id==="water"?p.ox:p.x,id==="water"?p.oy:p.y,PALETTE[p.color],grown,t);
+   if(id==="water"&&!p.done)shine(ctx,p.ox+10,p.oy-110,10,t);
   }
   if(id==="water"){
    for(let i=0;i<4;i++){
@@ -206,7 +206,7 @@ function note(freq:number){
 }
 export function AnimatedArcade({age,world,onExit}:{age:V15Age;world?:string;onExit:()=>void}){
  const games=ANIMATED_GAMES.filter(g=>g.ages.includes(age)&&(!world||g.world===world));
- const [selected,setSelected]=useState<Kind|null>(null),[status,setStatus]=useState(""),[progress,setProgress]=useState(0),[won,setWon]=useState(false),[sound,setSound]=useState(false);
+ const [selected,setSelected]=useState<Kind|null>(null),[status,setStatus]=useState(""),[progress,setProgress]=useState(0),[won,setWon]=useState(false),[sound,setSound]=useState(true);
  const canvas=useRef<HTMLCanvasElement>(null),scene=useRef<Scene|null>(null),lastFrame=useRef(0);
  const selectedGame=ANIMATED_GAMES.find(g=>g.id===selected);
  const restart=(id:Kind)=>{scene.current=initial(id,age);setSelected(id);setWon(false);setProgress(0);setStatus("Παίξε με το δάχτυλο, το ποντίκι ή τα κουμπιά.")};
