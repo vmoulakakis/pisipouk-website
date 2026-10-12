@@ -77,7 +77,7 @@ const games = [
 function BlogRouteView() {
   const location = useLocation();
   // Article URLs are nested under /blog; render the matched child route.
-  if (location.pathname.replace(/\\/+$/, "") !== "/blog") return <Outlet />;
+  if (location.pathname.startsWith("/blog/")) return <Outlet />;
   return <BlogPage />;
 }
 
