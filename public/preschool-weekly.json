@@ -1,10 +1,10 @@
 {
   "version": 1,
-  "week": "2026-W41",
-  "updatedAt": "2026-10-05T12:20:58.989Z",
+  "week": "2026-W42",
+  "updatedAt": "2026-10-12T13:15:12.549Z",
   "source": "deterministic-exploration",
   "items": [
-    "game-memory",
+    "game-pattern",
     "game-colors-shapes",
     "print-dot-pattern",
     "print-trace-paths",
@@ -12,6 +12,18 @@
     "craft-butterfly"
   ],
   "rotationHistory": [
+    {
+      "week": "2026-W42",
+      "at": "2026-10-12T13:15:12.549Z",
+      "source": "deterministic-exploration",
+      "replacements": [
+        {
+          "from": "game-memory",
+          "to": "game-pattern",
+          "reason": "exploration-slot"
+        }
+      ]
+    },
     {
       "week": "2026-W41",
       "at": "2026-10-05T12:20:58.989Z",
