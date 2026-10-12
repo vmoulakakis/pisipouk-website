@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
 import {
   ArrowRight,
   BookOpen,
@@ -53,7 +53,7 @@ export const Route = createFileRoute("/blog")({
       },
     ],
   }),
-  component: BlogPage,
+  component: BlogRouteView,
 });
 
 const games = [
@@ -73,6 +73,13 @@ const games = [
     text: "Ο γονιός δίνει 3 λέξεις. Το παιδί φτιάχνει μια μικρή ιστορία και μετά αλλάζετε ρόλους.",
   },
 ];
+
+function BlogRouteView() {
+  const location = useLocation();
+  // Article URLs are nested under /blog; render the matched child route.
+  if (location.pathname.replace(/\\/+$/, "") !== "/blog") return <Outlet />;
+  return <BlogPage />;
+}
 
 function BlogPage() {
   const { lang } = useLanguage();
