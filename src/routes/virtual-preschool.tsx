@@ -1,3 +1,4 @@
+import { PreschoolV17 } from "@/components/preschool/PreschoolV17";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { CalendarDays, Heart, Palette, Play, Printer, RotateCcw, Scissors, ShieldCheck, Sparkles, Star, Users } from "lucide-react";
@@ -9,14 +10,14 @@ import { COLORING_PAGES, CRAFT_LIBRARY, CURATED_MEDIA, type PreschoolAge } from 
 export const Route = createFileRoute("/virtual-preschool")({
   head: () => ({
     meta: [
-      { title: "Pisipouk Online Preschool | Watch • Play • Create" },
+      { title: "Ο Μαγικός Κόσμος του Πισιπούκ | Παιχνίδια 2–6 ετών" },
       {
         name: "description",
         content: "Ένα ολοκληρωμένο online preschool για παιδιά 2–6: θεματικά εκπαιδευτικά παιχνίδια ανά ηλικία, επιλεγμένα βίντεο, ζωγραφική, Α4 χειροτεχνίες, κίνηση και εποχιακές δραστηριότητες.",
       },
     ],
   }),
-  component: VirtualPreschool,
+  component: PreschoolV17,
 });
 
 type Season = {
