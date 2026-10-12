@@ -4,6 +4,7 @@ import { PisipoukCharacter } from "./v15/PisipoukCharacter";
 import { V15_GAMES, V15GamePlayer, type V15Game, type V15Age } from "./v15/Games";
 import { Atelier, Stories, Today, Worlds } from "./v15/Experiences";
 import "./preschool-v17.css";
+import { DiscoveryGames } from "./DiscoveryGames";
 import forestImage from "@/assets/pisipouk-exterior.webp";
 import atelierImage from "@/assets/pisipouk-classroom.webp";
 import storyImage from "@/assets/pisipouk-story.webp";
@@ -76,7 +77,7 @@ export function PreschoolV17() {
         <section className="pw17-feature"><div><span className="pw17-overline">ΜΙΑ ΜΙΚΡΗ ΑΠΟΣΤΟΛΗ</span><h2>Η ομορφότερη περιπέτεια συνεχίζεται έξω από την οθόνη.</h2><p>Παρατήρησε ένα φύλλο, άκου τη βροχή ή ζωγράφισε κάτι που είδες. Λίγα λεπτά παρέα μπορούν να γίνουν μεγάλη ιστορία.</p><button className="pw17-button primary" onClick={()=>open("today")}>Δες τη σημερινή ιδέα <ArrowRight/></button></div><img src={storyImage} alt="Εικονογράφηση για κοινή ανάγνωση και φαντασία" loading="lazy"/></section>
       </>}
       {zone!=="home"&&<section className="pw17-inner-heading"><button className="pw17-back" onClick={()=>open("home")}><ArrowLeft size={18}/> Πίσω στους κόσμους</button><span className="pw17-overline">Ο ΚΟΣΜΟΣ ΤΟΥ ΠΙΣΙΠΟΥΚ</span><h1>{zone==="games"?"Παίζω και ανακαλύπτω":zone==="atelier"?"Το ατελιέ των χρωμάτων":zone==="stories"?"Η παραμυθοχώρα":zone==="today"?"Η σημερινή μας ιδέα":zone==="parents"?"Για γονείς και παιδαγωγούς":current?.title||"Εξερευνώ"}</h1><p>{zone==="games"?ageToPhrase[age]:current?.subtitle||"Μαθαίνουμε με παιχνίδι, φαντασία και ελεύθερη εξερεύνηση."}</p></section>}
-      {zone==="games"&&<><div className="pw17-compact-ages">{ages.map(a=><button key={a.id} className={age===a.id?"selected":""} onClick={()=>setAge(a.id)} aria-pressed={age===a.id}>{a.label} ετών</button>)}</div><div className="pw17-game-grid">{games.map(g=><button key={g.id} onClick={()=>setGame(g)} className="pw17-game-card"><img src={g.cover} alt="" loading="lazy"/><div><span>{g.minutes} · {g.skill}</span><h2>{g.title}</h2><p>{g.intro}</p><strong>Παίζω <ArrowRight size={18}/></strong></div></button>)}</div></>}
+      {zone==="games"&&<><div className="pw17-compact-ages">{ages.map(a=><button key={a.id} className={age===a.id?"selected":""} onClick={()=>setAge(a.id)} aria-pressed={age===a.id}>{a.label} ετών</button>)}</div><DiscoveryGames age={age} onClose={()=>open("home")}/><div className="pw17-game-intro"><span>ΑΚΟΜΗ ΠΕΡΙΣΣΟΤΕΡΟ ΠΑΙΧΝΙΔΙ</span><h2>Οι αγαπημένες δραστηριότητες του Πισιπούκ</h2></div><div className="pw17-game-grid">{games.map(g=><button key={g.id} onClick={()=>setGame(g)} className="pw17-game-card"><img src={g.cover} alt="" loading="lazy"/><div><span>{g.minutes} · {g.skill}</span><h2>{g.title}</h2><p>{g.intro}</p><strong>Παίζω <ArrowRight size={18}/></strong></div></button>)}</div></>}
       {zone==="atelier"&&<div className="pw17-experience"><Atelier/></div>}
       {zone==="stories"&&<div className="pw17-experience"><Stories/></div>}
       {zone==="today"&&<div className="pw17-experience"><Today/></div>}
