@@ -29,13 +29,13 @@ function initial(id:Kind,age:V15Age):Scene {
  const build=(pts:{x:number;y:number}[],targets:{x:number;y:number}[],colors:number[])=>pts.map((p,i)=>({id:i,x:p.x,y:p.y,ox:p.x,oy:p.y,destX:targets[i].x,destY:targets[i].y,color:colors[i],done:false}));
  let pieces:Piece[]=[];
  if(id==="bloom"||id==="water"){
-  const pts=circles(id==="bloom"?5:4,155,830,390);
+  const pts=circles(Math.min(id==="bloom"?5:4,n),155,830,390);
   pieces=build(pts,pts,pts.map((_,i)=>i%5));
  }
  if(id==="sort"){
   const targets=circles(6,190,770,428);
   const pts=circles(6,120,830,210);
-  pieces=build(pts,targets,[0,1,2,0,1,2]);
+  pieces=build(pts,targets,[0,1,2,0,1,2]).slice(0,n);
  }
  if(id==="bridge"){
   const pts=circles(4,230,730,445), targets=circles(4,350,620,313);
@@ -43,13 +43,13 @@ function initial(id:Kind,age:V15Age):Scene {
  }
  if(id==="shapes"){
   const pts=circles(5,190,765,435), targets=circles(5,190,765,265);
-  pieces=build(pts,targets,[0,1,2,3,4]);
+  pieces=build(pts,targets,[0,1,2,3,4]).slice(0,n);
  }
  if(id==="constellation"){
   const stars=[{x:230,y:160},{x:360,y:110},{x:490,y:210},{x:650,y:125},{x:740,y:270},{x:570,y:365}];
-  pieces=build(stars,stars,stars.map((_,i)=>i));
+  pieces=build(stars,stars,stars.map((_,i)=>i)).slice(0,n);
  }
- return{pieces,completed:0,target:id==="music"?5:id==="sail"?3:id==="sort"?6:id==="bridge"?4:id==="shapes"?5:id==="constellation"?6:id==="water"?4:5,current:0,drag:null,particles:[],notes:0,boatX:150,boatGoal:150,boatMoving:false,visited:[],lastTime:0,win:false,points:[]};
+ return{pieces,completed:0,target:id==="music"?5:id==="sail"?3:pieces.length,current:0,drag:null,particles:[],notes:0,boatX:150,boatGoal:150,boatMoving:false,visited:[],lastTime:0,win:false,points:[]};
 }
 function oval(ctx:CanvasRenderingContext2D,x:number,y:number,rx:number,ry:number,color:string){ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();}
 function roundRect(ctx:CanvasRenderingContext2D,x:number,y:number,w:number,h:number,r:number,color:string){ctx.fillStyle=color;ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill();}
@@ -124,7 +124,7 @@ function draw(ctx:CanvasRenderingContext2D,id:Kind,scene:Scene,t:number,reduced:
    if(id==="water"&&!p.done)shine(ctx,p.ox+10,p.oy-110,10,t);
   }
   if(id==="water"){
-   for(let i=0;i<4;i++){
+   for(let i=0;i<scene.pieces.length;i++){
     if(scene.pieces[i].done)continue;
     const x=scene.drag===i?scene.pieces[i].x:185+i*195;
     const y=scene.drag===i?scene.pieces[i].y:160;
