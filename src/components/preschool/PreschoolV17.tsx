@@ -6,6 +6,7 @@ import { Atelier, Stories, Today, Worlds } from "./v15/Experiences";
 import "./preschool-v17.css";
 import { DiscoveryGames } from "./DiscoveryGames";
 import { CinematicForest3D } from "./CinematicForest3D";
+import { ForestQuestV17 } from "./ForestQuestV17";
 import forestImage from "@/assets/pisipouk-exterior.webp";
 import atelierImage from "@/assets/pisipouk-classroom.webp";
 import storyImage from "@/assets/pisipouk-story.webp";
@@ -82,7 +83,7 @@ export function PreschoolV17() {
       {zone==="atelier"&&<div className="pw17-experience"><Atelier/></div>}
       {zone==="stories"&&<div className="pw17-experience"><Stories/></div>}
       {zone==="today"&&<div className="pw17-experience"><Today/></div>}
-      {zone==="nature"&&<div className="pw17-experience"><Worlds/></div>}
+      {zone==="nature"&&<ForestQuestV17 age={age} onExit={()=>open("home")}/> }
       {zone==="greece"&&<div className="pw17-context"><img src={forestImage} alt="" /><h2>Μικρές αποστολές στην Ελλάδα</h2><p>Μια νέα ιστορία ξεκινά από τα χρώματα της εποχής. Βρες τρία φυσικά αντικείμενα, παρατήρησέ τα με έναν ενήλικο και ζωγράφισε το αγαπημένο σου.</p><button className="pw17-button primary" onClick={()=>open("today")}>Δες μια δραστηριότητα <ArrowRight/></button></div>}
       {zone==="music"&&<div className="pw17-context"><Music2 size={48}/><h2>Παίζουμε με τον ρυθμό</h2><p>Ακούμε, δοκιμάζουμε και δημιουργούμε ήχους χωρίς σωστό ή λάθος.</p><button className="pw17-button primary" onClick={()=>setGame(V15_GAMES.find(g=>g.id==="music")||null)}>Ξεκίνα τη μουσική <ArrowRight/></button></div>}
       {zone==="discovery"&&<div className="pw17-context"><Shapes size={48}/><h2>Ανακάλυψε σχήματα και μοτίβα</h2><p>Δοκίμασε παιχνίδια ταξινόμησης και ακολουθιών ανά ηλικία.</p><button className="pw17-button primary" onClick={()=>open("games")}>Δες τα παιχνίδια <ArrowRight/></button></div>}
