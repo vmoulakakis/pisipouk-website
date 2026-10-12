@@ -5,6 +5,7 @@ import { V15_GAMES, V15GamePlayer, type V15Game, type V15Age } from "./v15/Games
 import { Atelier, Stories, Today, Worlds } from "./v15/Experiences";
 import "./preschool-v17.css";
 import { DiscoveryGames } from "./DiscoveryGames";
+import { CinematicForest3D } from "./CinematicForest3D";
 import forestImage from "@/assets/pisipouk-exterior.webp";
 import atelierImage from "@/assets/pisipouk-classroom.webp";
 import storyImage from "@/assets/pisipouk-story.webp";
@@ -57,7 +58,7 @@ export function PreschoolV17() {
     <main id="pw17-content" className="pw17-main">
       {zone==="home"&&<>
         <section className="pw17-hero" aria-labelledby="pw17-hero-heading">
-          <div className="pw17-hero-illustration" aria-hidden="true"><img src={forestImage} alt=""/><span className="pw17-orbit pw17-orbit-one">✦</span><span className="pw17-orbit pw17-orbit-two">✿</span></div>
+          <div className="pw17-hero-illustration" aria-hidden="true"><CinematicForest3D/><span className="pw17-orbit pw17-orbit-one">✦</span><span className="pw17-orbit pw17-orbit-two">✿</span></div>
           <div className="pw17-hero-inner">
             <div className="pw17-copy"><span className="pw17-eyebrow"><Sparkles size={16}/> Καλώς ήρθες στον μαγικό μας κόσμο</span>
               <h1 id="pw17-hero-heading">Μικρά χεράκια.<br/><em>Μεγάλες ανακαλύψεις.</em></h1>
