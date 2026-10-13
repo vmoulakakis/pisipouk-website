@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { PreschoolGameLab } from "@/components/preschool/PreschoolGameLab";
 import type { PreschoolAge } from "@/content/virtualPreschoolMedia";
@@ -16,13 +16,15 @@ export const Route = createFileRoute("/virtual-preschool")({
 
 function VirtualPreschool() {
   const [age,setAge] = useState<PreschoolAge>("4–5");
+  const [worldHeight,setWorldHeight] = useState(2600);
+  useEffect(()=>{ const handler=(event:MessageEvent)=>{ if(event.origin===window.location.origin && event.data?.type==="pisipouk-learning-height" && typeof event.data.height==="number"){setWorldHeight(Math.max(800,Math.min(event.data.height+8,10000)));}};window.addEventListener("message",handler);return ()=>window.removeEventListener("message",handler);},[]);
   return <SiteLayout>
     <main className="bg-[#fff9f0]">
       <iframe
         title="Ο Μαγικός Κόσμος του Πισιπούκ — ζωγραφική, παραμύθια και εκπαιδευτικές δραστηριότητες"
         src="/pisipouk-learning-world.html"
         className="block w-full border-0"
-        style={{height:"3200px"}}
+        style={{height:worldHeight+"px"}}
         loading="eager"
       />
       <section id="more-games" className="mx-auto max-w-7xl px-4 pb-16 pt-10">
