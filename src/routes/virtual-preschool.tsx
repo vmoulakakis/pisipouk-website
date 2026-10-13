@@ -1,45 +1,25 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { SiteLayout } from "@/components/site/SiteLayout";
-import { PreschoolGameLab } from "@/components/preschool/PreschoolGameLab";
-import type { PreschoolAge } from "@/content/virtualPreschoolMedia";
 
 export const Route = createFileRoute("/virtual-preschool")({
-  head: () => ({
-    meta: [
-      { title: "Ο Μαγικός Κόσμος του Πισιπούκ | Διαδραστικό Νηπιαγωγείο" },
-      { name: "description", content: "Ηλικιακές δραστηριότητες 2–6 ετών, ζωγραφική, κατασκευές, ιστορίες, εκπαιδευτικά παιχνίδια, αστεράκια και εκτύπωση PDF." },
-    ],
-  }),
+  head: () => ({ meta: [
+    { title: "Πισιπούκ | Ο Μαγικός Εκπαιδευτικός Κόσμος" },
+    { name: "description", content: "Εκπαιδευτικό εργαστήρι για 2–6 ετών: ζωγραφική αφής, ιστορίες, κατασκευές, παιχνίδια, εποχές, εκτύπωση και θετική ενθάρρυνση." }
+  ]}),
   component: VirtualPreschool,
 });
-
-function VirtualPreschool() {
-  const [age,setAge] = useState<PreschoolAge>("4–5");
-  const [worldHeight,setWorldHeight] = useState(2600);
-  useEffect(()=>{ const handler=(event:MessageEvent)=>{ if(event.origin===window.location.origin && event.data?.type==="pisipouk-learning-height" && typeof event.data.height==="number"){setWorldHeight(Math.max(800,Math.min(event.data.height+8,10000)));}};window.addEventListener("message",handler);return ()=>window.removeEventListener("message",handler);},[]);
-  return <SiteLayout>
-    <main className="bg-[#fff9f0]">
-      <iframe
-        title="Ο Μαγικός Κόσμος του Πισιπούκ — ζωγραφική, παραμύθια και εκπαιδευτικές δραστηριότητες"
-        src="/pisipouk-learning-world.html"
-        className="block w-full border-0"
-        style={{height:worldHeight+"px"}}
-        loading="eager"
-      />
-      <section id="more-games" className="mx-auto max-w-7xl px-4 pb-16 pt-10">
-        <div className="mb-6 rounded-[28px] bg-white p-6 shadow-sm">
-          <p className="font-black uppercase tracking-wider text-amber-700">Περισσότερη εξερεύνηση</p>
-          <h2 className="text-3xl font-black text-[#49331e]">🎮 Διαδραστικά εκπαιδευτικά παιχνίδια</h2>
-          <p className="mt-2 text-[#735e49]">Παιχνίδια αριθμών, σχημάτων, μνήμης, γλώσσας και συναισθημάτων, ανά ηλικία.</p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            {([["2–3","2–3 ετών"],["4–5","3–5 ετών"],["5–6","5–6 ετών"]] as const).map(([value,label]) =>
-              <button key={value} onClick={()=>setAge(value)} className={`rounded-full px-5 py-3 font-black ${age===value?"bg-amber-400 text-amber-950":"bg-amber-50 text-amber-900"}`}>{label}</button>
-            )}
-          </div>
-        </div>
-        <PreschoolGameLab age={age} />
-      </section>
-    </main>
-  </SiteLayout>;
+function VirtualPreschool(){
+  const [height,setHeight]=useState(2050);
+  useEffect(()=>{
+    const onMessage=(e:MessageEvent)=>{
+      if(e.origin!==window.location.origin || e.data?.type!=="pisipouk-learning-height")return;
+      if(typeof e.data.height==="number")setHeight(Math.max(900,Math.min(12000,e.data.height+12)));
+    };
+    window.addEventListener("message",onMessage);
+    return ()=>window.removeEventListener("message",onMessage);
+  },[]);
+  return <SiteLayout><main className="bg-[#fff9f0]">
+    <iframe title="Ο Μαγικός Εκπαιδευτικός Κόσμος του Πισιπούκ" src="/pisipouk-learning-world.html?v=20261013r2" className="block w-full border-0" style={{height}} loading="eager"/>
+  </main></SiteLayout>
 }
