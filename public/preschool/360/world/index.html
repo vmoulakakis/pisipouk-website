@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="el"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="theme-color" content="#0874c5" /><meta name="robots" content="noindex,nofollow" />
+<title>PISIPOUK 360 — Το Μαγικό Χωριό</title>
+<link rel="stylesheet" href="world.css" />
+</head><body>
+<div id="world-app" class="world-app">
+  <header class="world-header">
+    <div class="world-identity"><img class="world-avatar" src="assets/pisipouk-mascot.webp" alt=""/><div><span class="brand-top">PISIPOUK 360</span><strong>Το Μαγικό Χωριό</strong></div></div>
+    <div class="world-header-actions"><span class="world-stars" aria-live="polite" aria-label="Αστέρια αυτής της επίσκεψης">⭐ <b id="star-count">0</b></span><button id="narration" title="Ελληνική αφήγηση" aria-label="Ενεργοποίηση ή απενεργοποίηση αφήγησης" aria-pressed="false">🔇</button><button id="parent-gate" title="Για γονείς και παιδαγωγούς" aria-label="Πύλη γονέων και παιδαγωγών">🔒</button></div>
+  </header>
+  <main>
+    <section class="map-section" aria-label="Διαδραστικός χάρτης του Πισιπούκ">
+      <div class="world-stage" id="world-stage">
+        <div class="world-scene" id="world-scene" role="img" aria-label="Κινηματογραφική εικονογράφηση του μαγικού χωριού: φάρμα, φούρνος, δεντρόσπιτο, μουσική, ατελιέ και κάστρο">
+          <img id="world-image" src="assets/pisipouk-preschool-world.webp" alt="" draggable="false" />
+          <button class="map-pin nature" style="--hx:17%;--hy:54%" data-zone="nature" aria-label="Φύση: ζωάκια, φυτά, περιβολάκι"><span class="pin-emoji">🌻</span><span class="pin-label">Φύση</span></button>
+          <button class="map-pin bakery" style="--hx:41%;--hy:43%" data-zone="bakery" aria-label="Φούρνος: χρώματα και μαθηματικά"><span class="pin-emoji">🧁</span><span class="pin-label">Μαθηματικά</span></button>
+          <button class="map-pin stories" style="--hx:61%;--hy:28%" data-zone="stories" aria-label="Δεντρόσπιτο: ιστορίες και βιβλία"><span class="pin-emoji">📖</span><span class="pin-label">Ιστορίες</span></button>
+          <button class="map-pin music" style="--hx:73%;--hy:57%" data-zone="music" aria-label="Μουσικό κιόσκι: μουσική και ρυθμός"><span class="pin-emoji">🎼</span><span class="pin-label">Μουσική</span></button>
+          <button class="map-pin atelier" style="--hx:91%;--hy:65%" data-zone="atelier" aria-label="Ατελιέ: τέχνη και χρώμα"><span class="pin-emoji">🎨</span><span class="pin-label">Ατελιέ</span></button>
+          <button class="map-pin castle" style="--hx:89%;--hy:28%" data-zone="castle" aria-label="Κάστρο: καθημερινές ρουτίνες και ανακαλύψεις"><span class="pin-emoji">🏰</span><span class="pin-label">Κάστρο</span></button>
+          <span class="world-glint glint-1" aria-hidden="true">✦</span><span class="world-glint glint-2" aria-hidden="true">✦</span><span class="world-glint glint-3" aria-hidden="true">✦</span>
+        </div>
+        <div class="world-gesture-hint" id="gesture-hint">👆 Άγγιξε έναν κόσμο ή σύρε τον χάρτη!</div>
+        <div class="world-pan-controls"><button id="pan-left" aria-label="Σύρε τον χάρτη αριστερά">◀</button><button id="pan-right" aria-label="Σύρε τον χάρτη δεξιά">▶</button></div>
+        <div class="world-zone-strip" role="group" aria-label="Γρήγορη επιλογή περιοχής">
+          <button data-zone="nature">🌿 Φύση</button><button data-zone="bakery">🍎 Μαθηματικά</button><button data-zone="stories">📖 Ιστορίες</button><button data-zone="music">🎵 Μουσική</button><button data-zone="atelier">🎨 Τέχνη</button><button data-zone="castle">🏰 Κάστρο</button>
+        </div>
+      </div>
+      <div class="world-meta"><div>✨ Ελεύθερη εξερεύνηση · Χωρίς χρονόμετρο και αποτυχία</div><div class="world-ages" aria-label="Επιλεγμένη ηλικία"><span id="age-label">3–4 ετών</span></div></div>
+    </section>
+    <section class="world-intro"><h1>Πού θα παίξουμε σήμερα;</h1><p>Έξι μαγικοί κόσμοι, φτιαγμένοι για μικρά χεράκια και μεγάλες ανακαλύψεις.</p><div class="world-age-buttons" role="group" aria-label="Ηλικιακή ομάδα"><button data-age="2-3">2–3</button><button data-age="3-4" aria-pressed="true">3–4</button><button data-age="4-5">4–5</button><button data-age="5-6">5–6</button></div></section>
+    <section class="world-catalog" aria-label="Εκπαιδευτικά παιχνίδια ανά ηλικία"><div class="catalog-head"><h2>Οι 20 μικρές περιπέτειες</h2><button id="shuffle" class="shuffle-button">🎲 Τυχαίο παιχνίδι</button></div><div id="age-games" class="catalog-grid"></div></section>
+  </main>
+  <dialog id="zone-dialog" class="world-dialog" aria-labelledby="dialog-title"><div class="dialog-panel"><div class="dialog-top"><span id="dialog-eyebrow">ΚΟΣΜΟΣ ΤΟΥ ΠΙΣΙΠΟΥΚ</span><button class="close" id="close-zone" aria-label="Κλείσιμο">✕</button></div><h2 id="dialog-title">Διάλεξε δραστηριότητα</h2><p id="dialog-summary"></p><div id="dialog-activities" class="dialog-activities"></div></div></dialog>
+  <dialog id="game-dialog" class="game-dialog" aria-labelledby="game-title"><div class="game-shell"><div class="game-top"><strong id="game-title">Παίζουμε!</strong><button id="close-game" aria-label="Πίσω στον χάρτη">✕ Πίσω στον χάρτη</button></div><iframe id="game-frame" title="Διαδραστικό εκπαιδευτικό παιχνίδι" loading="lazy" allow="fullscreen" referrerpolicy="same-origin"></iframe></div></dialog>
+  <dialog id="parent-dialog" class="parent-dialog" aria-labelledby="parent-title"><div class="parent-box"><button id="close-parent" class="close" aria-label="Κλείσιμο">✕</button><h2 id="parent-title">Για γονείς και παιδαγωγούς</h2><div id="parent-challenge"><p>Για να ανοίξει ο χώρος ενηλίκων, απάντησε: <strong>8 + 7 = ?</strong></p><label>Απάντηση <input id="parent-answer" type="number" inputmode="numeric" min="0" max="99"/></label><button id="parent-submit">Συνέχεια</button><p id="parent-error" role="alert"></p></div><div id="parent-content" hidden><p>Ο Πισιπούκ προσφέρει σύντομες δραστηριότητες, ελεύθερο παιχνίδι και ηλικιακά κατάλληλες επιλογές. Τα αστέρια αυτής της επίσκεψης παραμένουν μόνο στη μνήμη της σελίδας. Δεν συλλέγονται στοιχεία παιδιών.</p><p>Για εκπαιδευτικές παρατηρήσεις χρησιμοποιήστε δικές σας παιδαγωγικές σημειώσεις, όχι αυτόματη αξιολόγηση παιδιών.</p></div></div></dialog>
+</div>
+<script src="world.js" defer></script>
+</body></html>
