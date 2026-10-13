@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Πισιπούκ • Το Νησί των Σχημάτων — Διαδραστικό 3D παιχνίδι</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Three.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <!-- OrbitControls CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <!-- GSAP CDN for smooth toddler spring animations -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <!-- Canvas Confetti for winning celebrations -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <!-- Fredoka / Baloo playful google font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      font-family: 'Fredoka', cursive, system-ui, sans-serif;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(180deg, #7ad8ff 0%, #d8f5ff 100%);
+    }
+    #game-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      outline: none;
+    }
+    /* Soft bounce and gentle glow effects */
+    .bouncy-hover {
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+    }
+    .bouncy-hover:hover {
+      transform: translateY(-4px) scale(1.04);
+    }
+    .bouncy-hover:active {
+      transform: translateY(2px) scale(0.96);
+    }
+    .shadow-chunky {
+      box-shadow: 0 8px 0 rgba(0, 0, 0, 0.15), 0 15px 25px rgba(0, 0, 0, 0.1);
+    }
+    .text-stroke-white {
+      -webkit-text-stroke: 3px #ffffff;
+    }
+    @keyframes floating {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-8px) rotate(2deg); }
+    }
+    .animate-float {
+      animation: floating 3s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body class="relative w-screen h-screen">
+
+  <canvas id="game-canvas"></canvas>
+
+  <!-- Top Header UI: Stars Counter & Sound Controls -->
+  <div class="absolute top-3 left-0 right-0 px-4 md:px-8 flex justify-between items-center pointer-events-none z-20">
+    <!-- Star Counter Pill -->
+    <div class="pointer-events-auto bg-amber-400 border-4 border-white rounded-full px-5 py-2.5 flex items-center gap-3 shadow-chunky bouncy-hover">
+      <span class="text-3xl filter drop-shadow">⭐</span>
+      <div class="flex flex-col">
+        <span class="text-xs uppercase font-bold text-amber-900 tracking-wide">Αστεράκια</span>
+        <span id="star-count" class="text-2xl font-black text-amber-950 leading-none">0</span>
+      </div>
+    </div>
+
+    <!-- Quick Audio controls & Help Button -->
+    <div class="pointer-events-auto flex items-center gap-2">
+      <!-- Repeat Voice Prompt Button -->
+      <button id="btn-repeat-speech" class="bg-indigo-500 hover:bg-indigo-600 border-4 border-white text-white p-3 md:px-5 md:py-3 rounded-full shadow-chunky bouncy-hover flex items-center gap-2 font-bold text-lg" title="Άκου ξανά την οδηγία">
+        <span class="text-2xl">📢</span>
+        <span class="hidden md:inline">Άκου ξανά</span>
+      </button>
+      
+      <!-- Audio Mute/Unmute Toggle -->
+      <button id="btn-sound-toggle" class="bg-rose-500 hover:bg-rose-600 border-4 border-white text-white p-3 rounded-full shadow-chunky bouncy-hover text-2xl w-14 h-14 flex items-center justify-center" title="Ήχος On/Off">
+        <span id="sound-icon">🔊</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Instruction Mission Card (Center-Top for Toddlers) -->
+  <div class="absolute top-20 md:top-20 left-1/2 transform -translate-x-1/2 w-11/12 max-w-xl pointer-events-none z-20">
+    <div class="pointer-events-auto bg-white/95 backdrop-blur-md border-4 border-sky-400 rounded-3xl p-4 md:p-5 shadow-chunky text-center animate-float">
+      <p class="text-xs md:text-sm font-bold text-sky-600 tracking-wider uppercase mb-1">🎮 Αποστολή Σχημάτων</p>
+      <div id="target-prompt" class="text-2xl md:text-3xl font-extrabold text-slate-800 tracking-tight flex items-center justify-center gap-3 flex-wrap">
+        <span>Βρες το:</span>
+        <span id="target-name" class="inline-block px-4 py-1 rounded-2xl bg-amber-200 text-amber-900 shadow-sm border-2 border-amber-300">
+          ...
+        </span>
+      </div>
+      <p id="sub-hint" class="text-xs md:text-sm text-slate-500 mt-1">Άγγιξε ή κάνε κλικ στο σωστό τρισδιάστατο σχήμα!</p>
+    </div>
+  </div>
+
+  <!-- Bottom Interactive Action Bar -->
+  <div class="absolute bottom-4 left-0 right-0 px-3 flex flex-wrap justify-center items-center gap-2 md:gap-4 pointer-events-none z-20">
+    <button id="btn-next-mission" class="pointer-events-auto bg-emerald-500 hover:bg-emerald-600 text-white border-4 border-white px-4 py-3 md:px-8 md:py-4 rounded-3xl font-extrabold text-base md:text-2xl shadow-chunky bouncy-hover flex items-center gap-3">
+      <span>Επόμενο Σχήμα</span>
+      <span class="text-3xl">➔</span>
+    </button>
+    <button id="btn-free-play" class="pointer-events-auto bg-blue-500 hover:bg-blue-600 text-white border-4 border-white px-4 py-3 md:px-5 md:py-4 rounded-3xl font-extrabold text-base md:text-xl shadow-chunky bouncy-hover">🪁 Ελεύθερο παιχνίδι</button>
+    <button id="btn-dance-all" class="pointer-events-auto bg-purple-500 hover:bg-purple-600 text-white border-4 border-white px-4 py-3 md:px-6 md:py-4 rounded-3xl font-extrabold text-base md:text-xl shadow-chunky bouncy-hover flex items-center gap-2">
+      <span>Χορός!</span>
+      <span class="text-2xl">🎉</span>
+    </button>
+  </div>
+
+  <!-- Celebration Popup Modal for Milestones -->
+  <div id="celebration-modal" class="fixed inset-0 bg-sky-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-white border-8 border-amber-400 rounded-3xl p-6 md:p-8 max-w-md mx-4 text-center shadow-chunky transform scale-75 transition-transform duration-300" id="modal-box">
+      <div class="text-6xl mb-3">🏆🎈🎉</div>
+      <h2 class="text-3xl font-black text-amber-950 mb-2">Υπέροχα!</h2>
+      <p id="modal-text" class="text-xl font-bold text-slate-700 mb-6">Είσαι αστέρι! Βρήκες όλα τα σχήματα!</p>
+      <button id="btn-modal-continue" class="bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-2xl py-3 px-8 rounded-full border-4 border-white shadow-chunky bouncy-hover w-full">
+        Παίξε Ξανά! ✨
+      </button>
+    </div>
+  </div>
+
+  <!-- Audio Initial Permission Splash for iOS/Safari AudioContext unlock -->
+  <div id="start-splash" class="fixed inset-0 bg-gradient-to-b from-sky-400 to-indigo-500 z-40 flex flex-col items-center justify-center p-6 text-white text-center">
+    <div class="text-7xl mb-4 animate-bounce">🏝️⭐</div>
+    <h1 class="text-4xl md:text-5xl font-black tracking-wide mb-3 drop-shadow-md">Το Νησί των Σχημάτων</h1>
+    <p class="text-lg md:text-xl font-semibold max-w-md mb-8 text-sky-100">
+      Ένα χαρούμενο 3D παιχνίδι για παιδιά προσχολικής ηλικίας (3-5 ετών). Μάθε τα σχήματα και τα χρώματα!
+    </p>
+    <button id="btn-start-game" class="bg-amber-400 hover:bg-amber-500 text-amber-950 font-black text-2xl md:text-3xl px-10 py-5 rounded-full border-4 border-white shadow-chunky bouncy-hover transform active:scale-95 transition-all">
+      Έναρξη Παιχνιδιού ▶️
+    </button>
+  </div>
+
+  <script>
+    try {
+    // Web Audio API Procedural Sound Synthesizer (No external sound files required)
+    class SoundFX {
+      constructor() {
+        this.ctx = null;
+        this.muted = false;
+      }
+      
+      init() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioCtx();
+        }
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      playTone(freq, type = 'sine', duration = 0.2, gainPeak = 0.2, detune = 0) {
+        if (this.muted || !this.ctx) return;
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+          osc.detune.setValueAtTime(detune, this.ctx.currentTime);
+
+          gain.gain.setValueAtTime(0.001, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(gainPeak, this.ctx.currentTime + 0.03);
+          gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + duration);
+        } catch (e) {
+          console.warn("Audio play issue", e);
+        }
+      }
+
+      // Pleasant child-friendly sounds
+      playBoing() {
+        if (this.muted || !this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(260, now);
+        osc.frequency.exponentialRampToValueAtTime(620, now + 0.22);
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(now + 0.3);
+      }
+
+      playSuccess() {
+        if (this.muted || !this.ctx) return;
+        // Cheerful arpeggio chord: C5, E5, G5, C6
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, idx) => {
+          setTimeout(() => {
+            this.playTone(freq, 'triangle', 0.35, 0.25);
+          }, idx * 90);
+        });
+      }
+
+      playWrong() {
+        if (this.muted || !this.ctx) return;
+        // Soft encouraging wiggle sound instead of harsh buzzer
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(320, now);
+        osc.frequency.linearRampToValueAtTime(260, now + 0.15);
+        gain.gain.setValueAtTime(0.18, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(now + 0.25);
+      }
+
+      playFanfare() {
+        if (this.muted || !this.ctx) return;
+        const melody = [523, 659, 783, 1046, 783, 1046];
+        const times = [0, 120, 240, 360, 520, 680];
+        melody.forEach((f, i) => {
+          setTimeout(() => {
+            this.playTone(f, 'sine', 0.4, 0.28);
+          }, times[i]);
+        });
+      }
+    }
+
+    const soundManager = new SoundFX();
+
+    class GreekVoiceGuide {
+      constructor() {
+        this.synth = window.speechSynthesis;
+        this.greekVoice = null;
+        this.enabled = true;
+        this.initVoices();
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+          speechSynthesis.onvoiceschanged = () => this.initVoices();
+        }
+      }
+
+      initVoices() {
+        if (!this.synth) return;
+        const voices = this.synth.getVoices();
+        // Seek Greek voice or standard modern Greek language tag
+        this.greekVoice = voices.find(v => v.lang && (v.lang.startsWith('el') || v.lang.includes('Greek'))) || null;
+      }
+
+      speak(text, priority = true) {
+        if (!this.enabled || !this.synth) return;
+        if (priority) {
+          this.synth.cancel(); // Stop earlier talking so instructions are immediate
+        }
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'el-GR';
+        if (this.greekVoice) {
+          utterance.voice = this.greekVoice;
+        }
+        // Toddler friendly warm pitch & gentle pace
+        utterance.rate = 0.92;
+        utterance.pitch = 1.15;
+        this.synth.speak(utterance);
+      }
+    }
+
+    const voiceGuide = new GreekVoiceGuide();
+
+    const canvas = document.getElementById('game-canvas');
+    const scene = new THREE.Scene();
+    document.body.dataset.engine = "threejs";
+    scene.background = new THREE.Color(0xb7e9ff);
+    scene.fog = new THREE.FogExp2(0xb7e9ff, 0.022);
+
+    // Camera
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(0, 8, 14);
+
+    // Renderer
+    const renderer = new THREE.WebGLRenderer({
+      canvas: canvas,
+      antialias: true,
+      powerPreference: 'high-performance'
+    });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    // OrbitControls for touch & mouse view rotation
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.maxPolarAngle = Math.PI / 2 - 0.08; // Keep camera above the island ground
+    controls.minDistance = 8;
+    controls.maxDistance = 22;
+    controls.target.set(0, 1.2, 0);
+
+    // Warm, cheerful cartoon lighting
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x8fd154, 0.75);
+    scene.add(hemiLight);
+
+    const dirLight = new THREE.DirectionalLight(0xfff7d6, 1.1);
+    dirLight.position.set(12, 20, 10);
+    dirLight.castShadow = true;
+    dirLight.shadow.mapSize.width = 1024;
+    dirLight.shadow.mapSize.height = 1024;
+    dirLight.shadow.camera.near = 0.5;
+    dirLight.shadow.camera.far = 40;
+    const shadowSize = 10;
+    dirLight.shadow.camera.left = -shadowSize;
+    dirLight.shadow.camera.right = shadowSize;
+    dirLight.shadow.camera.top = shadowSize;
+    dirLight.shadow.camera.bottom = -shadowSize;
+    dirLight.shadow.bias = -0.001;
+    scene.add(dirLight);
+
+    // Ambient light fill
+    const ambLight = new THREE.AmbientLight(0xffe6ff, 0.35);
+    scene.add(ambLight);
+
+    const islandGroup = new THREE.Group();
+    scene.add(islandGroup);
+
+    // Floating Main Island (Cylinder with rounded bevel appearance)
+    const islandTopGeo = new THREE.CylinderGeometry(7.5, 7.0, 1.4, 32);
+    const islandTopMat = new THREE.MeshToonMaterial({
+      color: 0x76c944, // Lush cartoon grass
+    });
+    const islandTop = new THREE.Mesh(islandTopGeo, islandTopMat);
+    islandTop.position.y = 0;
+    islandTop.receiveShadow = true;
+    islandGroup.add(islandTop);
+
+    // Island Dirt Underbelly
+    const islandBottomGeo = new THREE.ConeGeometry(7.0, 4.5, 32);
+    const islandBottomMat = new THREE.MeshToonMaterial({
+      color: 0x8c5e39, // Rich soil
+    });
+    const islandBottom = new THREE.Mesh(islandBottomGeo, islandBottomMat);
+    islandBottom.position.y = -2.9;
+    islandBottom.rotation.x = Math.PI;
+    islandGroup.add(islandBottom);
+
+    // Small cartoon trees around the edge of the island
+    function createCartoonTree(x, z, scale = 1) {
+      const tree = new THREE.Group();
+      
+      // Trunk
+      const trunkGeo = new THREE.CylinderGeometry(0.2 * scale, 0.3 * scale, 1.2 * scale, 8);
+      const trunkMat = new THREE.MeshToonMaterial({ color: 0x7a4e2d });
+      const trunk = new THREE.Mesh(trunkGeo, trunkMat);
+      trunk.position.y = 0.6 * scale;
+      trunk.castShadow = true;
+      trunk.receiveShadow = true;
+      tree.add(trunk);
+
+      // Leaves (puffy spheres)
+      const leafMat = new THREE.MeshToonMaterial({ color: 0x48b636 });
+      const leafGeo1 = new THREE.SphereGeometry(0.8 * scale, 12, 12);
+      const leaf1 = new THREE.Mesh(leafGeo1, leafMat);
+      leaf1.position.y = 1.6 * scale;
+      leaf1.castShadow = true;
+      tree.add(leaf1);
+
+      const leafGeo2 = new THREE.SphereGeometry(0.6 * scale, 12, 12);
+      const leaf2 = new THREE.Mesh(leafGeo2, leafMat);
+      leaf2.position.set(0.3 * scale, 2.1 * scale, -0.1 * scale);
+      leaf2.castShadow = true;
+      tree.add(leaf2);
+
+      tree.position.set(x, 0.7, z);
+      islandGroup.add(tree);
+      return tree;
+    }
+
+    // Place decorative trees along perimeter
+    createCartoonTree(-5.2, -3.2, 1.1);
+    createCartoonTree(-5.8, 1.8, 0.9);
+    createCartoonTree(5.4, -2.8, 1.2);
+    createCartoonTree(5.6, 2.2, 0.85);
+    createCartoonTree(0, -6.0, 1.3);
+
+    // Puffy floating clouds in the sky
+    const clouds = [];
+    function createCloud(x, y, z, scale = 1) {
+      const cloud = new THREE.Group();
+      const puffMat = new THREE.MeshToonMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.95
+      });
+
+      const p1 = new THREE.Mesh(new THREE.SphereGeometry(1.2 * scale, 12, 12), puffMat);
+      const p2 = new THREE.Mesh(new THREE.SphereGeometry(0.9 * scale, 12, 12), puffMat);
+      const p3 = new THREE.Mesh(new THREE.SphereGeometry(0.8 * scale, 12, 12), puffMat);
+      p2.position.set(1.1 * scale, -0.2 * scale, 0);
+      p3.position.set(-1.0 * scale, -0.3 * scale, 0.2);
+
+      cloud.add(p1, p2, p3);
+      cloud.position.set(x, y, z);
+      scene.add(cloud);
+      clouds.push(cloud);
+    }
+
+    createCloud(-14, 9, -10, 1.2);
+    createCloud(12, 10, -12, 1.5);
+    createCloud(4, 12, -18, 1.8);
+    createCloud(-8, 7, 10, 1.1);
+
+    // Big Cartoon Smiling Sun in background
+    const sunGroup = new THREE.Group();
+    const sunGeo = new THREE.SphereGeometry(2.5, 24, 24);
+    const sunMat = new THREE.MeshBasicMaterial({ color: 0xffd524 });
+    const sunMesh = new THREE.Mesh(sunGeo, sunMat);
+    sunGroup.add(sunMesh);
+    sunGroup.position.set(18, 16, -24);
+    scene.add(sunGroup);
+
+    // Helper to generate a 3D Star geometry
+    function create3DStarGeometry(points = 5, outerRadius = 0.95, innerRadius = 0.48, depth = 0.45) {
+      const starShape = new THREE.Shape();
+      const step = Math.PI / points;
+
+      for (let i = 0; i < 2 * points; i++) {
+        const r = (i % 2 === 0) ? outerRadius : innerRadius;
+        const angle = i * step - Math.PI / 2;
+        const x = Math.cos(angle) * r;
+        const y = Math.sin(angle) * r;
+        if (i === 0) starShape.moveTo(x, y);
+        else starShape.lineTo(x, y);
+      }
+      starShape.closePath();
+
+      const extrudeSettings = {
+        depth: depth,
+        bevelEnabled: true,
+        bevelSegments: 3,
+        steps: 1,
+        bevelSize: 0.1,
+        bevelThickness: 0.1
+      };
+
+      const geo = new THREE.ExtrudeGeometry(starShape, extrudeSettings);
+      geo.center(); // Center rotation pivot
+      return geo;
+    }
+
+    // Interactive educational 3D shape catalog with Greek naming and vibrant materials
+    const shapeDefinitions = [
+      {
+        id: 'red-star',
+        shapeNameGreek: 'Αστέρι',
+        colorNameGreek: 'Κόκκινο',
+        fullNameGreek: 'Κόκκινο Αστέρι',
+        colorHex: 0xff3355,
+        createGeometry: () => create3DStarGeometry(5, 0.9, 0.45, 0.4),
+        position: new THREE.Vector3(-3.2, 2.0, -1.8)
+      },
+      {
+        id: 'blue-cube',
+        shapeNameGreek: 'Κύβος',
+        colorNameGreek: 'Μπλε',
+        fullNameGreek: 'Μπλε Κύβος',
+        colorHex: 0x2288ff,
+        createGeometry: () => new THREE.BoxGeometry(1.4, 1.4, 1.4),
+        position: new THREE.Vector3(0, 2.0, -2.6)
+      },
+      {
+        id: 'yellow-sphere',
+        shapeNameGreek: 'Σφαίρα',
+        colorNameGreek: 'Κίτρινη',
+        fullNameGreek: 'Κίτρινη Σφαίρα',
+        colorHex: 0xffcc00,
+        createGeometry: () => new THREE.SphereGeometry(0.9, 24, 24),
+        position: new THREE.Vector3(3.2, 2.0, -1.8)
+      },
+      {
+        id: 'green-cone',
+        shapeNameGreek: 'Κώνος',
+        colorNameGreek: 'Πράσινος',
+        fullNameGreek: 'Πράσινος Κώνος',
+        colorHex: 0x10cc66,
+        createGeometry: () => new THREE.ConeGeometry(0.9, 1.6, 24),
+        position: new THREE.Vector3(-3.2, 2.0, 1.8)
+      },
+      {
+        id: 'orange-cylinder',
+        shapeNameGreek: 'Κύλινδρος',
+        colorNameGreek: 'Πορτοκαλί',
+        fullNameGreek: 'Πορτοκαλί Κύλινδρος',
+        colorHex: 0xff7711,
+        createGeometry: () => new THREE.CylinderGeometry(0.8, 0.8, 1.4, 24),
+        position: new THREE.Vector3(0, 2.0, 2.0)
+      },
+      {
+        id: 'purple-heart',
+        shapeNameGreek: 'Καρδιά',
+        colorNameGreek: 'Μωβ',
+        fullNameGreek: 'Μωβ Καρδιά',
+        colorHex: 0xaa33dd,
+        createGeometry: () => {
+          // 2D heart shape extruded
+          const heartShape = new THREE.Shape();
+          heartShape.moveTo(0, 0.4);
+          heartShape.bezierCurveTo(0, 0.8, -0.6, 1.1, -1.0, 0.7);
+          heartShape.bezierCurveTo(-1.4, 0.3, -1.2, -0.4, 0, -1.2);
+          heartShape.bezierCurveTo(1.2, -0.4, 1.4, 0.3, 1.0, 0.7);
+          heartShape.bezierCurveTo(0.6, 1.1, 0, 0.8, 0, 0.4);
+          const geo = new THREE.ExtrudeGeometry(heartShape, {
+            depth: 0.4,
+            bevelEnabled: true,
+            bevelSegments: 3,
+            bevelSize: 0.08,
+            bevelThickness: 0.08
+          });
+          geo.center();
+          return geo;
+        },
+        position: new THREE.Vector3(3.2, 2.0, 1.8)
+      }
+    ];
+
+    const interactiveObjects = [];
+    const interactiveMeshes = [];
+
+    // Build Shape pedestals and 3D items
+    shapeDefinitions.forEach((def) => {
+      const group = new THREE.Group();
+      group.position.copy(def.position);
+
+      // Cute white pedestal with pastel rim
+      const pedestalGeo = new THREE.CylinderGeometry(1.2, 1.35, 0.4, 24);
+      const pedestalMat = new THREE.MeshToonMaterial({ color: 0xffffff });
+      const pedestal = new THREE.Mesh(pedestalGeo, pedestalMat);
+      pedestal.position.set(def.position.x, 0.85, def.position.z);
+      pedestal.receiveShadow = true;
+      pedestal.castShadow = true;
+      islandGroup.add(pedestal);
+
+      // Colored rim
+      const rimGeo = new THREE.TorusGeometry(1.22, 0.08, 12, 32);
+      rimGeo.rotateX(Math.PI / 2);
+      const rimMat = new THREE.MeshBasicMaterial({ color: def.colorHex });
+      const rim = new THREE.Mesh(rimGeo, rimMat);
+      rim.position.set(def.position.x, 1.0, def.position.z);
+      islandGroup.add(rim);
+
+      // The Main Shape Object
+      const geo = def.createGeometry();
+      const mat = new THREE.MeshStandardMaterial({
+        color: def.colorHex,
+        roughness: 0.25,
+        metalness: 0.15,
+        emissive: new THREE.Color(def.colorHex).multiplyScalar(0.12)
+      });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      mesh.position.copy(def.position);
+
+      // Store custom metadata for raycasting & quiz handling
+      mesh.userData = {
+        def: def,
+        initialPos: def.position.clone(),
+        initialRot: mesh.rotation.clone(),
+        initialScale: new THREE.Vector3(1, 1, 1),
+        isBouncing: false
+      };
+
+      scene.add(mesh);
+      interactiveObjects.push(mesh);
+      interactiveMeshes.push(mesh);
+    });
+
+    function bounceShape(mesh, isCorrect = true, callback = null) {
+      if (!mesh) return;
+      mesh.userData.isBouncing = true;
+
+      // Happy giant jump & 360 spin if correct, slight tilt & shake if wrong
+      if (isCorrect) {
+        soundManager.playSuccess();
+
+        // GSAP Bounce jump
+        gsap.to(mesh.position, {
+          y: mesh.userData.initialPos.y + 1.8,
+          duration: 0.35,
+          ease: "power2.out",
+          yoyo: true,
+          repeat: 1,
+          onComplete: () => {
+            mesh.position.y = mesh.userData.initialPos.y;
+            mesh.userData.isBouncing = false;
+            if (callback) callback();
+          }
+        });
+
+        // 360 Spin
+        gsap.to(mesh.rotation, {
+          y: mesh.rotation.y + Math.PI * 2,
+          duration: 0.7,
+          ease: "back.out(1.5)"
+        });
+
+        // Squash & Stretch
+        gsap.to(mesh.scale, {
+          x: 1.35,
+          y: 0.75,
+          z: 1.35,
+          duration: 0.15,
+          yoyo: true,
+          repeat: 1,
+          ease: "power1.inOut"
+        });
+
+      } else {
+        soundManager.playWrong();
+        // Gentle side to side toddler shake
+        const initX = mesh.userData.initialPos.x;
+        gsap.to(mesh.position, {
+          x: initX + 0.3,
+          duration: 0.08,
+          yoyo: true,
+          repeat: 4,
+          ease: "sine.inOut",
+          onComplete: () => {
+            mesh.position.x = initX;
+            mesh.userData.isBouncing = false;
+          }
+        });
+
+        gsap.to(mesh.scale, {
+          x: 0.85,
+          y: 1.15,
+          z: 0.85,
+          duration: 0.12,
+          yoyo: true,
+          repeat: 1,
+          ease: "power1.inOut"
+        });
+      }
+    }
+
+    // Gentle continuous idle floating for 3D items
+    let clock = new THREE.Clock();
+
+    const praisePhrases = [
+      "Μπράβο σου! Είσαι φοβερός!",
+      "Τέλεια! Το βρήκες!",
+      "Εξαιρετικά! Πολύ καλή δουλειά!",
+      "Συγχαρητήρια! Είσαι αστέρι!",
+      "Φανταστικά!"
+    ];
+
+    const encouragementPhrases = [
+      "Δεν πειράζει, προσπάθησε ξανά!",
+      "Ψάξε λίγο ακόμα, μπορείς να το βρεις!",
+      "Σχεδόν! Δοκίμασε άλλο ένα σχήμα!"
+    ];
+
+    const state = {
+      stars: 0,
+      currentTarget: null,
+      completedCount: 0,
+      availableTargets: [...shapeDefinitions],
+      isProcessingClick: false,
+      freePlay: false
+    };
+
+    const targetNameEl = document.getElementById('target-name');
+    const targetPromptEl = document.getElementById('target-prompt');
+    const starCountEl = document.getElementById('star-count');
+    const celebrationModal = document.getElementById('celebration-modal');
+    const modalBox = document.getElementById('modal-box');
+
+    function selectNewMission() {
+      if (state.freePlay) { targetNameEl.textContent = "Παίξε με τα σχήματα!"; return; }
+      // Pick random shape from definition
+      if (state.availableTargets.length === 0) {
+        state.availableTargets = [...shapeDefinitions];
+      }
+
+      const randIndex = Math.floor(Math.random() * state.availableTargets.length);
+      state.currentTarget = state.availableTargets[randIndex];
+
+      // Update UI label with shape color
+      targetNameEl.textContent = state.currentTarget.fullNameGreek;
+      targetNameEl.style.backgroundColor = '#' + state.currentTarget.colorHex.toString(16).padStart(6, '0') + '33';
+      targetNameEl.style.color = '#' + state.currentTarget.colorHex.toString(16).padStart(6, '0');
+      targetNameEl.style.borderColor = '#' + state.currentTarget.colorHex.toString(16).padStart(6, '0');
+
+      // Voice prompt in Greek
+      const questionText = `Βρες το: ${state.currentTarget.fullNameGreek}!`;
+      voiceGuide.speak(questionText);
+    }
+
+    function onTargetSolved(mesh) {
+      state.stars += 1;
+      state.completedCount += 1;
+      starCountEl.textContent = state.stars;
+
+      // Kid Confetti
+      confetti({
+        particleCount: 50,
+        spread: 60,
+        origin: { y: 0.7 }
+      });
+
+      // Cheerful spoken Greek encouragement
+      const praise = praisePhrases[Math.floor(Math.random() * praisePhrases.length)];
+      voiceGuide.speak(`${praise} Βρήκες το ${state.currentTarget.fullNameGreek}!`);
+
+      // If toddler reaches a round of 5 stars, show big celebration
+      if (state.completedCount % 5 === 0) {
+        setTimeout(() => {
+          showMilestoneCelebration();
+        }, 1200);
+      } else {
+        setTimeout(() => {
+          selectNewMission();
+        }, 1800);
+      }
+    }
+
+    function onTargetMistake(mesh) {
+      const encourage = encouragementPhrases[Math.floor(Math.random() * encouragementPhrases.length)];
+      voiceGuide.speak(`Αυτό είναι το ${mesh.userData.def.fullNameGreek}. ${encourage}`);
+    }
+
+    function showMilestoneCelebration() {
+      soundManager.playFanfare();
+      confetti({
+        particleCount: 120,
+        spread: 90,
+        origin: { y: 0.5 }
+      });
+
+      celebrationModal.classList.remove('hidden');
+      setTimeout(() => {
+        celebrationModal.classList.remove('opacity-0');
+        modalBox.classList.remove('scale-75');
+        modalBox.classList.add('scale-100');
+      }, 20);
+
+      voiceGuide.speak("Συγχαρητήρια! Μάζεψες πάρα πολλά αστεράκια!");
+    }
+
+    function hideMilestoneCelebration() {
+      celebrationModal.classList.add('opacity-0');
+      modalBox.classList.add('scale-75');
+      modalBox.classList.remove('scale-100');
+      setTimeout(() => {
+        celebrationModal.classList.add('hidden');
+        selectNewMission();
+      }, 300);
+    }
+
+    const raycaster = new THREE.Raycaster();
+    const pointer = new THREE.Vector2();
+
+    function handleInteraction(clientX, clientY) {
+      soundManager.init(); // Guarantee audio unlock on touch
+
+      // Convert pointer coordinates to normalized device coordinates (-1 to +1)
+      const rect = renderer.domElement.getBoundingClientRect();
+      pointer.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+      pointer.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+
+      raycaster.setFromCamera(pointer, camera);
+      const intersects = raycaster.intersectObjects(interactiveMeshes);
+
+      if (intersects.length > 0) {
+        const clickedMesh = intersects[0].object;
+        if (clickedMesh.userData && clickedMesh.userData.def) {
+          const isMatch = state.freePlay || (state.currentTarget && clickedMesh.userData.def.id === state.currentTarget.id);
+
+          if (isMatch) {
+            if (state.isProcessingClick) return;
+            state.isProcessingClick = true;
+            bounceShape(clickedMesh, true, () => {
+              if (state.freePlay) {
+                voiceGuide.speak(clickedMesh.userData.def.fullNameGreek);
+              } else {
+                onTargetSolved(clickedMesh);
+              }
+              state.isProcessingClick = false;
+            });
+          } else {
+            bounceShape(clickedMesh, false);
+            onTargetMistake(clickedMesh);
+          }
+        }
+      }
+    }
+
+    // Unified Pointer Events: prevent duplicate touches/mouse events, preserve orbit controls.
+    let pressStart = null;
+    canvas.addEventListener("pointerdown", (e) => { pressStart = {x:e.clientX,y:e.clientY,id:e.pointerId}; }, {passive:true});
+    canvas.addEventListener("pointerup", (e) => {
+      if (!pressStart || e.pointerId !== pressStart.id) return;
+      if (Math.hypot(e.clientX-pressStart.x,e.clientY-pressStart.y)<12) handleInteraction(e.clientX,e.clientY);
+      pressStart=null;
+    },{passive:true});
+    canvas.addEventListener("pointercancel",()=>{pressStart=null;},{passive:true});
+
+    // Start splash screen action
+    document.getElementById('btn-start-game').addEventListener('click', () => {
+      soundManager.init();
+      soundManager.playBoing();
+      const splash = document.getElementById('start-splash');
+      splash.style.transition = 'opacity 0.5s ease';
+      splash.style.opacity = '0';
+      setTimeout(() => {
+        splash.style.display = 'none';
+        selectNewMission();
+      }, 500);
+    });
+
+    // Repeat voice button
+    document.getElementById('btn-repeat-speech').addEventListener('click', () => {
+      soundManager.init();
+      soundManager.playBoing();
+      if (state.currentTarget) {
+        voiceGuide.speak(`Βρες το: ${state.currentTarget.fullNameGreek}!`);
+      }
+    });
+
+    // Mute sound & speech toggle
+    let isMuted = false;
+    const soundToggleBtn = document.getElementById('btn-sound-toggle');
+    const soundIcon = document.getElementById('sound-icon');
+
+    soundToggleBtn.addEventListener('click', () => {
+      isMuted = !isMuted;
+      soundManager.muted = isMuted;
+      voiceGuide.enabled = !isMuted;
+      soundIcon.textContent = isMuted ? '🔇' : '🔊';
+      soundToggleBtn.classList.toggle('bg-rose-500', !isMuted);
+      soundToggleBtn.classList.toggle('bg-slate-500', isMuted);
+    });
+
+    // Child-led discovery: toggle free play or guided Greek shape missions.
+    const freeButton = document.getElementById("btn-free-play");
+    freeButton.addEventListener("click", () => {
+      state.freePlay = !state.freePlay;
+      freeButton.textContent = state.freePlay ? "🎯 Αποστολές" : "🪁 Ελεύθερο παιχνίδι";
+      if (state.freePlay) {
+        targetNameEl.textContent = "Δοκίμασε όλα τα σχήματα!";
+        voiceGuide.speak("Άγγιξε όποιο σχήμα θέλεις και δες τι θα συμβεί!");
+      } else selectNewMission();
+    });
+
+    // Skip to next mission button
+    document.getElementById('btn-next-mission').addEventListener('click', () => {
+      soundManager.init();
+      soundManager.playBoing();
+      selectNewMission();
+    });
+
+    // Dance party button (Animates all 3D shapes simultaneously)
+    document.getElementById('btn-dance-all').addEventListener('click', () => {
+      soundManager.init();
+      soundManager.playFanfare();
+      voiceGuide.speak("Ώρα για χορό!");
+      confetti({ particleCount: 70, spread: 80 });
+
+      interactiveObjects.forEach((obj, idx) => {
+        setTimeout(() => {
+          gsap.to(obj.position, {
+            y: obj.userData.initialPos.y + 1.2,
+            duration: 0.3,
+            yoyo: true,
+            repeat: 3,
+            ease: "sine.inOut"
+          });
+          gsap.to(obj.rotation, {
+            y: obj.rotation.y + Math.PI * 2,
+            duration: 1.2,
+            ease: "power2.inOut"
+          });
+        }, idx * 100);
+      });
+    });
+
+    // Continue modal
+    document.getElementById('btn-modal-continue').addEventListener('click', () => {
+      hideMilestoneCelebration();
+    });
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    });
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      const elapsedTime = clock.getElapsedTime();
+
+      // Gentle floating clouds drift
+      clouds.forEach((cloud, i) => {
+        cloud.position.x += 0.006 * (i % 2 === 0 ? 1 : 1.3);
+        if (cloud.position.x > 22) {
+          cloud.position.x = -22;
+        }
+      });
+
+      // Sun slow rotation
+      sunMesh.rotation.y = elapsedTime * 0.1;
+
+      // Gentle ambient floating idle for educational shapes (if not actively bouncing)
+      interactiveObjects.forEach((mesh, index) => {
+        if (!mesh.userData.isBouncing) {
+          // Subtle hover bobbing
+          const offset = index * 1.05;
+          mesh.position.y = mesh.userData.initialPos.y + Math.sin(elapsedTime * 2.2 + offset) * 0.12;
+          mesh.rotation.y += 0.008;
+        }
+      });
+
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    // Inline script is at the end of <body>; start immediately and expose QA readiness.
+    document.body.dataset.gameReady = "true";
+    animate();
+    } catch(error) {
+      console.error("[PISIPOUK 3D]",error);
+      document.body.dataset.gameReady="failed";
+      const splash=document.getElementById("start-splash");
+      if(splash){splash.innerHTML="<h1 style=\"font-size:2rem;font-weight:900\">Το παιχνίδι χρειάζεται WebGL και τις βιβλιοθήκες Three.js</h1><p style=\"margin:1rem\">Δεν φορτώθηκε η τρισδιάστατη σκηνή. Δοκίμασε ανανέωση ή διαφορετικό browser.</p><button onclick=\"location.reload()\" style=\"background:white;color:#234;padding:1rem 2rem;border-radius:2rem;font-weight:bold\">Ξανά</button>";}
+    }
+  </script>
+</body>
+</html>
