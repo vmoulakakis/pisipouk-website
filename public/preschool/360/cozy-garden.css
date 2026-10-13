@@ -40,3 +40,42 @@ button{cursor:pointer;font:inherit;border:0;touch-action:manipulation}button:foc
 .farm-paint-colors button{width:58px;height:58px;border:5px solid #fff;border-radius:50%;background:var(--paint);box-shadow:0 3px 0 #405c4250,0 7px 16px #45664c26}
 .farm-paint-colors button.chosen{outline:4px solid #2b8059;outline-offset:2px}
 @media(max-width:700px){.farm-paint-colors button{width:50px;height:50px}}
+
+
+/* v20 • JUICY / GLOSSY TOY ART DIRECTION. Strong contrast: no washed-out gradients. */
+:root{color-scheme:light;--juicy-green:#22c55e;--deep-green:#166534;--juicy-blue:#0284c7;--royal-blue:#0369a1;--juicy-yellow:#facc15;--juicy-orange:#f97316;--juicy-red:#ef4444;--juicy-purple:#a855f7;--chocolate:#713f12;--ink:#172e29;color:var(--ink);background:#007fc8}
+body{background:radial-gradient(circle at 15% 12%,#00b6ff 0,#0284c7 48%,#0369a1 100%);color:var(--ink)}
+.farm-frame{background:linear-gradient(145deg,#1aa8ed,#0070b5 84%);padding-bottom:18px}
+.farm-header{background:#ffffffeb;border:3px solid #facc15;border-radius:23px;padding:5px 12px;box-shadow:0 7px 0 #005e9845,0 15px 20px #053c7830}
+.farm-caption strong{color:#c2410c;font-weight:1000}
+.farm-caption small{color:#0b4c39;font-weight:950}
+.farm-large{border:4px solid #fff;box-shadow:0 6px 0 #143f52,0 12px 15px #0d31485a;transition:transform .13s ease}
+.farm-back{color:#fff;background:linear-gradient(180deg,#38bdf8,#0284c7 68%,#0369a1)}
+.farm-next{color:#713f12;background:linear-gradient(180deg,#fff99c,#facc15 65%,#eab308)}
+.farm-stage{border:6px solid #facc15;background:#00aaf0;box-shadow:0 14px 0 #0369a1,0 28px 50px #052d5355;border-radius:31px}
+.farm-quest{border:4px solid #facc15;background:#fff;box-shadow:0 6px 0 #c08a0b,0 12px 25px #10443c4d}
+.farm-pictogram{background:#dcfce7;border:2px solid #22c55e}
+.farm-quest b{color:#14532d}
+.farm-quest p{color:#293e32}
+#voice{background:linear-gradient(#38bdf8,#0284c7);border:3px solid white;color:#fff;box-shadow:0 4px 0 #075b82}
+#status,#progress{background:#fff;border:3px solid #facc15;color:#14532d;box-shadow:0 4px 0 #a16207}
+.farm-overlay{background:linear-gradient(145deg,#002f7fb8,#001c4ca9);backdrop-filter:blur(5px)}
+.farm-splash-box{background:linear-gradient(154deg,#fffdf4 0%,#fef08a 46%,#dcfce7 100%);border:8px solid #fff;box-shadow:0 12px 0 #facc15,0 35px 70px #031c4c99}
+.farm-splash-box h1{color:#14532d;text-shadow:0 2px 0 #fff,0 5px 0 #a7f3d0}
+.farm-splash-box p{color:#18583e}
+.farm-play{background:linear-gradient(180deg,#4ade80 0%,#22c55e 45%,#15803d 100%);border:5px solid #fff;box-shadow:0 10px 0 #166534,0 19px 28px #064e3b8a;text-shadow:0 2px 0 #166534;font-weight:1000}
+.farm-play:hover{filter:saturate(1.16) brightness(1.08);transform:translateY(-3px)}
+.farm-alt-start{background:#fff;border:3px solid #0284c7;color:#075985;box-shadow:0 5px 0 #0369a1}
+.farm-age button{background:#fff;color:#075985;border:3px solid #38bdf8;font-weight:950}
+.farm-age button.chosen{color:#fff;background:#7e22ce;border-color:#a855f7}
+.farm-modes button{background:#fff;color:#12583a;border:4px solid #facc15;box-shadow:0 6px 0 #0369a1,0 10px 17px #0647727c}
+.farm-modes button.selected{color:#fff;background:linear-gradient(#4ade80,#15803d);border-color:#fff;box-shadow:0 6px 0 #166534}
+.farm-toolbox{background:#075985;border:4px solid #38bdf8}
+.farm-toolbox button{background:linear-gradient(#fff,#dff9ff);color:#075985;border:3px solid #fff;box-shadow:0 5px 0 #0c4a6e;font-weight:950}
+.farm-toolbox button.selected{background:linear-gradient(#86efac,#22c55e);color:#14532d;border-color:#fef08a;box-shadow:0 5px 0 #166534}
+.farm-footnote{color:#fff;font-weight:900;text-shadow:0 2px 4px #073c64}
+.farm-paint-colors{background:#fef08a;border:4px solid #facc15;box-shadow:0 5px 0 #b45309}
+.farm-paint-colors button{width:65px;height:65px;border:5px solid white;box-shadow:inset -8px -8px 13px #0003,0 6px 0 #7c3b07}
+.farm-paint-colors button.chosen{outline:5px solid #0284c7;outline-offset:3px}
+@media(max-width:760px){.farm-header{padding:4px 6px}.farm-stage{border-width:4px}.farm-toolbox{border-width:3px}.farm-paint-colors button{width:53px;height:53px}}
+@media(prefers-reduced-motion:reduce){.farm-play:hover{transform:none}}
