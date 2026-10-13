@@ -1,0 +1,138 @@
+{
+  "project": "PISIPOUK 360",
+  "generated": "2026-10-13",
+  "licensingNote": "Kenney original assets mirrored by Hidencod/tge-assets. CC0 license applies to original model assets; all in-game procedural code and original brand are separately authored. License and output review required for future HF generated files.",
+  "official_license": "https://kenney.nl/support",
+  "source_catalog": "https://github.com/Hidencod/tge-assets/blob/main/catalog.json",
+  "initial3dAssetBytes": 803624,
+  "assets": [
+    {
+      "name": "tree-oak",
+      "local": "/preschool/360/assets/tree-oak.glb",
+      "source": "https://github.com/Hidencod/tge-assets/blob/main/packs/nature-kit/tree-oak.glb",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "size_bytes": 14644
+    },
+    {
+      "name": "tree-detailed",
+      "local": "/preschool/360/assets/tree-detailed.glb",
+      "source": "https://github.com/Hidencod/tge-assets/blob/main/packs/nature-kit/tree-detailed.glb",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "size_bytes": 31412
+    },
+    {
+      "name": "flower-red",
+      "local": "/preschool/360/assets/flower-red.glb",
+      "source": "https://github.com/Hidencod/tge-assets/blob/main/packs/nature-kit/flower-reda.glb",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "size_bytes": 7104
+    },
+    {
+      "name": "flower-yellow",
+      "local": "/preschool/360/assets/flower-yellow.glb",
+      "source": "https://github.com/Hidencod/tge-assets/blob/main/packs/nature-kit/flower-yellowb.glb",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "size_bytes": 11256
+    },
+    {
+      "name": "flower-purple",
+      "local": "/preschool/360/assets/flower-purple.glb",
+      "source": "https://github.com/Hidencod/tge-assets/blob/main/packs/nature-kit/flower-purplea.glb",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "size_bytes": 7112
+    },
+    {
+      "name": "grass-large",
+      "local": "/preschool/360/assets/grass-large.glb",
+      "source": "https://github.com/Hidencod/tge-assets/blob/main/packs/nature-kit/grass-large.glb",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "size_bytes": 18504
+    },
+    {
+      "name": "fence-gate",
+      "local": "/preschool/360/assets/fence-gate.glb",
+      "source": "https://github.com/Hidencod/tge-assets/blob/main/packs/nature-kit/fence-gate.glb",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "size_bytes": 27652
+    },
+    {
+      "name": "bush",
+      "local": "/preschool/360/assets/bush.glb",
+      "source": "https://github.com/Hidencod/tge-assets/blob/main/packs/nature-kit/plant-bushdetailed.glb",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "size_bytes": 10172
+    },
+    {
+      "name": "cow",
+      "local": "/preschool/360/assets/cow.glb",
+      "source": "https://github.com/Hidencod/tge-assets/blob/main/packs/cube-pets/animal-cow.glb",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "size_bytes": 137048
+    },
+    {
+      "name": "chick",
+      "local": "/preschool/360/assets/chick.glb",
+      "source": "https://github.com/Hidencod/tge-assets/blob/main/packs/cube-pets/animal-chick.glb",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "size_bytes": 134576
+    },
+    {
+      "name": "pig",
+      "local": "/preschool/360/assets/pig.glb",
+      "source": "https://github.com/Hidencod/tge-assets/blob/main/packs/cube-pets/animal-pig.glb",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "size_bytes": 135924
+    },
+    {
+      "name": "cat",
+      "local": "/preschool/360/assets/cat.glb",
+      "source": "https://github.com/Hidencod/tge-assets/blob/main/packs/cube-pets/animal-cat.glb",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "size_bytes": 173668
+    },
+    {
+      "name": "apple",
+      "local": "/preschool/360/assets/apple.glb",
+      "source": "https://github.com/Hidencod/tge-assets/blob/main/packs/food-kit/apple.glb",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "size_bytes": 25120
+    },
+    {
+      "name": "carrot",
+      "local": "/preschool/360/assets/carrot.glb",
+      "source": "https://github.com/Hidencod/tge-assets/blob/main/packs/food-kit/carrot.glb",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "size_bytes": 27108
+    },
+    {
+      "name": "strawberry",
+      "local": "/preschool/360/assets/strawberry.glb",
+      "source": "https://github.com/Hidencod/tge-assets/blob/main/packs/food-kit/strawberry.glb",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "size_bytes": 27364
+    },
+    {
+      "name": "mushrooms",
+      "local": "/preschool/360/assets/mushrooms.glb",
+      "source": "https://github.com/Hidencod/tge-assets/blob/main/packs/nature-kit/mushroom-redgroup.glb",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "size_bytes": 14960
+    }
+  ]
+}
