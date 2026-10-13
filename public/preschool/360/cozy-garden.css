@@ -79,3 +79,18 @@ body{background:radial-gradient(circle at 15% 12%,#00b6ff 0,#0284c7 48%,#0369a1 
 .farm-paint-colors button.chosen{outline:5px solid #0284c7;outline-offset:3px}
 @media(max-width:760px){.farm-header{padding:4px 6px}.farm-stage{border-width:4px}.farm-toolbox{border-width:3px}.farm-paint-colors button{width:53px;height:53px}}
 @media(prefers-reduced-motion:reduce){.farm-play:hover{transform:none}}
+
+/* Mini-game suite expansion: 6 true WebGL modes + free-play. */
+.farm-modes{grid-template-columns:repeat(7,minmax(0,1fr))}
+.farm-modes button{min-height:73px;padding:8px 5px;gap:4px;flex-direction:column;justify-content:center;font-size:24px}
+.farm-modes button span{font-size:12px;font-weight:1000}
+.farm-animal-choices{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px;background:#fff;border:4px solid #facc15;border-radius:19px;padding:10px}
+.farm-animal-choices[hidden]{display:none!important}
+.farm-animal-choices button{min-height:58px;padding:11px 18px;font-weight:950;border-radius:15px;border:3px solid #fff;color:#fff;font-size:15px;
+ background:linear-gradient(#a855f7,#7e22ce);box-shadow:0 6px 0 #581c87}
+.farm-animal-choices button:nth-child(2){background:linear-gradient(#fb7185,#ef4444);box-shadow:0 6px 0 #b91c1c}
+.farm-animal-choices button:nth-child(3){background:linear-gradient(#facc15,#f97316);color:#713f12;box-shadow:0 6px 0 #b45309}
+.farm-animal-choices button:nth-child(4){background:linear-gradient(#38bdf8,#0284c7);box-shadow:0 6px 0 #075985}
+.farm-animal-choices button:focus-visible{outline:4px solid #facc15;outline-offset:4px}
+@media(max-width:760px){.farm-modes{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}.farm-modes button{min-height:58px;border-width:2px}.farm-modes button span{font-size:11px}.farm-animal-choices button{min-height:48px;font-size:12px;padding:7px 11px}}
+@media(max-width:390px){.farm-modes button span{font-size:9px}}
