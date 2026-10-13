@@ -1,0 +1,37 @@
+name: PISIPOUK 360 browser acceptance (one-time)
+on:
+  push:
+    branches: [feature/pisipouk-world-v17-design]
+    paths: [.github/workflows/pisipouk-world360-browser-qa.yml]
+permissions:
+  contents: read
+jobs:
+  functional-gameplay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install project dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+      - name: Start local website without production deployment
+        run: |
+          python3 -m http.server 4178 --directory public >/tmp/pisipouk-world360-http.log 2>&1 &
+          sleep 3
+          curl --fail http://127.0.0.1:4178/preschool/world360/index.html -o /dev/null
+          curl --fail http://127.0.0.1:4178/preschool/world360/village.webp -o /dev/null
+      - name: Run full browser game interactions
+        run: npx playwright test tests/pisipouk-world360.spec.ts --reporter=line --workers=1
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pisipouk-world360-browser-qa
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: ignore
