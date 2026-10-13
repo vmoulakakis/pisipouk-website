@@ -9,10 +9,10 @@
 })(typeof globalThis!=="undefined"?globalThis:this,function(){
   "use strict";
   const colors=[
-    {id:"red",name:"κόκκινα",hex:0xe77963},
-    {id:"yellow",name:"κίτρινα",hex:0xf6ca55},
-    {id:"green",name:"πράσινα",hex:0x83bc76},
-    {id:"purple",name:"μωβ",hex:0xb28ed6}
+    {id:"red",name:"κόκκινα",hex:0xef4444},
+    {id:"yellow",name:"κίτρινα",hex:0xfacc15},
+    {id:"green",name:"πράσινα",hex:0x22c55e},
+    {id:"purple",name:"μωβ",hex:0xa855f7}
   ];
   const seeds=[
     {id:"tomato",name:"ντοματιά",flower:0xffd978,produce:"ντοματάκια"},
@@ -42,7 +42,7 @@
       const slots=shuffle([0,1,2,3,4],rng);
       const count=1+Math.floor(rng()*Math.min(ageCount(a),slots.length));
       const palettes=shuffle(colors.slice(0,a==="2-3"?3:4),rng);
-      const type=gameId==="A01"?"sort":gameId==="B05"?"count":
+      const type=gameId==="A01"?"sort":gameId==="B05"?"count":gameId==="B01"?"tower":gameId==="M01"?"choir":gameId==="S01"?"story":
         choice(["care","plant","explore","build","paint"],rng);
       const objects=Array.from({length:Math.max(count+1,4)},(_,i)=>{
         const p=palettes[(i+Math.floor(rng()*palettes.length))%palettes.length];
@@ -52,10 +52,16 @@
       if(gameId==="A01"){
         for(let i=0;i<objects.length;i++)objects[i].color=i<count?color.id:palettes.find(p=>p.id!==color.id).id;
       }
-      const goal=type==="count"?{verb:"collect",targetKind:"apple",color:color.id,count}:
+      const goal=type==="tower"?{verb:"build",targetKind:"block",color:color.id,count}:
+        type==="choir"?{verb:"sing",targetKind:"animal",color:color.id,count}:
+        type==="story"?{verb:"explore",targetKind:"friend",color:color.id,count}:
+        type==="count"?{verb:"collect",targetKind:"apple",color:color.id,count}:
         type==="sort"?{verb:"sort",targetKind:"fruit",color:color.id,count}:
         {verb:type,targetKind:plant.id,color:color.id,count:1};
-      const words=type==="count"?"Μάζεψε "+count+" "+color.name+" μήλα.":
+      const words=type==="tower"?"Φτιάξε έναν πύργο με "+count+" τουβλάκια!":
+        type==="choir"?"Κάνε "+count+" ζωάκια να τραγουδήσουν!":
+        type==="story"?"Βοήθησε το κοτοπουλάκι να γνωρίσει "+count+" φίλους!":
+        type==="count"?"Μάζεψε "+count+" "+color.name+" μήλα.":
         type==="sort"?"Βάλε τα "+color.name+" φρούτα στο καλαθάκι.":
         type==="care"?"Πότισε το φυτό σου!":type==="plant"?"Φύτεψε ένα "+plant.name+"!":type==="build"?"Φτιάξε ένα ξύλινο παρτέρι!":type==="paint"?"Ζωγράφισε το λουλούδι σου με το "+color.name+" χρώμα!":"Δοκίμασε ό,τι θέλεις στον κήπο!";
       if(gameId==="B05")objects.forEach((o,i)=>{o.color=i<count?color.id:palettes.find(p=>p.id!==color.id).id;});
@@ -71,9 +77,9 @@
   }
   function makeFallback(gameId,a,seed,roundIndex){
     const spec={schemaVersion:1,gameId,seed:seed>>>0,roundIndex,ageBand:a,playMode:"guided",
-      templateId:gameId==="A01"?"sort":gameId==="B05"?"count":"plant",
-      goal:{verb:gameId==="A01"?"sort":gameId==="B05"?"collect":"plant",
-        targetKind:gameId==="C09"?"flower":"apple",color:"red",count:gameId==="C09"?1:2},
+      templateId:gameId==="A01"?"sort":gameId==="B05"?"count":gameId==="B01"?"tower":gameId==="M01"?"choir":gameId==="S01"?"story":"plant",
+      goal:{verb:gameId==="A01"?"sort":gameId==="B05"?"collect":gameId==="B01"?"build":gameId==="M01"?"sing":gameId==="S01"?"explore":"plant",
+        targetKind:gameId==="C09"?"flower":gameId==="B01"?"block":gameId==="M01"?"animal":gameId==="S01"?"friend":"apple",color:"red",count:gameId==="C09"?1:2},
       objects:[0,1,2,3].map(i=>({id:"item-"+i,kind:"apple",color:i%2?"yellow":"red",slot:i,size:1})),
       slots:[0,1,2,3,4],plantId:"flower",narrationKey:"Παίζουμε με τον κήπο!",
       hintKeys:["Δοκίμασε ξανά."],surprisePool:["butterfly"],visualVariant:0,rewardVariant:0};
@@ -82,7 +88,7 @@
   function validateRound(r){
     const issues=[];
     if(!r||r.schemaVersion!==1)issues.push("schema");
-    if(!["A01","B05","C09"].includes(r?.gameId))issues.push("game-id");
+    if(!["A01","B05","C09","B01","M01","S01"].includes(r?.gameId))issues.push("game-id");
     if(!r?.objects?.length||r.objects.length>10)issues.push("object-count");
     if(!r?.slots?.length||new Set(r.slots).size!==r.slots.length)issues.push("slots");
     if(!(r.goal?.count>=1&&r.goal.count<=10))issues.push("goal-count");
