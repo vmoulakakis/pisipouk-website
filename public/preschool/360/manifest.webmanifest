@@ -1,0 +1,22 @@
+{
+  "id": "/preschool/360/cozy-garden.html",
+  "name": "Πισιπούκ 360 · Το Μαγικό Περιβολάκι",
+  "short_name": "Πισιπούκ 360",
+  "description": "Διαδραστικό, δημιουργικό 3D περιβολάκι για παιδιά 2–5 ετών.",
+  "lang": "el",
+  "dir": "ltr",
+  "start_url": "/preschool/360/cozy-garden.html",
+  "scope": "/preschool/360/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f5eedf",
+  "theme_color": "#5eae79",
+  "icons": [
+    {
+      "src": "/preschool/360/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
