@@ -2,7 +2,7 @@
  * No user data storage, analytics, push, ads, external requests, or broad root intercepts.
  */
 const PREFIX="pisipouk360-";
-const VERSION="v1-20261013";
+const VERSION="v2-20261013";
 const CACHE=PREFIX+VERSION;
 const PRECACHE=[
  "/preschool/360/cozy-garden.html",
@@ -31,8 +31,15 @@ self.addEventListener("fetch",event=>{
  if(u.origin!==self.location.origin)return;
  // Only named standalone farm files and exactly these two shared vendor files.
  if(!PRECACHE.includes(u.pathname))return;
- event.respondWith(caches.open(CACHE).then(cache=>cache.match(req).then(hit=>{
-  if(hit)return hit;
-  return fetch(req).then(res=>{if(res.ok)cache.put(req,res.clone());return res;});
- })));
+ event.respondWith(caches.open(CACHE).then(async cache=>{
+   try{
+     const response=await fetch(req);
+     if(response.ok)await cache.put(req,response.clone());
+     return response;
+   }catch(error){
+     const cached=await cache.match(req);
+     if(cached)return cached;
+     throw error;
+   }
+ }));
 });
