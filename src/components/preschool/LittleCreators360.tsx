@@ -3,7 +3,7 @@ import { ArrowRight, Hammer, Palette, Gamepad2, Paintbrush, Music2, BookOpen, Sp
 import type { V15Age } from "./v15/Games";
 import "./little-creators-360.css";
 type Pillar="build"|"create"|"play"|"paint"|"sing"|"stories";
-type Activity={id:string;label:string;skill:string;destination?:"garden"|"sort"|"count"|"build"|"choir"|"story"|"existing"};
+type Activity={id:string;label:string;skill:string;destination?:"garden"|"sort"|"count"|"build"|"choir"|"xylophone"|"paint-animal"|"story"|"existing"};
 type PillarEntry={id:Pillar;name:string;descriptor:string;icon:typeof Hammer;activities:Activity[]};
 const pillars:PillarEntry[]=[
  {id:"build",name:"ΚΑΤΑΣΚΕΥΑΖΩ",descriptor:"Τουβλάκια, τροχοί και μικρές μηχανές",icon:Hammer,activities:[
@@ -22,13 +22,13 @@ const pillars:PillarEntry[]=[
  {id:"P03",label:"Κρυμμένοι Φίλοι",skill:"Μνήμη και αναγνώριση"},
  {id:"P04",label:"Το Μπάνιο των Ζώων",skill:"Λεπτή κινητικότητα"}]},
  {id:"paint",name:"ΖΩΓΡΑΦΙΖΩ",descriptor:"Χρώματα, πατρόν και προγραφή",icon:Paintbrush,activities:[
- {id:"D01",label:"Βάφω την Αγελάδα",skill:"Εικαστική δημιουργία"},
+ {id:"D01",label:"Χρωματίζω 3D Ζωάκια",skill:"Εικαστική δημιουργία",destination:"paint-animal"},
  {id:"D02",label:"Φωτεινή Νεροζωγραφική",skill:"Αισθητηριακή εξερεύνηση"},
  {id:"D03",label:"Ζωγραφίζω Πατρόν",skill:"Χρώματα και συντονισμός",destination:"existing"},
  {id:"D04",label:"Μονοπάτια Ουράνιου Τόξου",skill:"Προγραφή",destination:"existing"}]},
  {id:"sing",name:"ΤΡΑΓΟΥΔΩ",descriptor:"Ήχοι, ρυθμοί και φωνές",icon:Music2,activities:[
  {id:"M01",label:"Χορωδία Ζώων",skill:"Ακουστική αντίληψη",destination:"choir"},
- {id:"M02",label:"Μαγικό Ξυλόφωνο",skill:"Μουσική ανακάλυψη",destination:"existing"},
+ {id:"M02",label:"Μαγικό Ξυλόφωνο",skill:"Μουσική ανακάλυψη",destination:"xylophone"},
  {id:"M03",label:"Ρυθμικοί Σπόροι",skill:"Ρυθμός"},
  {id:"M04",label:"Τραγούδια του Πισιπούκ",skill:"Γλώσσα και τραγούδι"}]},
  {id:"stories",name:"ΙΣΤΟΡΙΕΣ",descriptor:"Χαρακτήρες που ζουν μαζί μας",icon:BookOpen,activities:[
@@ -45,7 +45,7 @@ export function LittleCreators360({age,onGoTo}:{age:V15Age;onGoTo:(zone:string)=
   if(item.destination==="existing"){
    onGoTo(active==="build"?"games":active==="paint"?"atelier":active==="sing"?"music":"stories");return;
   }
-  const game=({sort:"A01",count:"B05",garden:"C09",build:"B01",choir:"M01",story:"S01"} as Record<string,string>)[item.destination]||"C09";
+  const game=({sort:"A01",count:"B05",garden:"C09",build:"B01",choir:"M01",xylophone:"M02","paint-animal":"D01",story:"S01"} as Record<string,string>)[item.destination]||"C09";
   window.open("/preschool/360/cozy-garden.html?game="+game+"&age="+encodeURIComponent(age),"pisipouk360","noopener,noreferrer");
  };
  return <section className="lc360" aria-label="Μικροί Δημιουργοί — έξι δημιουργικοί κόσμοι">
