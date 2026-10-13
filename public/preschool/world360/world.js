@@ -55,3 +55,66 @@ return s;
 function launch(g){if(!g)return;ST.game=g;ST.round=0;$("modal").hidden=false;document.body.style.overflow="hidden";newRound()}
 function newRound(){if(!ST.game)return;ST.round++;ST.selected=null;ST.s=makeRound();$("reward").hidden=true;$("game-title").textContent=ST.game.title;$("game-age").textContent="Ηλικία "+AGES[ST.game.age]+" ετών · νέα δοκιμή "+ST.round;$("game-illustration").textContent=ST.game.icon;say(ST.s.prompt);render()}
 function close(){ST.game=null;ST.s=null;$("modal").hidden=true;document.body.style.overflow="";if(window.speechSynthesis)speechSynthesis.cancel()}
+
+function render(){
+ const s=ST.s;if(!s||!ST.game)return;const t=s.type;
+ $("game-progress").textContent=s.progress?("✨ "+s.progress):"";
+ let out="";
+ if(t==="bubble")out='<div class="board">'+s.items.filter(x=>!s.done.includes(x.id)).map(x=>tile("🫧","pop","", 'data-id="'+x.id+'" style="background:'+x.color+';border-radius:50%;font-size:62px"')).join("")+"</div>";
+ if(t==="feed")out='<div class="board">'+zone("🐼","feed","Ταΐζω το ζωάκι","font-size:105px")+'</div><div class="board">'+s.items.filter((x,i)=>!s.done.includes(i)).map(x=>piece(x,s.items.indexOf(x))).join("")+'</div><p class="prompt-counter">'+s.progress+" / "+s.target+"</p>";
+ if(t==="sounds")out='<div class="board">'+s.items.map(i=>tile(ANIMALS[i][0],"answer",ANIMALS[i][1],'data-id="'+i+'"')).join("")+'</div>'+tile("🔊","repeat","Άκου πάλι");
+ if(t==="wipe")out='<div class="trace-board" id="wipe-board"><div class="reveal-image">'+s.emoji+'</div><canvas id="wipe-canvas" class="wipe-canvas"></canvas></div>';
+ if(t==="sizes")out='<div class="board">'+s.items.filter(x=>!s.done.includes(x.id)).map(x=>piece(x.icon,x.id,x.size==="big"?"Μεγάλο":"Μικρό","font-size:"+(x.size==="big"?72:36)+"px")).join("")+"</div><div class=board>"+zone("🧺","big","Μεγάλο")+zone("🧺","small","Μικρό")+"</div>";
+ if(t==="cupcake")out='<div class="board">'+s.items.filter(x=>!s.done.includes(x.id)).map(x=>piece("🧁",x.id,"","background:"+x.color)).join("")+'</div><div class="board">'+s.items.map(x=>zone("🍽️",x.id,"","background:"+x.color+";font-size:43px")).join("")+"</div>";
+ if(t==="shapes")out='<div class="board">'+s.items.filter(i=>!s.done.includes(i)).map(i=>piece(["●","■","▲"][i],i,["Κύκλος","Τετράγωνο","Τρίγωνο"][i],"color:"+COLORS[i])).join("")+'</div><div class="board">'+s.items.map(i=>zone(["●","■","▲"][i],i,"","color:#88999e")).join("")+"</div>";
+ if(t==="routine")out='<div class="board">'+tile(s.icon,"brush","Σκούπισε με το δάχτυλο",'style="font-size:100px;min-width:260px;min-height:210px"')+'</div><div class=prompt-counter>✨ '+s.progress+" κινήσεις</div>";
+ if(t==="patterns")out='<div class="board">'+[s.a,s.b,s.a,"❓"].map(x=>tile(x,"noop")).join("")+'</div><p class=prompt-counter>Τι λείπει;</p><div class="board">'+s.items.map((x,i)=>tile(x,"answer","",'data-id="'+i+'"')).join("")+"</div>";
+ if(t==="xylophone")out='<div class="board">'+Array.from({length:5},(_,i)=>tile(["🔴","🟠","🟡","🟢","🔵"][i],"note","",'data-id="'+i+'" style="background:'+["#fda4af","#fdba74","#fde047","#86efac","#7dd3fc"][i]+';min-height:164px"')).join("")+"</div>"+tile("🔊","repeat","Άκου το μοτίβο");
+ if(t==="balance")out='<div class="board">'+zone("⚖️","static",s.progress+" / "+s.target)+'</div><div class="board">'+Array.from({length:s.target},(_,i)=>tile("🍎","count","",'data-id="'+i+'" '+(s.done.includes(i)?"disabled":""))).join("")+"</div>";
+ if(t==="plant")out='<div class=board>'+zone(["🟫","🌱","🌿","🌻"][s.progress]||"🌻","static")+'</div><div class="board">'+["🌱","💧","☀️"].map((e,i)=>tile(e,"grow",["Σπόρος","Νερό","Ήλιος"][i],'data-id="'+i+'"')).join("")+"</div>";
+ if(t==="maze")out='<div style="display:grid;grid-template-columns:repeat(4,65px);gap:7px">'+Array.from({length:16},(_,i)=>'<div class=tile style="min-width:65px;min-height:65px;font-size:30px">'+(i===s.pos?"🦔":i===15?"🏠":"·")+"</div>").join("")+'</div><div class="board">'+[["⬅️",-1],["⬆️",-4],["⬇️",4],["➡️",1]].map(x=>tile(x[0],"move","",'data-id="'+x[1]+'"')).join("")+"</div>";
+ if(t==="recycle")out='<div class=board>'+s.items.filter((x,i)=>!s.done.includes(i)).map(x=>piece(x.e,s.items.indexOf(x))).join("")+'</div><div class=board>'+["📄 Χαρτί","🧴 Πλαστικό","🍃 Οργανικά"].map((e,i)=>zone("♻️",i,e)).join("")+"</div>";
+ if(t==="shadows")out='<div class="board">'+zone(s.items[s.target],"static","Βρες τη σκιά","filter:grayscale(1) brightness(.4);font-size:85px")+'</div><div class=board>'+s.items.map((e,i)=>tile(e,"answer","",'data-id="'+i+'"')).join("")+"</div>";
+ if(t==="phonics")out='<p class=count-text>«'+s.items[s.target][0]+'»</p><div class=board>'+s.items.map((e,i)=>tile(e[1],"answer",e[2],'data-id="'+i+'"')).join("")+"</div>";
+ if(t==="market")out='<div class=story-card>🧸 Το παιχνίδι κοστίζει '+s.target+' 🪙</div><p class=prompt-counter>'+s.progress+" / "+s.target+'</p><div class=board>'+Array.from({length:s.target},(_,i)=>tile("🪙","coin","",'data-id="'+i+'" '+(s.done.includes(i)?"disabled":""))).join("")+"</div>";
+ if(t==="emotions")out='<div class=story-card>'+s.items[s.target][2]+'</div><div class=board>'+shuffle([0,1,2,3]).map(i=>tile(s.items[i][1],"answer",s.items[i][0],'data-id="'+i+'"')).join("")+"</div>";
+ if(t==="beebot")out='<div style="display:grid;grid-template-columns:repeat(3,78px);gap:6px">'+Array.from({length:9},(_,i)=>'<div class=tile style="min-width:78px;min-height:75px;font-size:34px">'+(s.pos===i?"🐝":i===8?"🌼":"🌿")+"</div>").join("")+'</div><div class=board>'+tile("⬆️","bee","Μπροστά",'data-id="forward"')+tile("↶","bee","Αριστερά",'data-id="left"')+tile("↷","bee","Δεξιά",'data-id="right"')+"</div>";
+ if(t==="sequence")out='<div class=board>'+s.items.filter(x=>!s.done.includes(x.id)).map(x=>tile(x.e,"sequence",x.label,'data-id="'+x.id+'"')).join("")+'</div><div class=prompt-counter>Σειρά: '+s.done.map(i=>["🌅","🛝","🌙"][i]).join(" → ")+"</div>";
+ board(out);
+ if(t==="wipe")setupWipe();
+ if(t==="xylophone"&&!s.played){s.played=true;setTimeout(playNotes,400)}
+ if(["feed","sizes","cupcake","shapes","recycle"].includes(t))hint("Πάτησε αντικείμενο και μετά στόχο — ή σύρε το!");
+}
+function playNotes(){const s=ST.s;if(s?.type!=="xylophone")return;s.notes.forEach((n,i)=>setTimeout(()=>sound(262*Math.pow(2,n/7)),i*460))}
+function setupWipe(){
+ const c=$("wipe-canvas"),s=ST.s;if(!c||!s)return;const rect=c.getBoundingClientRect();c.width=Math.max(1,rect.width);c.height=Math.max(1,rect.height);const ctx=c.getContext("2d");ctx.fillStyle="#bbc6d2";ctx.fillRect(0,0,c.width,c.height);ctx.font="bold 28px sans-serif";ctx.fillStyle="#677c90";ctx.textAlign="center";ctx.fillText("ΣΚΟΥΠΙΣΕ!",c.width/2,c.height/2);
+ let active=false;
+ const draw=e=>{if(!active||!$("reward").hidden)return;const r=c.getBoundingClientRect(),x=(e.clientX-r.left)*c.width/r.width,y=(e.clientY-r.top)*c.height/r.height;ctx.save();ctx.globalCompositeOperation="destination-out";ctx.beginPath();ctx.arc(x,y,40,0,Math.PI*2);ctx.fill();ctx.restore();if(++s.progress>=s.target){c.style.pointerEvents="none";completed()}};
+ c.addEventListener("pointerdown",e=>{active=true;c.setPointerCapture(e.pointerId);draw(e)});c.addEventListener("pointermove",draw);c.addEventListener("pointerup",e=>{active=false;try{c.releasePointerCapture(e.pointerId)}catch{}});c.addEventListener("pointercancel",()=>active=false);
+}
+function match(id,z,element){
+ const s=ST.s;if(!s||!ST.game||!$("reward").hidden)return;const t=s.type,n=Number(id);let ok=false;
+ if(t==="feed")ok=z==="feed";
+ if(t==="sizes")ok=(n===0&&z==="big")||(n===1&&z==="small");
+ if(t==="cupcake"||t==="shapes")ok=n===Number(z);
+ if(t==="recycle")ok=s.items[n]?.bin===Number(z);
+ if(!ok){gentle(element);return}
+ if(s.done.includes(n))return;s.done.push(n);s.progress++;ST.selected=null;sound(570);
+ if(s.progress>=({feed:3,sizes:2,cupcake:4,shapes:3,recycle:6}[t]))completed();else render();
+}
+function act(a,id,el){
+ const s=ST.s;if(!s||!ST.game||!$("reward").hidden)return;const t=s.type,n=Number(id);
+ if(a==="repeat"){if(t==="xylophone")playNotes();else speak(s.prompt);return}
+ if(a==="pop"&&t==="bubble"){if(s.done.includes(n))return;s.done.push(n);s.progress++;el.textContent=s.items[n].emoji;el.disabled=true;sound(490+n*35);if(s.progress>=s.items.length)completed();return}
+ if(a==="answer"&&t==="sounds"){n===s.target?completed():gentle(el);return}
+ if(a==="brush"&&t==="routine"){s.progress++;sound(320+s.progress*14);if(s.progress>=s.target)completed();else render();return}
+ if(a==="answer"&&t==="patterns"){s.items[n]===s.b?completed():gentle(el);return}
+ if(a==="note"&&t==="xylophone"){sound(262*Math.pow(2,n/7));if(n===s.notes[s.progress]){s.progress++;if(s.progress>=s.notes.length)completed()}else{s.progress=0;gentle(el)}return}
+ if(a==="count"&&t==="balance"){if(s.done.includes(n))return;s.done.push(n);s.progress++;sound(430+s.progress*50);s.progress===s.target?completed():render();return}
+ if(a==="grow"&&t==="plant"){if(n===s.progress){s.progress++;sound(420+n*80);s.progress>=3?completed():render()}else gentle(el);return}
+ if(a==="move"&&t==="maze"){let next=s.pos+n;if(next<0||next>15||(Math.abs(n)===1&&Math.floor(next/4)!==Math.floor(s.pos/4))){gentle(el);return}s.pos=next;next===15?completed():render();return}
+ if(a==="answer"&&["shadows","phonics","emotions"].includes(t)){n===s.target?completed():gentle(el);return}
+ if(a==="coin"&&t==="market"){if(s.done.includes(n))return;s.done.push(n);s.progress++;sound(510);s.progress===s.target?completed():render();return}
+ if(a==="bee"&&t==="beebot"){if(id==="left")s.direction=(s.direction+3)%4;else if(id==="right")s.direction=(s.direction+1)%4;else{const [dx,dy]=[[0,-1],[1,0],[0,1],[-1,0]][s.direction];const x=s.pos%3+dx,y=Math.floor(s.pos/3)+dy;if(x>=0&&x<3&&y>=0&&y<3)s.pos=y*3+x;else gentle(el)}s.pos===8?completed():render();return}
+ if(a==="sequence"&&t==="sequence"){if(n===s.done.length){s.done.push(n);sound(460+n*100);s.done.length===3?completed():render()}else gentle(el);return}
+}
