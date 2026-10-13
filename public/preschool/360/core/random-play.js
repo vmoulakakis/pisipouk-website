@@ -73,7 +73,7 @@
     const spec={schemaVersion:1,gameId,seed:seed>>>0,roundIndex,ageBand:a,playMode:"guided",
       templateId:gameId==="A01"?"sort":gameId==="B05"?"count":"plant",
       goal:{verb:gameId==="A01"?"sort":gameId==="B05"?"collect":"plant",
-        targetKind:gameId==="C09"?"flower":"apple",color:"red",count:2},
+        targetKind:gameId==="C09"?"flower":"apple",color:"red",count:gameId==="C09"?1:2},
       objects:[0,1,2,3].map(i=>({id:"item-"+i,kind:"apple",color:i%2?"yellow":"red",slot:i,size:1})),
       slots:[0,1,2,3,4],plantId:"flower",narrationKey:"Παίζουμε με τον κήπο!",
       hintKeys:["Δοκίμασε ξανά."],surprisePool:["butterfly"],visualVariant:0,rewardVariant:0};
