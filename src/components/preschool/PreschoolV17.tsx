@@ -12,6 +12,7 @@ import { WorldActivities } from "./WorldActivities";
 import { AnimatedArcade } from "./AnimatedArcade";
 import { LivingGarden } from "./LivingGarden";
 import { BuildPlayground } from "./BuildPlayground";
+import { PreschoolGameBoundary } from "./PreschoolGameBoundary";
 import forestImage from "@/assets/pisipouk-exterior.webp";
 import atelierImage from "@/assets/pisipouk-classroom.webp";
 import storyImage from "@/assets/pisipouk-story.webp";
@@ -83,7 +84,7 @@ export function PreschoolV17() {
       </>}
       {zone!=="home"&&<section className="pw17-inner-heading"><button className="pw17-back" onClick={()=>open("home")}><ArrowLeft size={18}/> Πίσω στους κόσμους</button><span className="pw17-overline">Ο ΚΟΣΜΟΣ ΤΟΥ ΠΙΣΙΠΟΥΚ</span><h1>{zone==="games"?"Παίζω και ανακαλύπτω":zone==="atelier"?"Το ατελιέ των χρωμάτων":zone==="stories"?"Η παραμυθοχώρα":zone==="today"?"Η σημερινή μας ιδέα":zone==="parents"?"Για γονείς και παιδαγωγούς":current?.title||"Εξερευνώ"}</h1><p>{zone==="games"?ageToPhrase[age]:current?.subtitle||"Μαθαίνουμε με παιχνίδι, φαντασία και ελεύθερη εξερεύνηση."}</p></section>}
       {zone==="games"&&<><div className="pw17-compact-ages">{ages.map(a=><button key={a.id} className={age===a.id?"selected":""} onClick={()=>setAge(a.id)} aria-pressed={age===a.id}>{a.label} ετών</button>)}</div><LivingGarden age={age} onBack={()=>open("home")}/><BuildPlayground age={age} onBack={()=>open("home")}/><AnimatedArcade age={age} onExit={()=>open("home")}/><DiscoveryGames age={age} onClose={()=>open("home")}/><div className="pw17-game-intro"><span>ΑΚΟΜΗ ΠΕΡΙΣΣΟΤΕΡΟ ΠΑΙΧΝΙΔΙ</span><h2>Οι αγαπημένες δραστηριότητες του Πισιπούκ</h2></div><div className="pw17-game-grid">{games.map(g=><button key={g.id} onClick={()=>setGame(g)} className="pw17-game-card"><img src={g.cover} alt="" loading="lazy"/><div><span>{g.minutes} · {g.skill}</span><h2>{g.title}</h2><p>{g.intro}</p><strong>Παίζω <ArrowRight size={18}/></strong></div></button>)}</div></>}
-      {zone==="atelier"&&<><div className="pw17-experience"><Atelier360/></div><WorldActivities world="atelier" age={age} onExit={()=>open("home")}/></>}
+      {zone==="atelier"&&<><div className="pw17-experience"><PreschoolGameBoundary name="Atelier360"><Atelier360/></PreschoolGameBoundary></div><WorldActivities world="atelier" age={age} onExit={()=>open("home")}/></>}
       {zone==="stories"&&<><AnimatedArcade age={age} world="stories" onExit={()=>open("home")}/><WorldActivities world="stories" age={age} onExit={()=>open("home")}/><div className="pw17-experience"><Stories/></div></>}
       {zone==="today"&&<div className="pw17-experience"><Today/></div>}
       {zone==="nature"&&<><LivingGarden age={age} onBack={()=>open("home")}/><ForestQuestV17 age={age} onExit={()=>open("home")}/><AnimatedArcade age={age} world="nature" onExit={()=>open("home")}/><WorldActivities world="nature" age={age} onExit={()=>open("home")}/></>}
