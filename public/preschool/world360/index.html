@@ -1,0 +1,33 @@
+<!doctype html><html lang="el"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#075985"><meta name="robots" content="noindex,nofollow"><title>PISIPOUK 360 · Μαγικό Χωριό</title><link rel="stylesheet" href="/preschool/world360/world.css"><script defer src="/preschool/world360/world.js"></script></head><body>
+<div id="app" class="world360">
+ <header class="topbar">
+  <div class="brand"><div class="bear">🧸</div><div><b>ΠΙΣΙΠΟΥΚ 360</b><small>Το Μαγικό Χωριό</small></div></div>
+  <div class="top-actions"><span class="stars" title="Αυτοκόλλητα αυτής της επίσκεψης">⭐ <strong id="stars">0</strong></span><button id="sound" aria-label="Ήχοι: ενεργοποίηση ή απενεργοποίηση">🔇</button><button id="reset" aria-label="Νέα επίσκεψη">↻</button><button id="parent" aria-label="Πληροφορίες για γονείς">🔒 <span>Γονείς</span></button></div>
+ </header>
+ <main>
+  <section class="world-stage" aria-label="Διαδραστικό εικονογραφημένο χωριό">
+   <div id="panorama" class="panorama"><div class="world-backdrop"></div><div class="world-vignette"></div>
+    <div class="world-title"><span>✨ Ο ΜΑΓΙΚΟΣ ΚΟΣΜΟΣ</span><strong>Πού θα πάμε σήμερα;</strong></div>
+    <button class="spot nature" data-spot="nature" style="left:16%;top:43%" aria-label="Φύση και αισθήσεις"><span>🌱</span><b>Φύση</b></button>
+    <button class="spot bakery" data-spot="bakery" style="left:42%;top:53%" aria-label="Φούρνος και μαθηματικά"><span>🧁</span><b>Φούρνος</b></button>
+    <button class="spot library" data-spot="library" style="left:59%;top:30%" aria-label="Παραμύθια και γλώσσα"><span>📖</span><b>Ιστορίες</b></button>
+    <button class="spot music" data-spot="music" style="left:67%;top:58%" aria-label="Μουσική"><span>🎶</span><b>Μουσική</b></button>
+    <button class="spot atelier" data-spot="atelier" style="left:87%;top:57%" aria-label="Ζωγραφική και δημιουργία"><span>🎨</span><b>Ατελιέ</b></button>
+    <button class="spot castle" data-spot="castle" style="left:89%;top:27%" aria-label="Ρουτίνες και συναισθήματα"><span>🏰</span><b>Κάστρο</b></button>
+    <button class="spot animals" data-spot="animals" style="left:18%;top:69%" aria-label="Ζωάκια"><span>🐾</span><b>Ζωάκια</b></button>
+    <button class="spot stem" data-spot="stem" style="left:35%;top:70%" aria-label="Πειραματισμός και STEM"><span>🔬</span><b>STEM</b></button>
+   </div>
+   <div class="pan-controls"><button id="left" aria-label="Μετακίνηση χάρτη αριστερά">◀</button><span>Σύρε για εξερεύνηση · Άγγιξε έναν κόσμο</span><button id="right" aria-label="Μετακίνηση χάρτη δεξιά">▶</button></div>
+  </section>
+  <section class="age-picker" aria-label="Ηλικία παιδιού"><div><b>Διάλεξε ηλικία</b><small>Κάθε ηλικία έχει τα δικά της παιχνίδια</small></div><div class="age-buttons"><button data-age="2-3">🧸 2–3</button><button data-age="3-4" class="selected">🌼 3–4</button><button data-age="4-5">🌈 4–5</button><button data-age="5-6">🚀 5–6</button></div></section>
+  <section class="library-section" aria-labelledby="activities-title"><div class="library-heading"><div><span class="eyebrow">20 ΕΚΠΑΙΔΕΥΤΙΚΕΣ ΕΜΠΕΙΡΙΕΣ</span><h1 id="activities-title">Παίζω, μαθαίνω, ανακαλύπτω!</h1><p>Πάτησε μία δραστηριότητα. Κάθε φορά είναι λίγο διαφορετική.</p></div><button class="random-play" id="surprise">▶ ΤΥΧΑΙΟ ΠΑΙΧΝΙΔΙ</button></div><div id="game-grid" class="game-grid"></div></section>
+  <section class="home-actions"><button id="stories-home">📚 Παραμύθια</button><button id="music-home">🎵 Μουσική</button><button id="art-home">🎨 Ατελιέ</button><a href="/virtual-preschool">↩ Πίσω στον Πισιπούκ</a></section>
+ </main>
+ <div id="modal" class="modal" hidden><section class="modal-window" role="dialog" aria-modal="true" aria-labelledby="game-title">
+   <div class="modal-head"><button id="close" aria-label="Κλείσιμο παιχνιδιού">⬅ ΠΙΣΩ</button><div><span id="game-age"></span><h2 id="game-title"></h2></div><button id="skip" aria-label="Νέα τυχαία δοκιμή">⤨ ΝΕΟ!</button></div>
+   <div class="instruction"><span id="game-illustration">⭐</span><p id="prompt" role="status" aria-live="polite"></p><button id="narrate" aria-label="Άκου την οδηγία">🔊</button></div>
+   <div id="play-area" class="play-area"></div><div id="game-foot"><span id="game-hint">Δοκίμασε με τον δικό σου τρόπο!</span><span id="game-progress"></span></div>
+   <div id="reward" class="reward" hidden aria-live="polite"><strong id="reward-text">✨ Μπράβο!</strong><button id="reward-next">▶ ΠΑΙΖΟΥΜΕ ΞΑΝΑ!</button></div>
+ </section></div>
+ <div id="adult-modal" class="modal" hidden><section class="adult-panel" role="dialog" aria-modal="true" aria-labelledby="adult-title"><button id="adult-close" aria-label="Κλείσιμο">✕</button><h2 id="adult-title">Για γονείς και εκπαιδευτικούς</h2><p>20 μικρές δραστηριότητες για ηλικίες 2–6. Χωρίς παιδικούς λογαριασμούς, διαφημίσεις ή αποστολή δεδομένων παιχνιδιού. Οι αστερίσκοι εμφανίζονται μόνο σε αυτή την επίσκεψη.</p><p>Η χρήση για τα μικρότερα παιδιά γίνεται μαζί με ενήλικο. Το εικονογραφημένο σκηνικό προσφέρει πανοραμική 2.5D μετακίνηση, όχι στερεοσκοπικό ή πλήρως ανακατασκευασμένο 360° 3D περιβάλλον.</p></section></div>
+</div></body></html>
