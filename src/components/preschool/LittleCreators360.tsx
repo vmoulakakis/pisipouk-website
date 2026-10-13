@@ -3,11 +3,11 @@ import { ArrowRight, Hammer, Palette, Gamepad2, Paintbrush, Music2, BookOpen, Sp
 import type { V15Age } from "./v15/Games";
 import "./little-creators-360.css";
 type Pillar="build"|"create"|"play"|"paint"|"sing"|"stories";
-type Activity={id:string;label:string;skill:string;destination?:"garden"|"sort"|"count"|"existing"};
+type Activity={id:string;label:string;skill:string;destination?:"garden"|"sort"|"count"|"build"|"choir"|"story"|"existing"};
 type PillarEntry={id:Pillar;name:string;descriptor:string;icon:typeof Hammer;activities:Activity[]};
 const pillars:PillarEntry[]=[
  {id:"build",name:"ΚΑΤΑΣΚΕΥΑΖΩ",descriptor:"Τουβλάκια, τροχοί και μικρές μηχανές",icon:Hammer,activities:[
- {id:"B01",label:"Ξύλινοι Κύβοι",skill:"Χώρος και ισορροπία",destination:"existing"},
+ {id:"B01",label:"3D Πύργοι από Κύβους",skill:"Χώρος και ισορροπία",destination:"build"},
  {id:"B02",label:"Φτιάχνω Τρακτέρ",skill:"Συναρμολόγηση"},
  {id:"B03",label:"Γέφυρα για Παπάκια",skill:"Πρώιμη μηχανική"},
  {id:"B04",label:"Νερόμυλος",skill:"Αιτία και αποτέλεσμα"}]},
@@ -27,12 +27,12 @@ const pillars:PillarEntry[]=[
  {id:"D03",label:"Ζωγραφίζω Πατρόν",skill:"Χρώματα και συντονισμός",destination:"existing"},
  {id:"D04",label:"Μονοπάτια Ουράνιου Τόξου",skill:"Προγραφή",destination:"existing"}]},
  {id:"sing",name:"ΤΡΑΓΟΥΔΩ",descriptor:"Ήχοι, ρυθμοί και φωνές",icon:Music2,activities:[
- {id:"M01",label:"Χορωδία Ζώων",skill:"Ακουστική αντίληψη"},
+ {id:"M01",label:"Χορωδία Ζώων",skill:"Ακουστική αντίληψη",destination:"choir"},
  {id:"M02",label:"Μαγικό Ξυλόφωνο",skill:"Μουσική ανακάλυψη",destination:"existing"},
  {id:"M03",label:"Ρυθμικοί Σπόροι",skill:"Ρυθμός"},
  {id:"M04",label:"Τραγούδια του Πισιπούκ",skill:"Γλώσσα και τραγούδι"}]},
  {id:"stories",name:"ΙΣΤΟΡΙΕΣ",descriptor:"Χαρακτήρες που ζουν μαζί μας",icon:BookOpen,activities:[
- {id:"S01",label:"Μια Μέρα στη Φάρμα",skill:"Αφήγηση",destination:"existing"},
+ {id:"S01",label:"Το Κοτοπουλάκι Βρίσκει Φίλους",skill:"Αφήγηση και ενσυναίσθηση",destination:"story"},
  {id:"S02",label:"Το Χαμένο Κοτοπουλάκι",skill:"Ενσυναίσθηση"},
  {id:"S03",label:"Κουκλοθέατρο",skill:"Παιχνίδι ρόλων"},
  {id:"S04",label:"Τι Γίνεται Μετά;",skill:"Αλληλουχία και επιλογές",destination:"existing"}]},
@@ -45,7 +45,7 @@ export function LittleCreators360({age,onGoTo}:{age:V15Age;onGoTo:(zone:string)=
   if(item.destination==="existing"){
    onGoTo(active==="build"?"games":active==="paint"?"atelier":active==="sing"?"music":"stories");return;
   }
-  const game=item.destination==="sort"?"A01":item.destination==="count"?"B05":"C09";
+  const game=({sort:"A01",count:"B05",garden:"C09",build:"B01",choir:"M01",story:"S01"} as Record<string,string>)[item.destination]||"C09";
   window.open("/preschool/360/cozy-garden.html?game="+game+"&age="+encodeURIComponent(age),"pisipouk360","noopener,noreferrer");
  };
  return <section className="lc360" aria-label="Μικροί Δημιουργοί — έξι δημιουργικοί κόσμοι">
@@ -69,6 +69,6 @@ export function LittleCreators360({age,onGoTo}:{age:V15Age;onGoTo:(zone:string)=
     </div>)}</div>
   </div>
   <div className="lc360-feature"><span><Sprout size={27}/> ΝΕΑ ΖΩΝΤΑΝΗ 3D ΣΚΗΝΗ</span><div><h3>Το Μαγικό Περιβολάκι</h3><p>Φύτεψε, πότισε, άλλαξε τον καιρό, φρόντισε λουλούδια και ανακάλυψε νέες τυχαίες αποστολές. Δεν υπάρχει Game Over.</p></div><button onClick={()=>window.open("/preschool/360/cozy-garden.html?game=C09&age="+encodeURIComponent(age),"pisipouk360","noopener,noreferrer")}>Μεγάλο πράσινο ΠΑΙΖΩ! <ArrowRight size={19}/></button></div>
-  <p className="lc360-transparency"><RotateCcw size={15}/> Οι 24 δραστηριότητες έχουν παιδαγωγικές προδιαγραφές. Το νέο 3D παιχνίδι βρίσκεται σε σταδιακή ανάπτυξη· οι μη ενεργές δραστηριότητες επισημαίνονται αντί να εμφανίζονται ψευδώς ως ολοκληρωμένες.</p>
+  <p className="lc360-transparency"><RotateCcw size={15}/> Οι 24 δραστηριότητες αποτελούν το συνολικό πρόγραμμα. Οι διαθέσιμες 3D διαδρομές ανοίγουν σε δοκιμαστική λειτουργία· οι υπόλοιπες επισημαίνονται ως υπό ανάπτυξη.</p>
  </section>;
 }
