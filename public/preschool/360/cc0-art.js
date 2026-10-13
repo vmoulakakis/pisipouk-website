@@ -76,6 +76,22 @@ function create(options){
  return {
    ready,
    getAnimals:()=>entities.filter(e=>e.item.type==="animal"),
+   paintAnimal(id,color){
+     const entry=entities.find(e=>e.item.id===id&&e.item.type==="animal");
+     if(!entry)return false;
+     const child=entry.group.children[0];
+     child?.traverse(node=>{
+       if(!node.isMesh||!node.material)return;
+       if(!node.userData.originalMaterials){
+         node.userData.originalMaterials=(Array.isArray(node.material)?node.material:[node.material]).map(m=>m);
+         node.material=Array.isArray(node.material)?node.material.map(m=>m.clone()):node.material.clone();
+       }
+       const materials=Array.isArray(node.material)?node.material:[node.material];
+       for(const m of materials){if(m.color)m.color.setHex(color);if("roughness" in m)m.roughness=.32;m.needsUpdate=true;}
+     });
+     entry.flashUntil=performance.now()+1250;
+     return true;
+   },
    onClick(id){
       const entry=entities.find(e=>e.item.id===id);if(!entry)return null;
       entry.flashUntil=performance.now()+850;
