@@ -40,7 +40,7 @@
       const color=choice(colors.slice(0,a==="2-3"?3:4),rng);
       const plant=choice(seeds,rng);
       const slots=shuffle([0,1,2,3,4],rng);
-      const count=Math.min(ageCount(a),slots.length);
+      const count=1+Math.floor(rng()*Math.min(ageCount(a),slots.length));
       const palettes=shuffle(colors.slice(0,a==="2-3"?3:4),rng);
       const type=gameId==="A01"?"sort":gameId==="B05"?"count":
         choice(["care","plant","explore"],rng);
@@ -50,7 +50,7 @@
           slot:slots[i%slots.length],size:.8+rng()*.35};
       });
       if(gameId==="A01"){
-        for(let i=0;i<objects.length;i++)objects[i].color=palettes[i%palettes.length].id;
+        for(let i=0;i<objects.length;i++)objects[i].color=i<count?color.id:palettes.find(p=>p.id!==color.id).id;
       }
       const goal=type==="count"?{verb:"collect",targetKind:"apple",color:color.id,count}:
         type==="sort"?{verb:"sort",targetKind:"fruit",color:color.id,count}:
@@ -58,6 +58,7 @@
       const words=type==="count"?"Μάζεψε "+count+" "+color.name+" μήλα.":
         type==="sort"?"Βάλε τα "+color.name+" φρούτα στο καλαθάκι.":
         type==="care"?"Πότισε το φυτό σου!":type==="plant"?"Φύτεψε ένα "+plant.name+"!":"Δοκίμασε ό,τι θέλεις στον κήπο!";
+      if(gameId==="B05")objects.forEach((o,i)=>{o.color=i<count?color.id:palettes.find(p=>p.id!==color.id).id;});
       const spec={schemaVersion:1,gameId,seed:seed>>>0,roundIndex,ageBand:a,playMode:"guided",
         templateId:type,goal,objects,slots,plantId:plant.id,narrationKey:words,
         hintKeys:["Κοίτα προσεκτικά.","Δοκίμασε ξανά, με τον δικό σου ρυθμό."],
@@ -85,7 +86,7 @@
     if(!r?.objects?.length||r.objects.length>10)issues.push("object-count");
     if(!r?.slots?.length||new Set(r.slots).size!==r.slots.length)issues.push("slots");
     if(!(r.goal?.count>=1&&r.goal.count<=10))issues.push("goal-count");
-    if(r.gameId==="B05"&&r.objects.filter(o=>o.color===r.goal.color).length<r.goal.count)issues.push("insufficient-targets");
+    if(["A01","B05"].includes(r.gameId)&&r.objects.filter(o=>o.color===r.goal.color).length<r.goal.count)issues.push("insufficient-targets");
     if(r.objects?.some(o=>!r.slots.includes(o.slot)))issues.push("invalid-slot");
     return{valid:issues.length===0,issues};
   }
