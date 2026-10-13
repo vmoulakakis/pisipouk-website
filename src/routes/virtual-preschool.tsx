@@ -1,4 +1,4 @@
-import { PreschoolV17 } from "@/components/preschool/PreschoolV17";
+import { PisipoukVillageHub } from "@/components/preschool/PisipoukVillageHub";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { CalendarDays, Heart, Palette, Play, Printer, RotateCcw, Scissors, ShieldCheck, Sparkles, Star, Users } from "lucide-react";
@@ -10,14 +10,14 @@ import { COLORING_PAGES, CRAFT_LIBRARY, CURATED_MEDIA, type PreschoolAge } from 
 export const Route = createFileRoute("/virtual-preschool")({
   head: () => ({
     meta: [
-      { title: "Ο Μαγικός Κόσμος του Πισιπούκ | Παιχνίδια 2–6 ετών" },
+      { title: "PISIPOUK 360 · Μαγικό Χωριό με 20 διαδραστικά παιχνίδια" },
       {
         name: "description",
         content: "Ένα ολοκληρωμένο online preschool για παιδιά 2–6: θεματικά εκπαιδευτικά παιχνίδια ανά ηλικία, επιλεγμένα βίντεο, ζωγραφική, Α4 χειροτεχνίες, κίνηση και εποχιακές δραστηριότητες.",
       },
     ],
   }),
-  component: PreschoolV17,
+  component: PisipoukVillageHub,
 });
 
 type Season = {
