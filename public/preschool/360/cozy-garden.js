@@ -181,7 +181,7 @@
   const g=group(),main=put(g,ball(.37,hex,12,9),0,0,0);main.scale.set(.90,1.05,.85);
   put(g,box(.09,.15,.08,0x8b6b3b),0,.40,0);
   const l=ball(.16,0x65995d,7,6);l.scale.set(1,.27,.6);l.rotation.z=.56;put(g,l,.14,.46,0);
-  g.position.set(x,y,z);g.userData.apple=id;return mark(g,"apple",{id});
+  g.position.set(x,y,z);g.userData.apple=id;g.userData.home=new THREE.Vector3(x,y,z);return mark(g,"apple",{id});
  }
  function crate(colorHex,x,z,isTarget){
   const b=group();put(b,box(1.65,.43,1.08,0xcfa16d),0,.38,0);
@@ -446,33 +446,70 @@ function clickInteraction(hit,target){
   }
   return best;
  }
+ // Basket targeting is independent of the fruit mesh being dragged in front of it.
+ // Screen-space proximity offers a 75 CSS-pixel magnetic dock for small hands.
+ function magnetBasket(clientX,clientY){
+   if(!camera||!renderer)return null;
+   const rect=renderer.domElement.getBoundingClientRect();
+   let best=null,dist=75;
+   for(const basket of crates){
+     if(!basket.visible)continue;
+     const point=basket.getWorldPosition(new THREE.Vector3());
+     point.y+=.65;point.project(camera);
+     const x=rect.left+(point.x+1)*rect.width*.5;
+     const y=rect.top+(1-point.y)*rect.height*.5;
+     const d=Math.hypot(clientX-x,clientY-y);
+     if(d<dist){best=basket;dist=d;}
+   }
+   return best;
+ }
+ function returnApple(apple){
+   if(!apple?.parent||!apple.userData.home)return;
+   const from=apple.position.clone(),home=apple.userData.home.clone(),start=performance.now();
+   const animate=now=>{
+     if(!apple.parent)return;
+     const t=Math.min(1,(now-start)/320);
+     const smooth=1-Math.pow(1-t,3);
+     apple.position.lerpVectors(from,home,smooth);
+     if(t<1)requestAnimationFrame(animate);
+   };
+   requestAnimationFrame(animate);
+ }
  function interactFromPointer(event,isDown){
-  if(!state.started||state.phase==="IDLE")return;
-  const hit=getHit(event.clientX,event.clientY);
-  if(isDown){
-   state.down={x:event.clientX,y:event.clientY,hit,at:performance.now()};
-   if(state.game==="A01"&&hit?.type==="apple"){
-    state.selected=fruitItems.find(a=>a.userData.interactive.id===hit.id);
-    state.isDrag=true;controls.enabled=false;
+   if(!state.started||state.phase==="IDLE")return;
+   const hit=getHit(event.clientX,event.clientY);
+   if(isDown){
+     state.down={x:event.clientX,y:event.clientY,hit,at:performance.now(),pointerId:event.pointerId};
+     if(state.game==="A01"&&hit?.type==="apple"){
+       state.selected=fruitItems.find(a=>a.userData.interactive.id===hit.id);
+       state.isDrag=true;controls.enabled=false;
+     }
+     return;
    }
-  }else{
-   if(!state.down)return;
+   if(!state.down||state.down.pointerId!==event.pointerId)return;
    const d=Math.hypot(event.clientX-state.down.x,event.clientY-state.down.y);
-   const initialHit=state.down.hit;state.down=null;controls.enabled=true;state.isDrag=false;
+   const initialHit=state.down.hit;
+   state.down=null;controls.enabled=true;state.isDrag=false;
    if(state.game==="A01"&&initialHit?.type==="apple"&&d>12){
-    const a=fruitItems.find(a=>a.userData.interactive.id===initialHit.id);
-    // magnetic snap to basket measured in screen CSS px and projected coordinates
-    if(hit?.type==="basket"&&hit.target&&a){targetFruit(a);state.selected=null;}
-    else if(a){sound("boing",200);setStatus("Το φρούτο επιστρέφει απαλά. Δοκίμασε ξανά!");}
-    return;
+     const apple=fruitItems.find(a=>a.userData.interactive.id===initialHit.id);
+     const basket=magnetBasket(event.clientX,event.clientY);
+     if(apple&&basket?.userData?.interactive?.target){
+       targetFruit(apple);
+       if(apple.visible)returnApple(apple);
+     }else if(apple){
+       sound("boing",200);
+       setStatus("Δοκίμασε ξανά! Το φρουτάκι επιστρέφει απαλά στη θέση του.");
+       returnApple(apple);
+     }
+     state.selected=null;
+     return;
    }
-   if(d<17)clickInteraction(hit||initialHit);
-  }
+   if(d<35)clickInteraction(hit||initialHit);
  }
  function drawInteraction(){
-  ui.canvas.addEventListener("pointerdown",e=>{if(e.button>0)return;interactFromPointer(e,true);});
-  ui.canvas.addEventListener("pointerup",e=>interactFromPointer(e,false));
-  ui.canvas.addEventListener("pointercancel",()=>{state.down=null;state.isDrag=false;controls.enabled=true;});
+  ui.canvas.addEventListener("pointerdown",e=>{if(e.button>0)return;try{ui.canvas.setPointerCapture(e.pointerId)}catch{} interactFromPointer(e,true);});
+  ui.canvas.addEventListener("pointerup",e=>{interactFromPointer(e,false);try{ui.canvas.releasePointerCapture(e.pointerId)}catch{}});
+  ui.canvas.addEventListener("pointercancel",()=>{if(state.selected&&state.isDrag)returnApple(state.selected);state.selected=null;state.down=null;state.isDrag=false;controls.enabled=true;});
   ui.canvas.addEventListener("pointermove",e=>{
    if(!state.started)return;let hit=getHit(e.clientX,e.clientY);
    ui.canvas.style.cursor=hit?"pointer":"grab";
