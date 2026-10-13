@@ -5,15 +5,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Πισιπούκ • Το Νησί των Σχημάτων — Διαδραστικό 3D παιχνίδι</title>
   <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="./shape-island-ui.css">
   <!-- Three.js CDN -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="./vendor/three-r128.min.js"></script>
   <!-- OrbitControls CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="./vendor/OrbitControls-r128.js"></script>
   <!-- GSAP CDN for smooth toddler spring animations -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="./vendor/gsap-3.min.js"></script>
   <!-- Canvas Confetti for winning celebrations -->
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script>
+  /* Lightweight on-site confetti. No third-party tracking or runtime dependency. */
+  function confetti(options={}) {
+    if (window.matchMedia("(prefers-reduced-motion:reduce)").matches) return;
+    const amount=Math.min(145,options.particleCount||45),layer=document.createElement("canvas");
+    layer.style.cssText="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:45";
+    layer.width=Math.floor(innerWidth*Math.min(devicePixelRatio,2));
+    layer.height=Math.floor(innerHeight*Math.min(devicePixelRatio,2));
+    document.body.appendChild(layer);
+    const c=layer.getContext("2d"),d=layer.width/innerWidth,cx=innerWidth*(options.origin?.x??.5),cy=innerHeight*(options.origin?.y??.45);
+    const pieces=Array.from({length:amount},(_,i)=>({x:cx,y:cy,vx:(Math.random()-.5)*380,vy:-120-Math.random()*420,angle:Math.random()*6.28,rate:(Math.random()-.5)*9,size:5+Math.random()*9,color:["#ffd14b","#f26d8c","#8cddcc","#9d8ff3","#fff7cd"][i%5]}));
+    let start=performance.now(),last=start;
+    const loop=(now)=>{const dt=Math.min(.045,(now-last)/1000);last=now;
+      c.setTransform(d,0,0,d,0,0);c.clearRect(0,0,innerWidth,innerHeight);
+      for(const p of pieces){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=650*dt;p.angle+=p.rate*dt;c.save();c.translate(p.x,p.y);c.rotate(p.angle);c.fillStyle=p.color;c.fillRect(-p.size/2,-p.size/2,p.size,p.size*.68);c.restore();}
+      if(now-start<2200)requestAnimationFrame(loop);else layer.remove();
+    };requestAnimationFrame(loop);
+  }
+  </script>
   <!-- Fredoka / Baloo playful google font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -158,9 +176,10 @@
       init() {
         if (!this.ctx) {
           const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (!AudioCtx) { this.muted = true; return; }
           this.ctx = new AudioCtx();
         }
-        if (this.ctx.state === 'suspended') {
+        if (this.ctx && this.ctx.state === 'suspended') {
           this.ctx.resume();
         }
       }
@@ -252,8 +271,8 @@
         this.greekVoice = null;
         this.enabled = true;
         this.initVoices();
-        if (speechSynthesis.onvoiceschanged !== undefined) {
-          speechSynthesis.onvoiceschanged = () => this.initVoices();
+        if (this.synth && this.synth.onvoiceschanged !== undefined) {
+          this.synth.onvoiceschanged = () => this.initVoices();
         }
       }
 
@@ -712,6 +731,7 @@
     }
 
     function onTargetSolved(mesh) {
+      state.availableTargets=state.availableTargets.filter(def=>def.id!==mesh.userData.def.id);
       state.stars += 1;
       state.completedCount += 1;
       starCountEl.textContent = state.stars;
@@ -943,10 +963,12 @@
 
     // Inline script is at the end of <body>; start immediately and expose QA readiness.
     document.body.dataset.gameReady = "true";
+    window.parent?.postMessage({type:"PISIPOUK_SHAPE_ISLAND_READY"},"*");
     animate();
     } catch(error) {
       console.error("[PISIPOUK 3D]",error);
       document.body.dataset.gameReady="failed";
+      window.parent?.postMessage({type:"PISIPOUK_SHAPE_ISLAND_FAILED"},"*");
       const splash=document.getElementById("start-splash");
       if(splash){splash.innerHTML="<h1 style=\"font-size:2rem;font-weight:900\">Το παιχνίδι χρειάζεται WebGL και τις βιβλιοθήκες Three.js</h1><p style=\"margin:1rem\">Δεν φορτώθηκε η τρισδιάστατη σκηνή. Δοκίμασε ανανέωση ή διαφορετικό browser.</p><button onclick=\"location.reload()\" style=\"background:white;color:#234;padding:1rem 2rem;border-radius:2rem;font-weight:bold\">Ξανά</button>";}
     }
