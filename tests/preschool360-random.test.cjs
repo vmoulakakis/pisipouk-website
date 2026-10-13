@@ -7,7 +7,7 @@ const ready=import(URL.pathToFileURL(path.join(__dirname,"../public/preschool/36
  .then(()=>{core=globalThis.PisipoukRandom;assert.ok(core,"Random play engine must be globally available");});
 test("seeded procedural missions are reproducible",async()=>{
  await ready;
- for(const game of ["C09","A01","B05","B01","M01","S01"]){
+ for(const game of ["C09","A01","B05","B01","M01","M02","D01","S01"]){
   const a=core.makeRound(game,"3-4",123456,4);
   const b=core.makeRound(game,"3-4",123456,4);
   assert.deepEqual(a,b,game);
@@ -16,7 +16,7 @@ test("seeded procedural missions are reproducible",async()=>{
 test("random goals are always achievable for 2-5 year olds",async()=>{
  await ready;
  for(const age of ["2-3","3-4","4-5"]){
-  for(const game of ["C09","A01","B05","B01","M01","S01"]){
+  for(const game of ["C09","A01","B05","B01","M01","M02","D01","S01"]){
    for(let i=0;i<220;i++){
     const s=core.makeRound(game,age,0xabc100+i,i);
     const validated=core.validateRound(s);
