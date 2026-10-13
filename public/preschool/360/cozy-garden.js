@@ -455,5 +455,8 @@
    loop();
   }catch(e){fail(e.message||String(e));}
  }
- if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",begin,{once:true});else begin();
+ if("serviceWorker" in navigator && location.protocol==="https:"){
+    window.addEventListener("load",()=>navigator.serviceWorker.register("/preschool/360/sw.js",{scope:"/preschool/360/"}).catch(error=>console.debug("[PISIPOUK 360] Offline cache unavailable",error)),{once:true});
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",begin,{once:true});else begin();
 })();
