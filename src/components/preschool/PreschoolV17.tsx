@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight, BookOpen, Brush, Compass, Gamepad2, Heart, Home,
 import { PisipoukCharacter } from "./v15/PisipoukCharacter";
 import { V15_GAMES, V15GamePlayer, type V15Game, type V15Age } from "./v15/Games";
 import { Atelier, Stories, Today, Worlds } from "./v15/Experiences";
+import "./preschool-v15.css";
 import "./preschool-v17.css";
 import { DiscoveryGames } from "./DiscoveryGames";
 import { CinematicForest3D } from "./CinematicForest3D";
