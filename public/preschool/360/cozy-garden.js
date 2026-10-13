@@ -20,7 +20,7 @@
    pending:[],elapsed:0,reduce:matchMedia("(prefers-reduced-motion: reduce)").matches,quality:"normal"};
  let scene,camera,renderer,controls,clock,raycaster,pointer,ambient=[],active=[],planted=[],fruitItems=[],
    plots=[],crates=[],builtObjects=[],builtSlots=new Set(),clickables=[],waterwheel,bee,beeWing,sheep,sky,smoke,barn,tree,decor=[],animation=0,
-   gameTime=0,oldTime=0,planner=null,context=null,selectGlow=null,supportsWebGL=false;
+   gameTime=0,oldTime=0,planner=null,context=null,selectGlow=null,supportsWebGL=false,art=null;
  const palette={wood:0xc08435,woodLight:0xfbbf66,grass:0x22c55e,dark:0x166534,cream:0xffeb9f,red:0xef4444,yellow:0xfacc15,blue:0x0284c7,orange:0xf97316,purple:0xa855f7};
  function fail(message){
   console.error("[PISIPOUK 360]",message);document.body.dataset.gameReady="failed";ui.fallback.hidden=false;
@@ -307,6 +307,16 @@
  }
  function clickInteraction(hit,target){
   if(!hit)return;
+  if(hit.type==="farmModel"){
+    const model=art?.onClick(hit.id);
+    if(model){
+      sound("pop",model.note||523);
+      const phrase=model.kind==="animal"?("Γεια σου, "+model.name+"! "+(model.sound||"")):"Ανακάλυψες "+model.name+"!";
+      setStatus(phrase);if(model.kind==="animal")speak(phrase);
+      reward(0,2,0);
+    }
+    return;
+  }
   if(hit.type==="plot"||hit.type==="plant"){onGarden(hit.type,hit.slot);return;}
   if(hit.type==="apple"){
    const item=fruitItems.find(a=>a.userData.interactive?.id===hit.id);
@@ -410,6 +420,7 @@
  }
  function loop(){
   animation=requestAnimationFrame(loop);const delta=Math.min(.05,clock.getDelta());gameTime+=delta;
+  art?.update(gameTime);
   if(controls)controls.update();
   if(waterwheel&&!state.reduce)waterwheel.rotation.z+=delta*.35;
   if(sheep&&!state.reduce)sheep.position.y=.16+Math.sin(gameTime*1.4)*.035;
@@ -479,6 +490,10 @@
    renderer=new THREE.WebGLRenderer({canvas:ui.canvas,context:context3d,antialias:true,powerPreference:"high-performance"});
    renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.25;
    setQuality();scene=new THREE.Scene();createCameraAndLights();createTerrain();
+   if(window.PisipoukCC0Art){
+    art=window.PisipoukCC0Art.create({THREE,scene,register:g=>clickables.push(g)});
+    art.ready.then(report=>{document.body.dataset.artAssets=String(report.loaded);console.info("[PISIPOUK] Local CC0 models",report)});
+   }
    pointer=new THREE.Vector2();raycaster=new THREE.Raycaster();clock=new THREE.Clock();
    configureUI();drawInteraction();resize();if("ResizeObserver" in window)new ResizeObserver(resize).observe(ui.canvas);else window.addEventListener("resize",resize);
    document.body.dataset.gameReady="true";parent.postMessage({type:"PISIPOUK_FARM_READY"},"*");
