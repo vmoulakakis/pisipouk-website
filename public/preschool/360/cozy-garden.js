@@ -11,7 +11,7 @@
  const C=engine?.colors||[],SEEDS=engine?.seeds||[];
  const THREE=window.THREE;
  const parameters=new URLSearchParams(location.search);
- const config={game:["C09","A01","B05","B01","M01","S01"].includes(parameters.get("game"))?parameters.get("game"):"C09",
+ const config={game:["C09","A01","B05","B01","M01","M02","D01","S01"].includes(parameters.get("game"))?parameters.get("game"):"C09",
    age:["2-3","3-4","4-5"].includes(parameters.get("age"))?parameters.get("age"):"3-4",
    seed:Number(parameters.get("seed"))>>>0||engine?.cryptoSeed?.()||42};
  const state={started:false,mode:"guided",game:config.game,age:config.age,seed:config.seed,index:0,round:null,
@@ -156,15 +156,19 @@
   planner=new engine.SurprisePlanner(state.round.seed^state.index);
   const count=state.round.goal.count;
   state.phase="SELECTION";
-  const names={C09:"Το Μικρό Μου Περιβολάκι",A01:"Τα Καλάθια των Χρωμάτων",B05:"Μετράω τα Μήλα",B01:"Ο Πύργος των Μικρών Μαστόρων",M01:"Η Χορωδία της Φάρμας",S01:"Το Κοτοπουλάκι Βρίσκει Φίλους"};
+  const names={C09:"Το Μικρό Μου Περιβολάκι",A01:"Τα Καλάθια των Χρωμάτων",B05:"Μετράω τα Μήλα",B01:"Ο Πύργος των Μικρών Μαστόρων",M01:"Η Χορωδία της Φάρμας",M02:"Το Μαγικό Ξυλόφωνο",D01:"Ζωγραφίζω τα Ζωάκια σε 3D",S01:"Το Κοτοπουλάκι Βρίσκει Φίλους"};
   ui.title.textContent=names[state.game];
-  ui.icon.textContent=({C09:"🌱",A01:"🧺",B05:"🍎",B01:"🧱",M01:"🎶",S01:"📚"})[state.game]||"✨";
+  ui.icon.textContent=({C09:"🌱",A01:"🧺",B05:"🍎",B01:"🧱",M01:"🎶",M02:"🎵",D01:"🎨",S01:"📚"})[state.game]||"✨";
   ui.quest.textContent=state.mode==="free"?"Πειραματίσου! Διάλεξε ό,τι θέλεις.":state.round.narrationKey;
   if(state.game==="C09"||state.game==="B01"){showGarden();}
   if(state.game==="C09"){setTool(state.round.templateId==="care"?"water":state.round.templateId==="build"?"build":state.round.templateId==="paint"?"paint":"plant");}
   if(state.game==="A01"||state.game==="B05"){showFruitRound();}
-  if(["M01","S01"].includes(state.game)){plots.forEach(p=>p.visible=false);}
-  $("animal-choices").hidden=!["M01","S01"].includes(state.game);
+  if(["M01","M02","D01","S01"].includes(state.game)){plots.forEach(p=>p.visible=false);}
+  if(state.game==="M02")showXylophone();
+  $("animal-choices").hidden=!["M01","D01","S01"].includes(state.game);
+  $("note-choices").hidden=state.game!=="M02";
+  $("paint-colors").hidden=state.game!=="D01";
+  if(state.game==="D01"){const btn=document.querySelector("[data-paint="+state.round.goal.color+"]");if(btn)btn.click();}
   $("toolbox").hidden=state.game!=="C09";
   if(state.game==="C09"&&["care","paint"].includes(state.round.templateId))addPlant(2,state.round.plantId,.74,true);
   if(state.game==="C09"&&state.round.templateId==="paint"){const button=document.querySelector("[data-paint="+state.round.goal.color+"]");if(button)button.click();}
@@ -319,6 +323,18 @@
  function onFarmModel(id){
   const model=art?.onClick(id)||ANIMALS[id];
   if(!model)return;
+  if(state.game==="D01"&&ANIMALS[id]){
+    const color=C.find(c=>c.id===state.paintColor)||C[0];
+    const painted=art?.paintAnimal(id,color.hex);
+    sound("pop",420);reward(0,2.3,0);
+    setStatus(painted?"Το ζωάκι έγινε "+color.name+"!":"Μπράβο, διάλεξες "+color.name+" χρώμα!");
+    if(state.mode!=="free"&&state.phase!=="REWARD"){
+      if(state.paintColor===state.round.goal.color){
+        state.progress=1;ui.progress.textContent="1 / 1";complete();
+      }else setStatus("Υπέροχη επιλογή! Δοκίμασε και το χρώμα της αποστολής!");
+    }
+    return;
+  }
   const isAnimal=Boolean(ANIMALS[id]);
   const animal=ANIMALS[id]||model;
   sound("pop",animal.note||523);
@@ -363,9 +379,35 @@
   if(state.progress>=state.round.goal.count)complete();
  }
 
+
+ const NOTES=[261.63,293.66,329.63,392.00,440.00];
+ function showXylophone(){
+  const barColors=[0xef4444,0xf97316,0xfacc15,0x22c55e,0xa855f7];
+  for(let i=0;i<5;i++){
+   const x=(i-2)*2.15,key=group();
+   put(key,box(1.62,.36,2.1,barColors[i]),0,.92,0);
+   const gloss=box(1.41,.07,1.8,0xffffff);gloss.material.transparent=true;gloss.material.opacity=.12;put(key,gloss,0,1.115,0);
+   const hit=new THREE.Mesh(new THREE.BoxGeometry(2,1.7,2.6),new THREE.MeshBasicMaterial({visible:false}));
+   put(key,hit,0,.94,0);
+   put(scene,key,x,.17,1.15);mark(key,"xylophone",{note:i});active.push(key);
+  }
+  setStatus("Άγγιξε τα χρωματιστά πλήκτρα και άκου τις μαγικές νότες!");
+ }
+ function playXylophone(note){
+  if(state.game!=="M02"||state.phase==="REWARD")return;
+  const index=Math.max(0,Math.min(4,Number(note)||0));
+  sound("chime",NOTES[index]);reward((index-2)*2.15,2.2,1.1);
+  setStatus(["Ντο!","Ρε!","Μι!","Σολ!","Λα!"][index]+" Πόσο όμορφα ακούγεται!");
+  if(state.mode!=="free"){
+   state.progress++;ui.progress.textContent=state.progress+" / "+state.round.goal.count;
+   if(state.progress>=state.round.goal.count)complete();
+  }
+ }
+
 function clickInteraction(hit,target){
   if(!hit)return;
   if(hit.type==="farmModel"){onFarmModel(hit.id);return;}
+  if(hit.type==="xylophone"){playXylophone(hit.note);return;}
   if(hit.type==="plot"||hit.type==="plant"){
     if(state.game==="B01"){placeTowerBlock(hit.slot);return;}
     onGarden(hit.type,hit.slot);return;
@@ -498,7 +540,7 @@ function clickInteraction(hit,target){
    const event=planner?.update(gameTime,{dragging:state.isDrag,speaking:state.speaking,calm:state.reduce});
    if(event)surprise(event.kind);
    if(state.phase==="REWARD"&&gameTime>state.celebration){
-    if(["B01","A01","B05","M01","S01"].includes(state.game)&&state.mode!=="free")initRound();
+    if(["B01","A01","B05","M01","M02","D01","S01"].includes(state.game)&&state.mode!=="free")initRound();
     else state.phase="INTERACTION";
    }
   }
@@ -532,6 +574,7 @@ function clickInteraction(hit,target){
   $("fallback-play").addEventListener("click",()=>{ui.status.textContent="Φύτεψες ένα φυτό! Μπράβο!";});
   document.querySelectorAll("[data-game]").forEach(b=>b.addEventListener("click",()=>{newGame(b.dataset.game);}));
   document.querySelectorAll("[data-animal]").forEach(b=>b.addEventListener("click",()=>onFarmModel(b.dataset.animal)));
+  document.querySelectorAll("[data-note]").forEach(b=>b.addEventListener("click",()=>playXylophone(b.dataset.note)));
   document.querySelectorAll("[data-tool]").forEach(b=>b.addEventListener("click",()=>setTool(b.dataset.tool)));
   document.querySelectorAll("[data-paint]").forEach(b=>b.addEventListener("click",()=>{
    state.paintColor=b.dataset.paint;document.querySelectorAll("[data-paint]").forEach(x=>x.classList.toggle("chosen",x===b));
