@@ -1,0 +1,64 @@
+
+/* PISIPOUK 3D Island - self-hosted UI; no Tailwind runtime or CDN. */
+*{box-sizing:border-box;font-family:"Fredoka",ui-rounded,system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#88d3f4;color:#203c50}
+button{border:0;cursor:pointer;font-family:inherit;transition:transform .2s ease,filter .2s ease}
+button:hover{filter:brightness(1.04);transform:translateY(-2px)}
+button:active{transform:translateY(2px) scale(.97)}
+button:focus-visible{outline:4px solid #fbd26c;outline-offset:3px}
+#game-canvas{width:100%;height:100%;display:block;touch-action:none}
+body>div:first-of-type{position:absolute;top:12px;left:0;right:0;padding:0 22px;display:flex;align-items:flex-start;justify-content:space-between;gap:15px;pointer-events:none;z-index:20}
+body>div:first-of-type>div{pointer-events:auto}
+body>div:first-of-type>div:first-child{display:flex;align-items:center;gap:10px;padding:8px 18px;background:#ffcb43;border:4px solid #fff;border-radius:50px;box-shadow:0 7px 0 #ab832f,0 16px 25px #253d5b25}
+body>div:first-of-type>div:first-child>span{font-size:30px}
+body>div:first-of-type>div:first-child>div{display:flex;flex-direction:column}
+body>div:first-of-type>div:first-child div span:first-child{font-size:11px;font-weight:900;text-transform:uppercase;color:#76521a}
+#star-count{font-size:26px;font-weight:1000;line-height:1.1;color:#644b16}
+body>div:first-of-type>div:last-child{display:flex;align-items:center;gap:8px}
+#btn-repeat-speech,#btn-sound-toggle{background:#6650db;border:4px solid white;color:#fff;border-radius:50px;min-height:52px;padding:9px 15px;font-weight:900;display:flex;align-items:center;gap:9px;box-shadow:0 6px 0 #3e3295,0 12px 25px #334b6740}
+#btn-sound-toggle{background:#e86381;min-width:55px;min-height:55px;justify-content:center;box-shadow:0 6px 0 #983f59,0 12px 25px #334b6740}
+#btn-repeat-speech>span:first-child{font-size:24px}
+#sound-icon{font-size:22px}
+body>div:nth-of-type(2){position:absolute;top:80px;left:50%;transform:translateX(-50%);width:min(94%,560px);pointer-events:none;z-index:20}
+body>div:nth-of-type(2)>div{pointer-events:auto;background:#fffdfff2;backdrop-filter:blur(12px);border:4px solid #56b5ed;border-radius:27px;padding:15px 18px;text-align:center;box-shadow:0 8px 0 #278bc683,0 22px 45px #21375335;animation:islefloat 3.5s ease-in-out infinite}
+body>div:nth-of-type(2) p:first-child{margin:0 0 6px;color:#328bd0;font-size:12px;font-weight:900;letter-spacing:.08em}
+#target-prompt{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;font-size:clamp(20px,3.5vw,29px);font-weight:950;color:#273c50}
+#target-name{background:#ffe59b;border:2px solid #eac668;color:#72541d;border-radius:13px;padding:4px 12px}
+#sub-hint{margin:7px 0 0;color:#607184;font-size:13px;font-weight:750}
+body>div:nth-of-type(3){position:absolute;left:10px;right:10px;bottom:13px;display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:wrap;pointer-events:none;z-index:20}
+body>div:nth-of-type(3)>button{pointer-events:auto;min-height:61px;padding:12px 22px;color:#fff;font-size:clamp(14px,2vw,22px);font-weight:950;border:4px solid #fff;border-radius:22px;box-shadow:0 8px 0 #28403950,0 15px 23px #2539532b;display:flex;align-items:center;gap:12px}
+#btn-next-mission{background:#35b984}#btn-free-play{background:#4889e8}#btn-dance-all{background:#9c5de3}
+body>div:nth-of-type(3)>button span{font-size:1.15em}
+#celebration-modal{position:fixed;inset:0;background:#204b7688;backdrop-filter:blur(6px);z-index:50;display:flex;align-items:center;justify-content:center;opacity:1;transition:opacity .3s}
+#celebration-modal.hidden{display:none!important}
+#celebration-modal.opacity-0{opacity:0}
+#modal-box{background:#fff;border:8px solid #ffc43c;border-radius:30px;width:min(92%,430px);padding:25px;text-align:center;box-shadow:0 14px 0 #be8c23,0 25px 50px #11324e5b;transition:transform .3s}
+#modal-box.scale-75{transform:scale(.75)}#modal-box.scale-100{transform:scale(1)}
+#modal-box>div:first-child{font-size:64px;margin-bottom:10px}
+#modal-box h2{font-size:32px;color:#76551d;margin:8px 0 6px}
+#modal-text{font-size:18px;font-weight:800;color:#41546b;line-height:1.45}
+#btn-modal-continue{background:#ffc343;color:#674516;font-size:22px;font-weight:950;padding:15px 25px;border:4px solid white;border-radius:27px;box-shadow:0 5px 0 #bb8639;width:100%}
+#start-splash{position:fixed;inset:0;z-index:40;background:linear-gradient(150deg,#45b6e6,#4b74d7 55%,#764ed1);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 20px;text-align:center;color:white}
+#start-splash>div:first-child{font-size:70px;animation:islefloat 3.2s ease-in-out infinite}
+#start-splash h1{font-size:clamp(32px,5vw,54px);font-weight:1000;margin:10px 0 8px;text-shadow:0 5px 15px #1837604f}
+#start-splash p{font-size:clamp(16px,2.2vw,21px);max-width:490px;line-height:1.65;color:#edf9ff;margin:0 auto 25px;font-weight:750}
+#btn-start-game{background:#ffc741;color:#674513;padding:16px 30px;font-size:clamp(22px,4vw,30px);font-weight:1000;border:4px solid white;border-radius:50px;box-shadow:0 9px 0 #aa832b,0 22px 30px #18376a55}
+@keyframes islefloat{50%{transform:translateY(-7px)}}
+@media(max-width:650px){
+ body>div:first-of-type{top:8px;padding:0 8px}
+ body>div:first-of-type>div:first-child{padding:6px 9px;gap:5px;border-width:3px}
+ body>div:first-of-type>div:first-child>span{font-size:21px}
+ #star-count{font-size:19px}
+ #btn-repeat-speech{min-width:44px;min-height:44px;padding:5px 8px;border-width:3px}
+ #btn-repeat-speech>span:last-child{display:none}
+ #btn-sound-toggle{min-height:45px;min-width:45px;padding:5px;border-width:3px}
+ body>div:nth-of-type(2){top:77px;width:93%}
+ body>div:nth-of-type(2)>div{padding:10px 7px;border-width:3px;border-radius:20px}
+ body>div:nth-of-type(2) p:first-child{font-size:10px}
+ #target-prompt{font-size:20px}
+ #sub-hint{font-size:10px}
+ body>div:nth-of-type(3){bottom:8px;gap:5px}
+ body>div:nth-of-type(3)>button{min-height:46px;padding:6px 9px;border-radius:16px;font-size:12px;border-width:3px;gap:4px}
+}
+@media(max-width:400px){#target-prompt{font-size:17px}body>div:nth-of-type(3)>button{font-size:11px}#start-splash>div:first-child{font-size:52px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
