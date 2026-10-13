@@ -11,15 +11,15 @@
  const C=engine?.colors||[],SEEDS=engine?.seeds||[];
  const THREE=window.THREE;
  const parameters=new URLSearchParams(location.search);
- const config={game:["C09","A01","B05"].includes(parameters.get("game"))?parameters.get("game"):"C09",
+ const config={game:["C09","A01","B05","B01","M01","S01"].includes(parameters.get("game"))?parameters.get("game"):"C09",
    age:["2-3","3-4","4-5"].includes(parameters.get("age"))?parameters.get("age"):"3-4",
    seed:Number(parameters.get("seed"))>>>0||engine?.cryptoSeed?.()||42};
  const state={started:false,mode:"guided",game:config.game,age:config.age,seed:config.seed,index:0,round:null,
-   history:[],phase:"IDLE",selected:null,progress:0,tool:"plant",paintColor:"yellow",weather:"sun",muted:true,
+   history:[],phase:"IDLE",selected:null,progress:0,blocks:[],tool:"plant",paintColor:"yellow",weather:"sun",muted:true,
    isDrag:false,down:null,plants:[],dropped:[],speaking:false,celebration:0,particles:[],events:[],
    pending:[],elapsed:0,reduce:matchMedia("(prefers-reduced-motion: reduce)").matches,quality:"normal"};
  let scene,camera,renderer,controls,clock,raycaster,pointer,ambient=[],active=[],planted=[],fruitItems=[],
-   plots=[],crates=[],builtObjects=[],builtSlots=new Set(),clickables=[],waterwheel,bee,beeWing,sheep,sky,smoke,barn,tree,decor=[],animation=0,
+   plots=[],crates=[],builtObjects=[],builtSlots=new Set(),clickables=[],artRefs=[],waterwheel,bee,beeWing,sheep,sky,smoke,barn,tree,decor=[],animation=0,
    gameTime=0,oldTime=0,planner=null,context=null,selectGlow=null,supportsWebGL=false,art=null;
  const palette={wood:0xc08435,woodLight:0xfbbf66,grass:0x22c55e,dark:0x166534,cream:0xffeb9f,red:0xef4444,yellow:0xfacc15,blue:0x0284c7,orange:0xf97316,purple:0xa855f7};
  function fail(message){
@@ -146,7 +146,7 @@
  function setTool(t){state.tool=t;$("paint-colors").hidden=t!=="paint";document.querySelectorAll("[data-tool]").forEach(b=>b.classList.toggle("selected",b.dataset.tool===t));
   const hints={plant:"Άγγιξε ένα παρτέρι για να φυτέψεις!",water:"Άγγιξε ή σύρε το νερό πάνω σε ένα φυτό.",sun:"Άλλαξε τον καιρό και δες τα φυτά να μεγαλώνουν!",bee:"Άγγιξε το λουλούδι για να έρθει η μελισσούλα!",build:"Άγγιξε ένα παρτέρι για να κατασκευάσεις ξύλινο περίγραμμα!",paint:"Άγγιξε ένα λουλούδι για να του αλλάξεις χρώμα!"};setStatus(hints[t]||"Παίζουμε!");}
  function clearRound(){
-  clearArray(active);clearArray(builtObjects);builtSlots.clear();clickables=plots.slice();fruitItems=[];crates=[];state.dropped=[];
+  clearArray(active);clearArray(builtObjects);builtSlots.clear();clickables=plots.concat(artRefs);fruitItems=[];crates=[];state.dropped=[];state.blocks=[];
   state.selected=null;state.progress=0;ui.progress.textContent="";
  }
  function initRound(restart=false){
@@ -156,12 +156,16 @@
   planner=new engine.SurprisePlanner(state.round.seed^state.index);
   const count=state.round.goal.count;
   state.phase="SELECTION";
-  const names={C09:"Το Μικρό Μου Περιβολάκι",A01:"Τα Καλάθια των Χρωμάτων",B05:"Μετράω τα Μήλα"};
+  const names={C09:"Το Μικρό Μου Περιβολάκι",A01:"Τα Καλάθια των Χρωμάτων",B05:"Μετράω τα Μήλα",B01:"Ο Πύργος των Μικρών Μαστόρων",M01:"Η Χορωδία της Φάρμας",S01:"Το Κοτοπουλάκι Βρίσκει Φίλους"};
   ui.title.textContent=names[state.game];
-  ui.icon.textContent=state.game==="C09"?"🌱":state.game==="A01"?"🧺":"🍎";
+  ui.icon.textContent=({C09:"🌱",A01:"🧺",B05:"🍎",B01:"🧱",M01:"🎶",S01:"📚"})[state.game]||"✨";
   ui.quest.textContent=state.mode==="free"?"Πειραματίσου! Διάλεξε ό,τι θέλεις.":state.round.narrationKey;
-  if(state.game==="C09"){showGarden();setTool(state.round.templateId==="care"?"water":state.round.templateId==="build"?"build":state.round.templateId==="paint"?"paint":"plant");}
+  if(state.game==="C09"||state.game==="B01"){showGarden();}
+  if(state.game==="C09"){setTool(state.round.templateId==="care"?"water":state.round.templateId==="build"?"build":state.round.templateId==="paint"?"paint":"plant");}
   if(state.game==="A01"||state.game==="B05"){showFruitRound();}
+  if(["M01","S01"].includes(state.game)){plots.forEach(p=>p.visible=false);}
+  $("animal-choices").hidden=!["M01","S01"].includes(state.game);
+  $("toolbox").hidden=state.game!=="C09";
   if(state.game==="C09"&&["care","paint"].includes(state.round.templateId))addPlant(2,state.round.plantId,.74,true);
   if(state.game==="C09"&&state.round.templateId==="paint"){const button=document.querySelector("[data-paint="+state.round.goal.color+"]");if(button)button.click();}
   state.phase="INTERACTION";
@@ -305,19 +309,61 @@
   if(state.progress>=state.round.goal.count)complete();
   else setStatus("Μπράβο! Συνέχισε να ψάχνεις.");
  }
- function clickInteraction(hit,target){
-  if(!hit)return;
-  if(hit.type==="farmModel"){
-    const model=art?.onClick(hit.id);
-    if(model){
-      sound("pop",model.note||523);
-      const phrase=model.kind==="animal"?("Γεια σου, "+model.name+"! "+(model.sound||"")):"Ανακάλυψες "+model.name+"!";
-      setStatus(phrase);if(model.kind==="animal")speak(phrase);
-      reward(0,2,0);
-    }
-    return;
+ 
+ const ANIMALS={
+   cow:{name:"Αγελαδίτσα",sound:"Μου",note:261.63},
+   pig:{name:"Γουρουνάκι",sound:"Γκρου",note:293.66},
+   chick:{name:"Κοτοπουλάκι",sound:"Πιπ πιπ",note:392},
+   cat:{name:"Γατάκι",sound:"Νιάου",note:440}
+ };
+ function onFarmModel(id){
+  const model=art?.onClick(id)||ANIMALS[id];
+  if(!model)return;
+  const isAnimal=Boolean(ANIMALS[id]);
+  const animal=ANIMALS[id]||model;
+  sound("pop",animal.note||523);
+  if(!["M01","S01"].includes(state.game)||!isAnimal){
+    const phrase=isAnimal?("Γεια σου, "+animal.name+"! "+animal.sound+"!"):"Βρήκες "+model.name+"!";
+    setStatus(phrase);if(isAnimal)speak(phrase);
+    reward(0,2,0);return;
   }
-  if(hit.type==="plot"||hit.type==="plant"){onGarden(hit.type,hit.slot);return;}
+  if(state.dropped.includes(id)){
+    sound("boing",190);setStatus("Ο φίλος αυτός τραγούδησε ήδη! Διάλεξε και έναν άλλο.");return;
+  }
+  state.dropped.push(id);state.progress++;ui.progress.textContent=state.progress+" / "+state.round.goal.count;
+  const phrase=state.game==="S01"?
+    ("Το "+animal.name+" γνώρισε το κοτοπουλάκι. Μια καινούργια φιλία!") :
+    (animal.name+" τραγουδάει: "+animal.sound+"!");
+  speak(phrase);setStatus(phrase);reward(0,2,0);
+  if(state.progress>=state.round.goal.count)complete();
+ }
+ function placeTowerBlock(slot){
+  if(state.game!=="B01"||state.phase==="REWARD")return;
+  const stack=state.blocks.filter(b=>b.slot===slot).length;
+  if(stack>=4){setStatus("Ο πύργος έφτασε ψηλά! Δοκίμασε ένα διπλανό παρτέρι.");sound("boing",210);return;}
+  const colors=[0xef4444,0xfacc15,0x0284c7,0xa855f7,0xf97316];
+  const root=group(),body=box(1.34,.58,1.18,colors[(slot+stack+state.index)%colors.length]);
+  put(root,body,0,.36,0);
+  const stripe=box(1.21,.07,1.07,0xffffff);put(root,stripe,0,.67,0);
+  const peg=disc(.20,.14,0xfef08a,10);put(root,peg,0,.76,0);
+  root.position.set((slot-2)*2.20,.48+stack*.70,1.13);
+  addToActive(root);state.blocks.push({slot,root});
+  root.scale.setScalar(.1);
+  if(window.gsap)window.gsap.to(root.scale,{x:1,y:1,z:1,duration:.77,ease:"elastic.out(1,.5)"});
+  else root.scale.setScalar(1);
+  reward((slot-2)*2.20,2,1.13);
+  setStatus("Το τουβλάκι μπήκε στη θέση του! Μπορείς να συνεχίσεις να χτίζεις.");
+  state.progress++;ui.progress.textContent=state.progress+" / "+state.round.goal.count;
+  if(state.progress>=state.round.goal.count)complete();
+ }
+
+function clickInteraction(hit,target){
+  if(!hit)return;
+  if(hit.type==="farmModel"){onFarmModel(hit.id);return;}
+  if(hit.type==="plot"||hit.type==="plant"){
+    if(state.game==="B01"){placeTowerBlock(hit.slot);return;}
+    onGarden(hit.type,hit.slot);return;
+  }
   if(hit.type==="apple"){
    const item=fruitItems.find(a=>a.userData.interactive?.id===hit.id);
    if(item&&item.visible){state.selected=item;
@@ -340,11 +386,11 @@
   if(found.length){let o=found[0].object;while(o&&!o.userData?.interactive)o=o.parent;
    if(o?.userData?.interactive)return o.userData.interactive;}
   // 40 CSS px forgiveness threshold, measured from projected center to pointer.
-  const threshold=46;
+  const threshold=60;
   let best=null,bestDist=threshold;
   for(const root of clickables.filter(g=>g.visible)){
    const o=root.userData.interactive;if(!o)continue;
-   let c=root.position.clone();if(o.type==="plot")c.y+=.5;else if(o.type==="basket")c.y+=.5;
+   let c=root.position.clone();if(o.type==="plot")c.y+=.5;else if(o.type==="basket")c.y+=.5;else if(o.type==="farmModel")c.y+=.7;
    c.project(camera);
    const sx=(c.x+1)*.5*rect.width+rect.left,sy=(-c.y+1)*.5*rect.height+rect.top;
    const dist=Math.hypot(clientX-sx,clientY-sy);
@@ -476,6 +522,7 @@
   $("calm").addEventListener("click",()=>{state.reduce=!state.reduce;$("calm").setAttribute("aria-pressed",String(state.reduce));setStatus(state.reduce?"Οι εκπλήξεις θα είναι ήρεμες.":"Η φύση ζωντανεύει πάλι!");});
   $("fallback-play").addEventListener("click",()=>{ui.status.textContent="Φύτεψες ένα φυτό! Μπράβο!";});
   document.querySelectorAll("[data-game]").forEach(b=>b.addEventListener("click",()=>{newGame(b.dataset.game);}));
+  document.querySelectorAll("[data-animal]").forEach(b=>b.addEventListener("click",()=>onFarmModel(b.dataset.animal)));
   document.querySelectorAll("[data-tool]").forEach(b=>b.addEventListener("click",()=>setTool(b.dataset.tool)));
   document.querySelectorAll("[data-paint]").forEach(b=>b.addEventListener("click",()=>{
    state.paintColor=b.dataset.paint;document.querySelectorAll("[data-paint]").forEach(x=>x.classList.toggle("chosen",x===b));
@@ -491,7 +538,7 @@
    renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.25;
    setQuality();scene=new THREE.Scene();createCameraAndLights();createTerrain();
    if(window.PisipoukCC0Art){
-    art=window.PisipoukCC0Art.create({THREE,scene,register:g=>clickables.push(g)});
+    art=window.PisipoukCC0Art.create({THREE,scene,register:g=>{clickables.push(g);artRefs.push(g);}});
     art.ready.then(report=>{document.body.dataset.artAssets=String(report.loaded);console.info("[PISIPOUK] Local CC0 models",report)});
    }
    pointer=new THREE.Vector2();raycaster=new THREE.Raycaster();clock=new THREE.Clock();
