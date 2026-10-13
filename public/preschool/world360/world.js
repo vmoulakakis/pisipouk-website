@@ -137,7 +137,7 @@ function panBy(delta){
 function setupPan(){
  const p=$("panorama");let drag=null;
  p.addEventListener("pointerdown",e=>{if(e.target.closest(".spot"))return;drag={id:e.pointerId,x:e.clientX,from:ST.offset};p.classList.add("dragging")});
- p.addEventListener("pointermove",e=>{if(!drag||e.pointerId!==drag.id)return;const x=e.clientX-drag.x;if(Math.abs(x)>7){const min=Math.min(0,p.parentElement.clientWidth-p.clientWidth);ST.offset=Math.max(min,Math.min(0,drag.from+x));p.style.transform="translateX("+ST.offset+"px")}})
+ p.addEventListener("pointermove",e=>{if(!drag||e.pointerId!==drag.id)return;const x=e.clientX-drag.x;if(Math.abs(x)>7){const min=Math.min(0,p.parentElement.clientWidth-p.clientWidth);ST.offset=Math.max(min,Math.min(0,drag.from+x));p.style.transform="translateX("+ST.offset+"px)"}})
  const stop=()=>{drag=null;p.classList.remove("dragging")};
  p.addEventListener("pointerup",stop);p.addEventListener("pointercancel",stop);
  $("left").onclick=()=>panBy(210);$("right").onclick=()=>panBy(-210);
