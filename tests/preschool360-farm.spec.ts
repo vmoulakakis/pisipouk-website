@@ -14,7 +14,7 @@ test.describe("Μικροί Δημιουργοί — WebGL farm vertical slice",
    await page.getByRole("button",{name:"Περιστροφή δεξιά"}).click();
    expect(errors).toEqual([]);
  });
- test("random play provides 3 distinct modes and a no-fail new mission",async({page})=>{
+ test("random play provides 6 distinct modes and a no-fail new mission",async({page})=>{
    await page.goto(base+"/preschool/360/cozy-garden.html?seed=12345");
    await expect(page.locator("body")).toHaveAttribute("data-game-ready","true",{timeout:25000});
    await page.locator("#start").click();
@@ -23,6 +23,15 @@ test.describe("Μικροί Δημιουργοί — WebGL farm vertical slice",
    await expect(page.locator("#progress")).toContainText("0 /");
    await page.locator('[data-game="B05"]').click();
    await expect(page.locator("#quest-title")).toHaveText("Μετράω τα Μήλα");
+   await page.locator('[data-game="B01"]').click();
+   await expect(page.locator("#quest-title")).toContainText("Μικρών Μαστόρων");
+   await page.locator('[data-game="M01"]').click();
+   await expect(page.locator("#animal-choices")).toBeVisible();
+   await page.locator('[data-animal="cow"]').click();
+   await expect(page.locator("#progress")).toContainText("1 /");
+   await page.locator('[data-game="S01"]').click();
+   await expect(page.locator("#quest-title")).toContainText("Κοτοπουλάκι");
+   await page.locator('[data-animal="chick"]').click();
    await page.locator('[data-game="C09"]').click();
    await expect(page.locator("#quest-title")).toHaveText("Το Μικρό Μου Περιβολάκι");
    await page.locator("#next").click();
