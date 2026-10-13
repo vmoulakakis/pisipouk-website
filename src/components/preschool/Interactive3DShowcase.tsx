@@ -1,11 +1,22 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Box, ExternalLink, Gamepad2, Maximize2, RotateCcw, Sparkles } from "lucide-react";
 
 /** The supplied Three.js/GSAP game runs inside an isolated static HTML iframe. */
 export function Interactive3DShowcase(){
- const [revision,setRevision]=useState(0),[loaded,setLoaded]=useState(false);
+ const [revision,setRevision]=useState(0),[status,setStatus]=useState<"loading"|"ready"|"failed">("loading");
+ const iframeRef=useRef<HTMLIFrameElement>(null);
+ useEffect(()=>{
+  const onMessage=(e:MessageEvent)=>{
+   if(e.origin!==window.location.origin||e.source!==iframeRef.current?.contentWindow)return;
+   if(e.data?.type==="PISIPOUK_SHAPE_ISLAND_READY")setStatus("ready");
+   if(e.data?.type==="PISIPOUK_SHAPE_ISLAND_FAILED")setStatus("failed");
+  };
+  window.addEventListener("message",onMessage);
+  const timer=window.setTimeout(()=>setStatus(s=>s==="loading"?"failed":s),15000);
+  return()=>{window.removeEventListener("message",onMessage);window.clearTimeout(timer)};
+ },[revision]);
  const gameUrl="/preschool/games/shape-island.html";
- const reset=()=>{setLoaded(false);setRevision(n=>n+1)};
+ const reset=()=>{setStatus("loading");setRevision(n=>n+1)};
  const full=()=>{const iframe=document.getElementById("pisipouk-3d-shape-island") as HTMLIFrameElement|null;const request=iframe?.requestFullscreen?.();if(request){request.catch(()=>window.open(gameUrl,"_blank","noopener,noreferrer"))}else window.open(gameUrl,"_blank","noopener,noreferrer")};
  return <section className="pw17-3d-showcase" aria-label="Τρισδιάστατο παιχνίδι: Το Νησί των Σχημάτων" style={{maxWidth:1290,margin:"25px auto 35px",padding:"0 16px"}}>
   <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:16,flexWrap:"wrap",marginBottom:16}}>
@@ -20,8 +31,8 @@ export function Interactive3DShowcase(){
     </div>
   </div>
   <div style={{position:"relative",width:"100%",height:"min(77vh,760px)",minHeight:530,borderRadius:24,overflow:"hidden",background:"linear-gradient(#7fd5f7,#e9f9fd)",border:"4px solid white",boxShadow:"0 22px 55px #30604c28"}}>
-   {!loaded&&<div aria-live="polite" style={{position:"absolute",inset:0,display:"grid",placeItems:"center",background:"#c1eafa",zIndex:1,pointerEvents:"none"}}><span style={{display:"flex",alignItems:"center",gap:8,fontWeight:900,color:"#275d69"}}><Box size={20}/> Φορτώνει ο τρισδιάστατος κόσμος…</span></div>}
-   <iframe key={revision} id="pisipouk-3d-shape-island" src={gameUrl} title="Το Νησί των Σχημάτων — διαδραστικό 3D παιχνίδι" loading="eager" allow="fullscreen; autoplay" onLoad={()=>setLoaded(true)} style={{height:"100%",width:"100%",border:0,display:"block"}} />
+   {status!=="ready"&&<div aria-live="polite" style={{position:"absolute",inset:0,display:"grid",placeItems:"center",background:"#c1eafa",zIndex:1}}><div style={{maxWidth:410,padding:24,textAlign:"center",color:"#275d69",fontWeight:900}}>{status==="failed"?<><p>Η τρισδιάστατη σκηνή δεν ξεκίνησε.</p><p style={{fontWeight:600,fontSize:13}}>Δοκίμασε επανεκκίνηση ή άνοιγμα σε νέα καρτέλα.</p><button onClick={reset} style={{background:"#31745c",color:"white",padding:"12px 22px",borderRadius:13,border:0,fontWeight:900}}>Ξανά</button></>:<span style={{display:"flex",alignItems:"center",gap:8}}><Box size={20}/> Φορτώνει ο τρισδιάστατος κόσμος…</span>}</div></div>}
+   <iframe ref={iframeRef} key={revision} id="pisipouk-3d-shape-island" src={gameUrl} title="Το Νησί των Σχημάτων — διαδραστικό 3D παιχνίδι" loading="eager" allow="fullscreen; autoplay" style={{height:"100%",width:"100%",border:0,display:"block"}} />
   </div>
   <p style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap",fontSize:12,color:"#63766e",fontWeight:750,marginTop:13}}><Gamepad2 size={17}/> Αν ο browser δεν υποστηρίζει WebGL ή δεν φορτώνονται οι δωρεάν βιβλιοθήκες, το παιχνίδι θα εμφανίσει σχετικό μήνυμα. <a href={gameUrl} target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:4,color:"#2e735f",fontWeight:900}}>Άνοιγμα σε νέα καρτέλα <ExternalLink size={15}/></a></p>
  </section>;
