@@ -115,6 +115,21 @@ function VirtualPreschool() {
 
         {activeVideo?.videoId && <div className="fixed inset-0 z-[100] grid place-items-center bg-[#07112f]/85 p-5" onClick={() => setActiveVideo(null)}><div className="w-full max-w-4xl rounded-[30px] bg-white p-4 shadow-2xl" onClick={(e) => e.stopPropagation()}><div className="mb-3 flex items-center justify-between"><div><div className="text-xs font-black text-pink-500">WATCH → DO</div><div className="text-lg font-black">{activeVideo.title}</div></div><button className="rounded-full bg-slate-100 px-4 py-2 font-black" onClick={() => setActiveVideo(null)}>✕</button></div><div className="aspect-video overflow-hidden rounded-2xl"><iframe className="h-full w-full" src={`https://www.youtube-nocookie.com/embed/${activeVideo.videoId}?rel=0&modestbranding=1`} title={activeVideo.title} allow="accelerometer; autoplay; encrypted-media; picture-in-picture" allowFullScreen /></div><div className="mt-4 rounded-2xl bg-amber-50 p-4 font-bold text-amber-900">Μετά: {activeVideo.offlineMission}</div></div></div>}
 
+        <section id="magic-world" className="mx-auto max-w-7xl px-4 py-10 md:px-6">
+          <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p className="text-sm font-black uppercase tracking-[.2em] text-fuchsia-600">PISIPOUK 360 · Premium World</p>
+              <h2 className="mt-2 text-3xl font-black text-slate-900 md:text-4xl">🐻 Ο Μαγικός Κόσμος του Πισιπούκ</h2>
+              <p className="mt-2 max-w-2xl text-slate-600">Άγγιξε τα λαμπερά σημεία του εικονογραφημένου κόσμου και εξερεύνησε παιχνίδια με χρώματα, αριθμούς, ιστορίες και μουσική.</p>
+            </div>
+            <a href="/pisipouk-360-play.html" target="_blank" rel="noopener noreferrer" className="rounded-full bg-fuchsia-600 px-5 py-3 font-black text-white shadow-lg hover:bg-fuchsia-700">⛶ Πλήρης οθόνη</a>
+          </div>
+          <div className="overflow-hidden rounded-[28px] border-4 border-amber-200 bg-amber-100 shadow-2xl">
+            <iframe src="/pisipouk-360-play.html" title="Ο Μαγικός Κόσμος του Πισιπούκ — διαδραστικά παιχνίδια" loading="lazy" allow="autoplay" className="block h-[690px] w-full md:h-[780px]" />
+          </div>
+          <p className="mt-3 text-center text-sm font-semibold text-slate-500">Κάτω από τον κόσμο θα βρεις και την πλήρη συλλογή των 43 εκπαιδευτικών παιχνιδιών, ταξινομημένων ανά ηλικία.</p>
+        </section>
+
         <PreschoolGameLab age={age} />
 
         <section id="create" className="bg-gradient-to-b from-[#fff0f7] to-[#fffaf2] py-12">
