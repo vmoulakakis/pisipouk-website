@@ -43,7 +43,7 @@
       const count=1+Math.floor(rng()*Math.min(ageCount(a),slots.length));
       const palettes=shuffle(colors.slice(0,a==="2-3"?3:4),rng);
       const type=gameId==="A01"?"sort":gameId==="B05"?"count":
-        choice(["care","plant","explore"],rng);
+        choice(["care","plant","explore","build","paint"],rng);
       const objects=Array.from({length:Math.max(count+1,4)},(_,i)=>{
         const p=palettes[(i+Math.floor(rng()*palettes.length))%palettes.length];
         return{id:"item-"+i,kind:gameId==="C09"?"seed":"apple",color:gameId==="B05"&&i<count?color.id:p.id,
@@ -57,7 +57,7 @@
         {verb:type,targetKind:plant.id,color:color.id,count:1};
       const words=type==="count"?"Μάζεψε "+count+" "+color.name+" μήλα.":
         type==="sort"?"Βάλε τα "+color.name+" φρούτα στο καλαθάκι.":
-        type==="care"?"Πότισε το φυτό σου!":type==="plant"?"Φύτεψε ένα "+plant.name+"!":"Δοκίμασε ό,τι θέλεις στον κήπο!";
+        type==="care"?"Πότισε το φυτό σου!":type==="plant"?"Φύτεψε ένα "+plant.name+"!":type==="build"?"Φτιάξε ένα ξύλινο παρτέρι!":type==="paint"?"Ζωγράφισε το λουλούδι σου με το "+color.name+" χρώμα!":"Δοκίμασε ό,τι θέλεις στον κήπο!";
       if(gameId==="B05")objects.forEach((o,i)=>{o.color=i<count?color.id:palettes.find(p=>p.id!==color.id).id;});
       const spec={schemaVersion:1,gameId,seed:seed>>>0,roundIndex,ageBand:a,playMode:"guided",
         templateId:type,goal,objects,slots,plantId:plant.id,narrationKey:words,
