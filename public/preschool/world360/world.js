@@ -118,3 +118,83 @@ function act(a,id,el){
  if(a==="bee"&&t==="beebot"){if(id==="left")s.direction=(s.direction+3)%4;else if(id==="right")s.direction=(s.direction+1)%4;else{const [dx,dy]=[[0,-1],[1,0],[0,1],[-1,0]][s.direction];const x=s.pos%3+dx,y=Math.floor(s.pos/3)+dy;if(x>=0&&x<3&&y>=0&&y<3)s.pos=y*3+x;else gentle(el)}s.pos===8?completed():render();return}
  if(a==="sequence"&&t==="sequence"){if(n===s.done.length){s.done.push(n);sound(460+n*100);s.done.length===3?completed():render()}else gentle(el);return}
 }
+
+function renderCards(){
+ const filtered=GAMES.filter(g=>g.age===ST.age);
+ $("game-grid").innerHTML=filtered.map((g,i)=>'<button class="game-card" data-game="'+g.id+'"><span class="tag">ΠΑΙΧΝΙΔΙ '+(i+1)+'</span><span class="glyph">'+g.icon+'</span><b>'+g.title+'</b><small>'+g.skill+'</small></button>').join("");
+}
+function setAge(age){ST.age=Math.max(0,AGES.indexOf(age));document.querySelectorAll("[data-age]").forEach(b=>b.classList.toggle("selected",b.dataset.age===age));renderCards()}
+function openSpot(spot){
+ const ageMatches=GAMES.filter(g=>g.age===ST.age&&g.zone===spot);
+ const anyZone=GAMES.filter(g=>g.zone===spot);
+ launch(pick(ageMatches.length?ageMatches:anyZone.length?anyZone:GAMES.filter(g=>g.age===ST.age)));
+}
+function panBy(delta){
+ const p=$("panorama"),stage=p.parentElement,min=Math.min(0,stage.clientWidth-p.clientWidth);
+ ST.offset=Math.max(min,Math.min(0,ST.offset+delta));
+ p.style.transform="translateX("+ST.offset+"px)";
+}
+function setupPan(){
+ const p=$("panorama");let drag=null;
+ p.addEventListener("pointerdown",e=>{if(e.target.closest(".spot"))return;drag={id:e.pointerId,x:e.clientX,from:ST.offset};p.classList.add("dragging")});
+ p.addEventListener("pointermove",e=>{if(!drag||e.pointerId!==drag.id)return;const x=e.clientX-drag.x;if(Math.abs(x)>7){const min=Math.min(0,p.parentElement.clientWidth-p.clientWidth);ST.offset=Math.max(min,Math.min(0,drag.from+x));p.style.transform="translateX("+ST.offset+"px")}})
+ const stop=()=>{drag=null;p.classList.remove("dragging")};
+ p.addEventListener("pointerup",stop);p.addEventListener("pointercancel",stop);
+ $("left").onclick=()=>panBy(210);$("right").onclick=()=>panBy(-210);
+ window.addEventListener("resize",()=>panBy(0));
+}
+function setupInput(){
+ const area=$("play-area");let drag=null,strokeAt=0;
+ area.addEventListener("pointerdown",e=>{
+  const p=e.target.closest("[data-piece]");
+  if(p){ST.selected=p.dataset.piece;drag={id:p.dataset.piece,pid:e.pointerId,x:e.clientX,y:e.clientY,ghost:null};return}
+  if(e.target.closest('[data-action="brush"]')){strokeAt=Date.now()}
+ });
+ area.addEventListener("pointermove",e=>{
+  if(drag&&e.pointerId===drag.pid){
+   if(!drag.ghost&&Math.hypot(e.clientX-drag.x,e.clientY-drag.y)>12){
+    drag.ghost=document.createElement("div");drag.ghost.className="virtual-cursor";drag.ghost.textContent=area.querySelector('[data-piece="'+drag.id+'"]')?.textContent?.trim().slice(0,3)||"⭐";
+    document.body.appendChild(drag.ghost);
+   }
+   if(drag.ghost){drag.ghost.style.left=e.clientX+"px";drag.ghost.style.top=e.clientY+"px"}
+  }else if(ST.s?.type==="routine"&&e.buttons&&Date.now()-strokeAt>100){
+   strokeAt=Date.now();act("brush","",area.querySelector('[data-action="brush"]'));
+  }
+ });
+ area.addEventListener("pointerup",e=>{
+  if(!drag||e.pointerId!==drag.pid)return;
+  const target=document.elementFromPoint(e.clientX,e.clientY)?.closest("[data-zone]");
+  if(target)match(drag.id,target.dataset.zone,target);
+  else ST.selected=drag.id;
+  drag.ghost?.remove();drag=null;
+ });
+ area.addEventListener("pointercancel",()=>{drag?.ghost?.remove();drag=null});
+ area.addEventListener("click",e=>{
+  const dst=e.target.closest("[data-zone]");
+  if(dst&&ST.selected!==null){match(ST.selected,dst.dataset.zone,dst);return}
+  const btn=e.target.closest("[data-action]");
+  if(btn)act(btn.dataset.action,btn.dataset.id,btn);
+ });
+}
+function boot(){
+ document.querySelectorAll("[data-age]").forEach(b=>b.addEventListener("click",()=>setAge(b.dataset.age)));
+ document.querySelectorAll(".spot").forEach(b=>b.addEventListener("click",()=>openSpot(b.dataset.spot)));
+ $("game-grid").addEventListener("click",e=>{const el=e.target.closest("[data-game]");if(el)launch(GAMES.find(g=>g.id===el.dataset.game))});
+ $("surprise").onclick=()=>launch(pick(GAMES.filter(g=>g.age===ST.age)));
+ $("close").onclick=close;$("skip").onclick=newRound;$("reward-next").onclick=newRound;
+ $("narrate").onclick=()=>speak(ST.s?.prompt||"");
+ $("sound").onclick=()=>{ST.muted=!ST.muted;$("sound").textContent=ST.muted?"🔇":"🔊";if(ST.muted&&window.speechSynthesis)speechSynthesis.cancel()};
+ $("reset").onclick=()=>{ST.stars=0;$("stars").textContent="0";if(ST.game)newRound()};
+ $("parent").onclick=()=>$("adult-modal").hidden=false;
+ $("adult-close").onclick=()=>$("adult-modal").hidden=true;
+ $("stories-home").onclick=()=>openSpot("library");
+ $("music-home").onclick=()=>openSpot("music");
+ $("art-home").onclick=()=>openSpot("atelier");
+ document.addEventListener("keydown",e=>{if(e.key==="Escape"){close();$("adult-modal").hidden=true}});
+ setupPan();setupInput();renderCards();
+ const art=new Image();art.onload=()=>{document.body.dataset.artReady="true"};art.onerror=()=>{document.body.dataset.artReady="missing";console.warn("[PISIPOUK] Panorama asset village.webp not available.")};art.src="/preschool/world360/village.webp";
+ document.body.dataset.gameReady="true";
+}
+boot();
+window.PisipoukWorld360={games:GAMES.map(g=>({id:g.id,age:AGES[g.age],zone:g.zone})),open:id=>launch(GAMES.find(g=>g.id===id))};
+})();
