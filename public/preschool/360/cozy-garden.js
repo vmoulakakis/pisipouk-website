@@ -21,13 +21,13 @@
  let scene,camera,renderer,controls,clock,raycaster,pointer,ambient=[],active=[],planted=[],fruitItems=[],
    plots=[],crates=[],builtObjects=[],builtSlots=new Set(),clickables=[],waterwheel,bee,beeWing,sheep,sky,smoke,barn,tree,decor=[],animation=0,
    gameTime=0,oldTime=0,planner=null,context=null,selectGlow=null,supportsWebGL=false;
- const palette={wood:0xc39a6b,woodLight:0xe8c99b,grass:0x85bb72,dark:0x54795b,cream:0xfff2d0};
+ const palette={wood:0xc08435,woodLight:0xfbbf66,grass:0x22c55e,dark:0x166534,cream:0xffeb9f,red:0xef4444,yellow:0xfacc15,blue:0x0284c7,orange:0xf97316,purple:0xa855f7};
  function fail(message){
   console.error("[PISIPOUK 360]",message);document.body.dataset.gameReady="failed";ui.fallback.hidden=false;
   ui.status.textContent="Ο τρισδιάστατος κόσμος δεν φορτώθηκε. Χρησιμοποίησε τα μεγάλα κουμπιά.";
   parent.postMessage({type:"PISIPOUK_FARM_FAILED"},"*");
  }
- function material(hex,roughness=.82){return new THREE.MeshStandardMaterial({color:hex,roughness,metalness:0,flatShading:true});}
+ function material(hex,roughness=.35){return new THREE.MeshStandardMaterial({color:hex,roughness,metalness:.05,flatShading:true});}
  function mesh(geo,mat,shadow=true){const m=new THREE.Mesh(geo,mat);m.castShadow=shadow;m.receiveShadow=shadow;return m;}
  function box(w,h,d,c){return mesh(new THREE.BoxGeometry(w,h,d),material(c));}
  function ball(r,c,w=10,h=8){return mesh(new THREE.SphereGeometry(r,w,h),material(c));}
@@ -38,12 +38,12 @@
  function clearArray(arr){arr.forEach(x=>{x.parent?.remove(x);x.traverse?.(c=>{c.geometry?.dispose?.();if(c.material&&c.material!==undefined){if(Array.isArray(c.material))c.material.forEach(m=>m.dispose?.());else c.material.dispose?.();}})});arr.length=0;}
  function addToActive(o){scene.add(o);active.push(o);return o;}
  function createTerrain(){
-  scene.background=new THREE.Color(0xb8e5f4);scene.fog=new THREE.Fog(0xcde8de,20,52);
-  put(scene,disc(7.7,1.13,0xb69a76,16),0,-.67,0);
-  put(scene,disc(7.85,.40,0x81b66d,16),0,-.06,0);
-  const ring=mesh(new THREE.TorusGeometry(7.6,.13,6,24),material(0x6e995d));
+  scene.background=new THREE.Color(0x00a8ef);scene.fog=new THREE.Fog(0x32cbff,32,75);
+  put(scene,disc(7.7,1.13,0x854d0e,16),0,-.67,0);
+  put(scene,disc(7.85,.40,0x22c55e,16),0,-.06,0);
+  const ring=mesh(new THREE.TorusGeometry(7.6,.13,6,24),material(0x166534));
   put(scene,ring,0,.13,0);ring.rotation.x=Math.PI/2;
-  const pebbleColors=[0xe9d8a6,0xc8b1a5,0xe8d5bf,0xa6bba3];
+  const pebbleColors=[0xfacc15,0xf97316,0xffffff,0x16a34a];
   for(let i=0;i<54;i++){
    const t=i*2.399,r=5.8+((i*7)%10)*.1,x=Math.sin(t)*r,z=Math.cos(t)*r;
    const p=ball(.13+(i%4)*.055,pebbleColors[i%4],7,6);p.scale.y=.6;put(scene,p,x,.20,z);decor.push(p);
@@ -52,34 +52,34 @@
    const t=i*2.53,r=4+((i*5)%19)*.16,x=Math.sin(t)*r,z=Math.cos(t)*r;
    if(z>-1&&z<2.7&&Math.abs(x)<5.4)continue;
    const grass=group();
-   for(let j=0;j<3;j++){const leaf=mesh(new THREE.ConeGeometry(.085,.35,4),material(i%3?0x679c64:0x9ec47a),false);put(grass,leaf,(j-1)*.11,.18,0);leaf.rotation.z=(j-1)*.2;}
+   for(let j=0;j<3;j++){const leaf=mesh(new THREE.ConeGeometry(.085,.35,4),material(i%3?0x16a34a:0x4ade80),false);put(grass,leaf,(j-1)*.11,.18,0);leaf.rotation.z=(j-1)*.2;}
    put(scene,grass,x,.15,z);decor.push(grass);
   }
-  const river=disc(1.8,.07,0x83cdd5,20);river.scale.set(1.2,1,.86);put(scene,river,5.55,.17,-3.9);
-  const inner=disc(1.25,.08,0x68b9c8,20);put(scene,inner,5.7,.20,-3.9);
+  const river=disc(1.8,.07,0x0284c7,20);river.scale.set(1.2,1,.86);put(scene,river,5.55,.17,-3.9);
+  const inner=disc(1.25,.08,0x00c8ff,20);put(scene,inner,5.7,.20,-3.9);
   // Barn silhouette and blue roof, intentionally original 3D chunky-toy geometry.
   barn=group();
-  put(barn,box(2.7,2.0,2.0,0xd78362),0,1.25,0);
-  const roof=mesh(new THREE.ConeGeometry(2.15,1.28,4),material(0x618fa1));roof.rotation.y=Math.PI/4;
+  put(barn,box(2.7,2.0,2.0,0xef4444),0,1.25,0);
+  const roof=mesh(new THREE.ConeGeometry(2.15,1.28,4),material(0x0369a1));roof.rotation.y=Math.PI/4;
   put(barn,roof,0,2.80,0);
-  put(barn,box(.95,1.22,.05,0xf5d5a2),0,.91,1.03);
-  put(barn,box(.13,1.22,.07,0x987052),0,.91,1.08);
-  put(barn,box(.95,.12,.06,0x987052),0,1.52,1.08);
-  for(let side of [-1,1]){const win=put(barn,box(.48,.5,.08,0x8fdbda),side*.91,1.74,1.04);
-   put(barn,box(.54,.11,.11,0xfde7c2),side*.91,1.74,1.11);}
+  put(barn,box(.95,1.22,.05,0xfacc15),0,.91,1.03);
+  put(barn,box(.13,1.22,.07,0x854d0e),0,.91,1.08);
+  put(barn,box(.95,.12,.06,0x854d0e),0,1.52,1.08);
+  for(let side of [-1,1]){const win=put(barn,box(.48,.5,.08,0x38bdf8),side*.91,1.74,1.04);
+   put(barn,box(.54,.11,.11,0xffffff),side*.91,1.74,1.11);}
   put(scene,barn,-3.75,.19,-3.7);barn.rotation.y=.23;
   // Windmill / wheel with real geometric spokes.
-  waterwheel=group();const hub=put(waterwheel,disc(.21,.4,0xd9b379,10),0,0,0);hub.rotation.x=Math.PI/2;
-  for(let i=0;i<8;i++){let a=i*Math.PI/4,rod=box(.13,1.22,.19,0xb9895a);rod.rotation.z=-a;put(waterwheel,rod,Math.sin(a)*.57,Math.cos(a)*.57,0);}
-  const wheelRing=mesh(new THREE.TorusGeometry(1.14,.15,7,16),material(0xc89a65));put(waterwheel,wheelRing,0,0,0);
+  waterwheel=group();const hub=put(waterwheel,disc(.21,.4,0xfacc15,10),0,0,0);hub.rotation.x=Math.PI/2;
+  for(let i=0;i<8;i++){let a=i*Math.PI/4,rod=box(.13,1.22,.19,0xf97316);rod.rotation.z=-a;put(waterwheel,rod,Math.sin(a)*.57,Math.cos(a)*.57,0);}
+  const wheelRing=mesh(new THREE.TorusGeometry(1.14,.15,7,16),material(0xf59e0b));put(waterwheel,wheelRing,0,0,0);
   put(scene,waterwheel,5.4,1.58,-3.45);
-  const stand=put(scene,box(.35,1.05,.40,0xb28b6f),5.4,.63,-3.45);
+  const stand=put(scene,box(.35,1.05,.40,0x854d0e),5.4,.63,-3.45);
   // Reusable growing spots and their padded invisible hit area.
   for(let i=0;i<5;i++){
    const x=(i-2)*2.20,z=1.13;
    const root=group();
-   const soil=put(root,disc(.76,.18,0x9c7658,20),0,.25,0);
-   const border=mesh(new THREE.TorusGeometry(.76,.12,5,24),material(0xe4bd86));
+   const soil=put(root,disc(.76,.18,0x854d0e,20),0,.25,0);
+   const border=mesh(new THREE.TorusGeometry(.76,.12,5,24),material(0xfacc15));
    border.rotation.x=Math.PI/2;put(root,border,0,.35,0);
    const hit=mesh(new THREE.CylinderGeometry(.95,.95,.6,14),new THREE.MeshBasicMaterial({visible:false}));
    put(root,hit,0,.49,0);
@@ -87,26 +87,26 @@
   }
   // Fruit tree and friendly sheep.
   tree=group();put(tree,disc(.24,2.8,0x9a7860,8),0,1.52,0);
-  for(let i=0;i<6;i++){const a=i*Math.PI*2/6;put(tree,ball(1.05,i%2?0x88b66f:0x79a76e,9,7),Math.cos(a)*.83,2.86+((i%3)-1)*.31,Math.sin(a)*.83);}
+  for(let i=0;i<6;i++){const a=i*Math.PI*2/6;put(tree,ball(1.05,i%2?0x22c55e:0x16a34a,9,7),Math.cos(a)*.83,2.86+((i%3)-1)*.31,Math.sin(a)*.83);}
   put(scene,tree,3.65,.2,-3.7);
-  sheep=group();put(sheep,ball(.57,0xfff2dd,12,9),0,.79,0);
-  put(sheep,ball(.36,0xffead0,10,8),-.41,1.00,.31);
+  sheep=group();put(sheep,ball(.57,0xffffff,12,9),0,.79,0);
+  put(sheep,ball(.36,0xffd6a5,10,8),-.41,1.00,.31);
   for(let a of [-1,1]){put(sheep,box(.13,.40,.17,0xa38669),a*.33,.40,.23);
     put(sheep,ball(.20,0xeac5ab,8,7),-.48+a*.20,1.18,.29);}
   for(let eye of [-1,1])put(sheep,ball(.046,0x382d29,7,6),-.67,1.09,eye*.16+.32);
   put(scene,sheep,-6.25,.16,-.6);
-  bee=group();put(bee,ball(.22,0xfbd15e,12,9),0,0,0);
+  bee=group();put(bee,ball(.22,0xfacc15,12,9),0,0,0);
   for(let x of [-.07,.07])put(bee,box(.07,.28,.22,0x6c5940),x,0,.03);
-  for(let x of [-.15,.15]){beeWing=put(bee,ball(.19,0xe2f9f7,8,6),x,.23,0);beeWing.scale.set(1,.31,.7);}
+  for(let x of [-.15,.15]){beeWing=put(bee,ball(.19,0x38bdf8,8,6),x,.23,0);beeWing.scale.set(1,.31,.7);}
   put(scene,bee,3.1,3.3,-.5);
  }
  function createCameraAndLights(){
   camera=new THREE.PerspectiveCamera(43,1,.1,100);camera.position.set(0,10.5,17.8);camera.lookAt(0,.7,0);
-  scene.add(new THREE.HemisphereLight(0xffefcf,0x6d966e,1.85));
-  const sun=new THREE.DirectionalLight(0xffebbf,2.7);sun.position.set(-4,12,6);
+  scene.add(new THREE.HemisphereLight(0x38bdf8,0x4ade80,1.1));
+  const sun=new THREE.DirectionalLight(0xfff4cc,2.4);sun.position.set(-4,12,6);
   sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);sun.shadow.camera.left=-12;sun.shadow.camera.right=12;sun.shadow.camera.top=12;sun.shadow.camera.bottom=-12;sun.shadow.bias=-.0008;scene.add(sun);
-  const fill=new THREE.DirectionalLight(0x9ad6ed,.85);fill.position.set(5,5,-5);scene.add(fill);
-  const floor=mesh(new THREE.PlaneGeometry(200,200),material(0xc6dccd),false);floor.rotation.x=-Math.PI/2;
+  const fill=new THREE.DirectionalLight(0x0284c7,.35);fill.position.set(5,5,-5);scene.add(fill);
+  const floor=mesh(new THREE.PlaneGeometry(200,200),material(0x16a34a),false);floor.rotation.x=-Math.PI/2;
   floor.receiveShadow=true;put(scene,floor,0,-1.3,0);
   controls=new THREE.OrbitControls(camera,ui.canvas);controls.target.set(0,.75,-.15);controls.enableDamping=true;controls.dampingFactor=.075;
   controls.maxPolarAngle=1.33;controls.minPolarAngle=.47;controls.minDistance=10.5;controls.maxDistance=24;
