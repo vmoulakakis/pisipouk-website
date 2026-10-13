@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="el"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow"><title>Πισιπούκ 360 • Μικρή Φάρμα — 3D Random Play</title>
+<link rel="stylesheet" href="/preschool/360/cozy-garden.css">
+<script defer src="/preschool/games/vendor/three-r128.min.js"></script>
+<script defer src="/preschool/games/vendor/OrbitControls-r128.js"></script>
+<script defer src="/preschool/360/core/random-play.js"></script>
+<script defer src="/preschool/360/cozy-garden.js"></script>
+</head><body>
+<div id="farm-app">
+ <main class="farm-frame">
+  <header class="farm-header" aria-label="Χειριστήρια μικρής φάρμας">
+   <button id="back" class="farm-large farm-back" aria-label="Πίσω στο Preschool">← <span>Πίσω</span></button>
+   <div class="farm-caption"><strong>ΠΙΣΙΠΟΥΚ 360</strong><small>Η μικρή μου φάρμα • μαθαίνω παίζοντας</small></div>
+   <button id="next" class="farm-large farm-next" aria-label="Νέα τυχαία αποστολή">⤭ <span>Νέο!</span></button>
+  </header>
+  <div class="farm-stage" id="stage">
+   <canvas id="farm-canvas" aria-label="Τρισδιάστατη διαδραστική φάρμα" role="application"></canvas>
+   <div id="fallback" class="farm-fallback" hidden><h2>Ο κόσμος χρειάζεται WebGL</h2><p>Μπορείς να παίξεις την απλή δραστηριότητα πατώντας τα κουμπιά φύτεμα, νερό και ήλιος.</p><button id="fallback-play">🌱 Φύτεψε</button></div>
+   <div class="farm-quest"><span class="farm-pictogram" id="quest-icon">🌱</span><div><b id="quest-title">Το Μικρό Μου Περιβολάκι</b><p id="quest-text" role="status" aria-live="polite">Διάλεξε ένα μεγάλο πράσινο ΠΑΙΖΩ!</p></div><button id="voice" aria-label="Άκου την οδηγία">🔊</button></div>
+   <div class="farm-bottom-status"><span id="status" role="status" aria-live="polite">Παίξε με τον δικό σου ρυθμό.</span><span id="progress" aria-label="Πρόοδος δραστηριότητας"></span></div>
+   <div class="farm-overlay" id="splash"><div class="farm-splash-box"><div class="farm-splash-art" aria-hidden="true">🌻 🐝 🍎</div><h1>Η Μικρή Μου Φάρμα!</h1><p>Παίζω, φυτεύω, φροντίζω και ανακαλύπτω. Κάθε φορά μια καινούργια περιπέτεια!</p>
+    <button id="start" class="farm-play">▶ ΠΑΙΖΩ!</button><button id="free-start" class="farm-alt-start">✿ Ελεύθερο παιχνίδι</button>
+    <div class="farm-age" role="group" aria-label="Ηλικιακή ομάδα"><button data-age="2-3">2–3</button><button data-age="3-4" class="chosen">3–4</button><button data-age="4-5">4–5</button></div>
+   </div></div>
+  </div>
+  <nav class="farm-modes" aria-label="Επιλογή παιχνιδιού">
+   <button data-game="C09" class="selected">🌱 <span>Περιβολάκι</span></button>
+   <button data-game="A01">🧺 <span>Χρώματα</span></button>
+   <button data-game="B05">🍎 <span>Μετράω</span></button>
+   <button id="free-mode" aria-pressed="false">✨ <span>Ελεύθερα</span></button>
+  </nav>
+  <div class="farm-toolbox" id="toolbox" role="group" aria-label="Εργαλεία"><button data-tool="plant" class="selected">🌱 <span>Φυτεύω</span></button>
+   <button data-tool="water">💧 <span>Ποτίζω</span></button><button data-tool="sun">☀️ <span>Ήλιος/Βροχή</span></button>
+   <button data-tool="bee">🐝 <span>Μελισσούλα</span></button><button id="rotate-left" aria-label="Περιστροφή αριστερά">↶</button><button id="rotate-right" aria-label="Περιστροφή δεξιά">↷</button><button id="calm" aria-pressed="false">☁ <span>Ήρεμα</span></button><button id="mute" aria-pressed="true">🔇</button>
+  </div>
+  <footer class="farm-footnote">Δεν υπάρχει λάθος ή τέλος παιχνιδιού • Όλα αλλάζουν χωρίς να χάνονται τα φυτά σου • Για ηλικίες 2–5 ετών</footer>
+ </main>
+</div>
+</body></html>
