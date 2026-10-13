@@ -216,7 +216,7 @@
   if(state.plants.some(p=>p.slot===slot))return null;
   const meshObj=makeFlower(species,initialGrowth);
   meshObj.position.set((slot-2)*2.20,.44,1.13);
-  const p={slot,species,growth:initialGrowth,moisture:existing?.30:0,mesh:meshObj,watered:false};
+  const p={slot,species,growth:initialGrowth,moisture:existing?0.30:0,mesh:meshObj,watered:false};
   scene.add(meshObj);planted.push(meshObj);state.plants.push(p);
   return p;
  }
@@ -432,7 +432,7 @@
   $("voice").addEventListener("click",()=>speak(ui.quest.textContent));
   $("back").addEventListener("click",()=>{location.href="/virtual-preschool";});
   $("mute").addEventListener("click",()=>{state.muted=!state.muted;$("mute").textContent=state.muted?"🔇":"🔊";
-    $("mute").setAttribute("aria-pressed",String(state.muted));if(state.muted)speechSynthesis?.cancel?.();});
+    $("mute").setAttribute("aria-pressed",String(state.muted));if(state.muted&&"speechSynthesis"in window)window.speechSynthesis.cancel();});
   $("rotate-left").addEventListener("click",()=>{camera.position.applyAxisAngle(new THREE.Vector3(0,1,0),-.27);});
   $("rotate-right").addEventListener("click",()=>{camera.position.applyAxisAngle(new THREE.Vector3(0,1,0),.27);});
   $("calm").addEventListener("click",()=>{state.reduce=!state.reduce;$("calm").setAttribute("aria-pressed",String(state.reduce));setStatus(state.reduce?"Οι εκπλήξεις θα είναι ήρεμες.":"Η φύση ζωντανεύει πάλι!");});
@@ -450,7 +450,7 @@
    renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.25;
    setQuality();scene=new THREE.Scene();createCameraAndLights();createTerrain();
    pointer=new THREE.Vector2();raycaster=new THREE.Raycaster();clock=new THREE.Clock();
-   configureUI();drawInteraction();resize();new ResizeObserver(resize).observe(ui.canvas);
+   configureUI();drawInteraction();resize();if("ResizeObserver" in window)new ResizeObserver(resize).observe(ui.canvas);else window.addEventListener("resize",resize);
    document.body.dataset.gameReady="true";parent.postMessage({type:"PISIPOUK_FARM_READY"},"*");
    loop();
   }catch(e){fail(e.message||String(e));}
