@@ -12,7 +12,7 @@
     "test:e2e": "playwright test",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "test:preschool360": "node --check public/preschool/360/cozy-garden.js && node --check public/preschool/360/core/random-play.js && node --test tests/preschool360-random.test.cjs"
+    "test:preschool360": "node --check public/preschool/360/cozy-garden.js && node --check public/preschool/360/core/random-play.js && node --check public/preschool/360/cc0-art.js && node --check public/preschool/360/sw.js && node --test tests/preschool360-random.test.cjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
