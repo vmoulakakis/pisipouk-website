@@ -256,8 +256,11 @@
   if(!p){setStatus("Φύτεψε πρώτα ένα λουλούδι για να το ζωγραφίσεις!");sound("boing",245);return;}
   const color=C.find(c=>c.id===state.paintColor)||C[1];
   const head=p.mesh.children.find(x=>x.type==="Group");
-  if(head)head.traverse(node=>{if(node.isMesh&&node.geometry?.type==="SphereGeometry"&&node.parent===head){node.material.color.setHex(color.hex);}});
+  if(head)head.children.slice(0,9).forEach(petal=>{if(petal.material?.color)petal.material.color.setHex(color.hex);});
   reward((slot-2)*2.2,2.3,1.13);setStatus("Τι υπέροχο χρώμα! Το λουλούδι έγινε δικό σου!");
+  if(state.mode==="guided"&&state.round.templateId==="paint"&&state.paintColor!==state.round.goal.color){
+   const desired=C.find(c=>c.id===state.round.goal.color);setStatus("Πολύ όμορφο χρώμα! Μπορούμε να δοκιμάσουμε και το "+(desired?.name||"άλλο")+";");return;
+  }
   if(state.phase!=="REWARD"&&(state.round.templateId==="paint"||state.mode==="free")){state.progress++;complete();}
  }
  function onGarden(type,slot){
