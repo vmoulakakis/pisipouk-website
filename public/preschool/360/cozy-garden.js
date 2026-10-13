@@ -27,7 +27,7 @@
   ui.status.textContent="Ο τρισδιάστατος κόσμος δεν φορτώθηκε. Χρησιμοποίησε τα μεγάλα κουμπιά.";
   parent.postMessage({type:"PISIPOUK_FARM_FAILED"},"*");
  }
- function material(hex,roughness=.35){return new THREE.MeshStandardMaterial({color:hex,roughness,metalness:.05,flatShading:true});}
+ function material(hex,roughness=.35){return new THREE.MeshPhysicalMaterial({color:hex,roughness,metalness:.03,clearcoat:.62,clearcoatRoughness:.22,flatShading:true});}
  function mesh(geo,mat,shadow=true){const m=new THREE.Mesh(geo,mat);m.castShadow=shadow;m.receiveShadow=shadow;return m;}
  function box(w,h,d,c){return mesh(new THREE.BoxGeometry(w,h,d),material(c));}
  function ball(r,c,w=10,h=8){return mesh(new THREE.SphereGeometry(r,w,h),material(c));}
@@ -236,7 +236,7 @@
  function complete(){
   if(state.mode==="free"){reward();return;}
   if(state.progress<(state.round?.goal.count||1))return;
-  state.phase="REWARD";state.celebration=gameTime+1.6;
+  state.phase="REWARD";state.celebration=gameTime+3.1;
   reward(0,2,1);
   setStatus("Υπέροχα! Μπορείς να παίξεις ξανά ή να διαλέξεις ΝΕΟ!");
   ui.progress.textContent="✨ Το κατάφερες!";
@@ -349,8 +349,14 @@
   root.position.set((slot-2)*2.20,.48+stack*.70,1.13);
   addToActive(root);state.blocks.push({slot,root});
   root.scale.setScalar(.1);
-  if(window.gsap)window.gsap.to(root.scale,{x:1,y:1,z:1,duration:.77,ease:"elastic.out(1,.5)"});
-  else root.scale.setScalar(1);
+  const created=performance.now();
+  function bounceBlock(now){
+   if(!root.parent)return;
+   const t=Math.min(1,(now-created)/750);
+   const ease=t===0?0:t===1?1:Math.pow(2,-10*t)*Math.sin((t*10-.75)*2*Math.PI/3)+1;
+   root.scale.setScalar(Math.max(.1,ease));
+   if(t<1)requestAnimationFrame(bounceBlock);else root.scale.setScalar(1);
+  }requestAnimationFrame(bounceBlock);
   reward((slot-2)*2.20,2,1.13);
   setStatus("Το τουβλάκι μπήκε στη θέση του! Μπορείς να συνεχίσεις να χτίζεις.");
   state.progress++;ui.progress.textContent=state.progress+" / "+state.round.goal.count;
@@ -491,7 +497,10 @@ function clickInteraction(hit,target){
   if(state.started){
    const event=planner?.update(gameTime,{dragging:state.isDrag,speaking:state.speaking,calm:state.reduce});
    if(event)surprise(event.kind);
-   if(state.phase==="REWARD"&&gameTime>state.celebration)state.phase="SELECTION";
+   if(state.phase==="REWARD"&&gameTime>state.celebration){
+    if(["B01","A01","B05","M01","S01"].includes(state.game)&&state.mode!=="free")initRound();
+    else state.phase="INTERACTION";
+   }
   }
   renderer.render(scene,camera);
  }
