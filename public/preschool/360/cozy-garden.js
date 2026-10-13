@@ -15,11 +15,11 @@
    age:["2-3","3-4","4-5"].includes(parameters.get("age"))?parameters.get("age"):"3-4",
    seed:Number(parameters.get("seed"))>>>0||engine?.cryptoSeed?.()||42};
  const state={started:false,mode:"guided",game:config.game,age:config.age,seed:config.seed,index:0,round:null,
-   history:[],phase:"IDLE",selected:null,progress:0,tool:"plant",weather:"sun",muted:true,
+   history:[],phase:"IDLE",selected:null,progress:0,tool:"plant",paintColor:"yellow",weather:"sun",muted:true,
    isDrag:false,down:null,plants:[],dropped:[],speaking:false,celebration:0,particles:[],events:[],
    pending:[],elapsed:0,reduce:matchMedia("(prefers-reduced-motion: reduce)").matches,quality:"normal"};
  let scene,camera,renderer,controls,clock,raycaster,pointer,ambient=[],active=[],planted=[],fruitItems=[],
-   plots=[],crates=[],clickables=[],waterwheel,bee,beeWing,sheep,sky,smoke,barn,tree,decor=[],animation=0,
+   plots=[],crates=[],builtObjects=[],builtSlots=new Set(),clickables=[],waterwheel,bee,beeWing,sheep,sky,smoke,barn,tree,decor=[],animation=0,
    gameTime=0,oldTime=0,planner=null,context=null,selectGlow=null,supportsWebGL=false;
  const palette={wood:0xc39a6b,woodLight:0xe8c99b,grass:0x85bb72,dark:0x54795b,cream:0xfff2d0};
  function fail(message){
@@ -143,10 +143,10 @@
    state.speaking=true;u.onend=()=>{state.speaking=false;};u.onerror=()=>{state.speaking=false;};speechSynthesis.speak(u);
   }catch{state.speaking=false;}}
  function setStatus(s){ui.status.textContent=s;}
- function setTool(t){state.tool=t;document.querySelectorAll("[data-tool]").forEach(b=>b.classList.toggle("selected",b.dataset.tool===t));
-  const hints={plant:"Άγγιξε ένα παρτέρι για να φυτέψεις!",water:"Άγγιξε ή σύρε το νερό πάνω σε ένα φυτό.",sun:"Άλλαξε τον καιρό και δες τα φυτά να μεγαλώνουν!",bee:"Άγγιξε το λουλούδι για να έρθει η μελισσούλα!"};setStatus(hints[t]||"Παίζουμε!");}
+ function setTool(t){state.tool=t;$("paint-colors").hidden=t!=="paint";document.querySelectorAll("[data-tool]").forEach(b=>b.classList.toggle("selected",b.dataset.tool===t));
+  const hints={plant:"Άγγιξε ένα παρτέρι για να φυτέψεις!",water:"Άγγιξε ή σύρε το νερό πάνω σε ένα φυτό.",sun:"Άλλαξε τον καιρό και δες τα φυτά να μεγαλώνουν!",bee:"Άγγιξε το λουλούδι για να έρθει η μελισσούλα!",build:"Άγγιξε ένα παρτέρι για να κατασκευάσεις ξύλινο περίγραμμα!",paint:"Άγγιξε ένα λουλούδι για να του αλλάξεις χρώμα!"};setStatus(hints[t]||"Παίζουμε!");}
  function clearRound(){
-  clearArray(active);clickables=plots.slice();fruitItems=[];crates=[];state.dropped=[];
+  clearArray(active);clearArray(builtObjects);builtSlots.clear();clickables=plots.slice();fruitItems=[];crates=[];state.dropped=[];
   state.selected=null;state.progress=0;ui.progress.textContent="";
  }
  function initRound(restart=false){
@@ -160,9 +160,10 @@
   ui.title.textContent=names[state.game];
   ui.icon.textContent=state.game==="C09"?"🌱":state.game==="A01"?"🧺":"🍎";
   ui.quest.textContent=state.mode==="free"?"Πειραματίσου! Διάλεξε ό,τι θέλεις.":state.round.narrationKey;
-  if(state.game==="C09"){showGarden();setTool(state.round.templateId==="care"?"water":"plant");}
+  if(state.game==="C09"){showGarden();setTool(state.round.templateId==="care"?"water":state.round.templateId==="build"?"build":state.round.templateId==="paint"?"paint":"plant");}
   if(state.game==="A01"||state.game==="B05"){showFruitRound();}
-  if(state.game==="C09"&&state.round.templateId==="care")addPlant(2,state.round.plantId,.74,true);
+  if(state.game==="C09"&&["care","paint"].includes(state.round.templateId))addPlant(2,state.round.plantId,.74,true);
+  if(state.game==="C09"&&state.round.templateId==="paint"){const button=document.querySelector("[data-paint="+state.round.goal.color+"]");if(button)button.click();}
   state.phase="INTERACTION";
   setStatus("Ανακάλυψε, δοκίμασε και παίξε όσο θέλεις!");
   ui.progress.textContent=state.game==="C09"?"":("0 / "+count);
@@ -217,10 +218,10 @@
   const meshObj=makeFlower(species,initialGrowth);
   meshObj.position.set((slot-2)*2.20,.44,1.13);
   const p={slot,species,growth:initialGrowth,moisture:existing?0.30:0,mesh:meshObj,watered:false};
-  scene.add(meshObj);planted.push(meshObj);state.plants.push(p);
+  scene.add(meshObj);planted.push(meshObj);state.plants.push(p);mark(meshObj,"plant",{slot});
   return p;
  }
- function removePlantVisuals(){for(const ob of planted){ob.parent?.remove(ob);ob.traverse(c=>c.geometry?.dispose?.());}planted=[];state.plants=[];}
+ function removePlantVisuals(){for(const ob of planted){ob.parent?.remove(ob);ob.traverse(c=>{c.geometry?.dispose?.();c.material?.dispose?.();});}planted=[];state.plants=[];clickables=clickables.filter(x=>!x.userData?.interactive||x.userData.interactive.type!=="plant");}
  function reward(x=0,y=1.6,z=1.5){
   for(let i=0;i<16;i++){
    const dot=mesh(new THREE.OctahedronGeometry(.08+(i%3)*.025),new THREE.MeshBasicMaterial({color:[0xf6d466,0xe99b8d,0x93cbb4,0xbba6dd][i%4]}),false);
@@ -238,8 +239,31 @@
   ui.quest.textContent="Μπράβο! Παίζουμε κι άλλο;";
   if(!state.muted)speak("Μπράβο! Συνέχισε όπως σου αρέσει.");
  }
+ function buildPlanter(slot){
+  if(builtSlots.has(slot)){setStatus("Το παρτέρι είναι έτοιμο! Μπορείς να φτιάξεις κι άλλο.");return;}
+  const root=plots[slot],x=root.position.x;
+  const rail=group();for(let i=0;i<8;i++){
+   const a=i*Math.PI/4,post=box(.20,.50,.22,0xcda06e);
+   put(rail,post,Math.cos(a)*.70,.57,Math.sin(a)*.70);
+   const cross=box(.9,.12,.14,0xe4ba7e);cross.rotation.y=a+Math.PI/2;put(rail,cross,Math.cos(a)*.70,.76,Math.sin(a)*.70);
+  }
+  put(scene,rail,x,.07,root.position.z);builtObjects.push(rail);builtSlots.add(slot);
+  reward(x,1.6,1);setStatus("Έφτιαξες ένα μικρό ξύλινο παρτέρι!");
+  if(state.phase!=="REWARD"&&(state.round.templateId==="build"||state.mode==="free")){state.progress++;complete();}
+ }
+ function colorPlant(slot){
+  const p=state.plants.find(x=>x.slot===slot);
+  if(!p){setStatus("Φύτεψε πρώτα ένα λουλούδι για να το ζωγραφίσεις!");sound("boing",245);return;}
+  const color=C.find(c=>c.id===state.paintColor)||C[1];
+  const head=p.mesh.children.find(x=>x.type==="Group");
+  if(head)head.traverse(node=>{if(node.isMesh&&node.geometry?.type==="SphereGeometry"&&node.parent===head){node.material.color.setHex(color.hex);}});
+  reward((slot-2)*2.2,2.3,1.13);setStatus("Τι υπέροχο χρώμα! Το λουλούδι έγινε δικό σου!");
+  if(state.phase!=="REWARD"&&(state.round.templateId==="paint"||state.mode==="free")){state.progress++;complete();}
+ }
  function onGarden(type,slot){
   if(state.game!=="C09")return;
+  if(state.tool==="build"){buildPlanter(slot);return;}
+  if(state.tool==="paint"){colorPlant(slot);return;}
   if(state.tool==="plant"){
    let existing=state.plants.find(p=>p.slot===slot);
    if(existing){setStatus("Αυτό το παρτέρι έχει ήδη λουλούδι! Δοκίμασε δίπλα.");sound("boing",225);return;}
@@ -280,7 +304,7 @@
  }
  function clickInteraction(hit,target){
   if(!hit)return;
-  if(hit.type==="plot"){onGarden(hit.type,hit.slot);return;}
+  if(hit.type==="plot"||hit.type==="plant"){onGarden(hit.type,hit.slot);return;}
   if(hit.type==="apple"){
    const item=fruitItems.find(a=>a.userData.interactive?.id===hit.id);
    if(item&&item.visible){state.selected=item;
@@ -439,6 +463,9 @@
   $("fallback-play").addEventListener("click",()=>{ui.status.textContent="Φύτεψες ένα φυτό! Μπράβο!";});
   document.querySelectorAll("[data-game]").forEach(b=>b.addEventListener("click",()=>{newGame(b.dataset.game);}));
   document.querySelectorAll("[data-tool]").forEach(b=>b.addEventListener("click",()=>setTool(b.dataset.tool)));
+  document.querySelectorAll("[data-paint]").forEach(b=>b.addEventListener("click",()=>{
+   state.paintColor=b.dataset.paint;document.querySelectorAll("[data-paint]").forEach(x=>x.classList.toggle("chosen",x===b));
+  }));
   document.addEventListener("visibilitychange",()=>{if(document.hidden){if(clock)clock.stop();}else if(clock)clock.start();});
  }
  function begin(){
