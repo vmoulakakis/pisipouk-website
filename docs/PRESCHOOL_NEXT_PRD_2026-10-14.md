@@ -121,3 +121,25 @@ Accept images after consistency/style/safety/legibility/rights review and respon
 Implementation is not completed by writing this PRD. Ship milestone packages with links to actual code, image assets, gameplay recordings or QA logs and Preview READY. No unverified “final” release claims.
 **Order**: M0 production baseline screenshots + architecture inventory; M1 approved art system and mascot; M2 one genuinely polished playable Garden vertical slice; M3 shared HTML5 engine/accessibility/pedagogical content schema; M4 all 24 unique games in batches with measured QA; M5 Greek seasonal content + illustrated printables + adult authoring workflow; M6 isolated end-to-end QA; M7 manual promotion to production after review.
 **Hard gate**: production deploy must not happen while images/interactive games remain placeholders or while baseline regression/safety requirements fail.
+
+## 16. OWNER SCOPE EXPANSION — ALL FOUR CAPABILITIES INCLUDED (2026-10-14)
+Owner explicitly requires these as product scope, not indefinitely postponed optional ideas. Implementation remains dependent on release acceptance gates.
+
+### Private Multiplayer Rooms — committed feature
+Three modes: cooperative drawing with per-child isolated layers, cooperative turn-taking games, and preset-emote parallel play. Entry only from adult-gated UI with adult-created temporary invitations; anonymous aliases; no unrestricted messaging, image, audio or video exchange. Server-authoritative session validation, rate limits, input schema and event size limits, replay/abuse protection, authenticated adult invitation controls, session expiry, disconnect/reconnect semantics and cross-origin checks. Ephemeral storage alone does NOT prove GDPR/COPPA compliance. Security and privacy review is a mandatory release gate, not a reason to omit feature.
+
+### Advanced AI Companion Bots — committed feature
+Pisipouk and Titos plus explicitly labeled virtual peers (e.g. squirrel/bunny) governed by finite-state behavior trees and an age/skill-aware local rules engine. Distinct personalities, teach-by-deliberate-error, gentle hints, contextual celebrations, turn-taking support and transparent disclosure that companions are computer characters, not real children. No unrestricted LLM chat with children; adult-reviewed scripts and deterministic fallback; safe when network unavailable. Test for manipulative attachment, dependency prompts, unsafe advice and hallucinated dialogue.
+
+### Guided autonomous experience — committed feature with safeguard
+Date-driven curricula and local weather-selection/mood check-in with daily seeded repeatable missions, original Greek audio prompts, age-tier adaption, parent-set session limits, calm/sick-day options, pauses and offline continuity. Adult need not click through every step; autonomy refers to software orchestration, not removing safeguarding/physical supervision for young children. Product copy must never claim the app can babysit children unsupervised, diagnose mood/illness, or replace educators.
+
+### Capacitor Android & iOS — committed delivery target
+PWA remains the canonical lightweight web experience. Build native wrappers using the Capacitor version compatible with the actual lockfile/runtime at implementation time (do not blindly freeze 6.x), with safe-area handling, orientation flexibility (no mandatory landscape), platform-native Back, share/print, on-device asset cache, offline/audio resume, reduced motion, parent gate for native notifications and links. Require signing credentials and store accounts controlled by owner, platform policy checks, Play Store/TestFlight acceptance and separate release QA. Avoid native SDK child tracking and unnecessary device permissions. Do not block web feature delivery on approval by Apple/Google.
+
+### Cross-cutting acceptance
+- Multiplayer pass: invite expiration, permissions, 4-user isolation, mobile disconnections, reconnect, abuse tests and external security/privacy review.
+- Companion pass: child knows AI is virtual, script coverage and safe refusal/fallback; offline deterministic behavior.
+- Guided autonomy pass: 14-day deterministic scheduler tests including Athens timezone/DST and moving Greek holidays; stop/pause/exit, parent limits, no manipulative streaks.
+- Native pass: physical Android/iOS device tests, accessibility/audio/background behaviors, crash-free QA, signing/store review.
+- Zero production changes before all relevant gates pass; multiplayer may be feature-flagged until audited; release staging does not remove scope.
