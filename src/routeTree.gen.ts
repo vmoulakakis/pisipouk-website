@@ -10,9 +10,9 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as BlogRouteImport } from './routes/blog'
-import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as BlogRouteImport } from './routes/blog'
 import { Route as BookVisitRouteImport } from './routes/book-visit'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DailyLifeRouteImport } from './routes/daily-life'
@@ -21,30 +21,54 @@ import { Route as Espa20262027RouteImport } from './routes/espa-2026-2027'
 import { Route as FacilitiesRouteImport } from './routes/facilities'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as GalleryRouteImport } from './routes/gallery'
+import { Route as LearningGamesRouteImport } from './routes/learning-games'
 import { Route as NutritionRouteImport } from './routes/nutrition'
+import { Route as ParentNotesRouteImport } from './routes/parent-notes'
+import { Route as ParentZoneRouteImport } from './routes/parent-zone'
 import { Route as PhilosophyRouteImport } from './routes/philosophy'
 import { Route as ProgramRouteImport } from './routes/program'
+import { Route as ReviewsRouteImport } from './routes/reviews'
 import { Route as SafetyCareRouteImport } from './routes/safety-care'
+import { Route as SeasonalPacksRouteImport } from './routes/seasonal-packs'
+import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as VirtualPreschoolRouteImport } from './routes/virtual-preschool'
+import { Route as VirtualPreschoolFinalRouteImport } from './routes/virtual-preschool-final'
+import { Route as VirtualPreschoolGraceRouteImport } from './routes/virtual-preschool-grace'
+import { Route as VirtualPreschoolWorldRouteImport } from './routes/virtual-preschool-world'
+import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as LearningGamesIndexRouteImport } from './routes/learning-games.index'
+import { Route as LearningGamesColorsShapesRouteImport } from './routes/learning-games.colors-shapes'
+import { Route as LearningGamesCountRouteImport } from './routes/learning-games.count'
+import { Route as LearningGamesDressRouteImport } from './routes/learning-games.dress'
+import { Route as LearningGamesFruitBasketRouteImport } from './routes/learning-games.fruit-basket'
+import { Route as LearningGamesMazeRouteImport } from './routes/learning-games.maze'
+import { Route as LearningGamesMemoryRouteImport } from './routes/learning-games.memory'
+import { Route as LearningGamesOddOneRouteImport } from './routes/learning-games.odd-one'
+import { Route as LearningGamesPatternRouteImport } from './routes/learning-games.pattern'
+import { Route as LearningGamesSchoolBagRouteImport } from './routes/learning-games.school-bag'
+import { Route as LearningGamesSizeOrderRouteImport } from './routes/learning-games.size-order'
+import { Route as LearningGamesSnakeRouteImport } from './routes/learning-games.snake'
+import { Route as LearningGamesSortRouteImport } from './routes/learning-games.sort'
+import { Route as SeasonalPacksSeasonRouteImport } from './routes/seasonal-packs_.$season'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BlogRoute = BlogRouteImport.update({
-  id: '/blog',
-  path: '/blog',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BlogSlugRoute = BlogSlugRouteImport.update({
-  id: '/blog/$slug',
-  path: '/blog/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogRoute = BlogRouteImport.update({
+  id: '/blog',
+  path: '/blog',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BookVisitRoute = BookVisitRouteImport.update({
@@ -87,9 +111,24 @@ const GalleryRoute = GalleryRouteImport.update({
   path: '/gallery',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LearningGamesRoute = LearningGamesRouteImport.update({
+  id: '/learning-games',
+  path: '/learning-games',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NutritionRoute = NutritionRouteImport.update({
   id: '/nutrition',
   path: '/nutrition',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ParentNotesRoute = ParentNotesRouteImport.update({
+  id: '/parent-notes',
+  path: '/parent-notes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ParentZoneRoute = ParentZoneRouteImport.update({
+  id: '/parent-zone',
+  path: '/parent-zone',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PhilosophyRoute = PhilosophyRouteImport.update({
@@ -102,9 +141,24 @@ const ProgramRoute = ProgramRouteImport.update({
   path: '/program',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReviewsRoute = ReviewsRouteImport.update({
+  id: '/reviews',
+  path: '/reviews',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SafetyCareRoute = SafetyCareRouteImport.update({
   id: '/safety-care',
   path: '/safety-care',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SeasonalPacksRoute = SeasonalPacksRouteImport.update({
+  id: '/seasonal-packs',
+  path: '/seasonal-packs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UnsubscribeRoute = UnsubscribeRouteImport.update({
+  id: '/unsubscribe',
+  path: '/unsubscribe',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VirtualPreschoolRoute = VirtualPreschoolRouteImport.update({
@@ -112,12 +166,104 @@ const VirtualPreschoolRoute = VirtualPreschoolRouteImport.update({
   path: '/virtual-preschool',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VirtualPreschoolFinalRoute = VirtualPreschoolFinalRouteImport.update({
+  id: '/virtual-preschool-final',
+  path: '/virtual-preschool-final',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VirtualPreschoolGraceRoute = VirtualPreschoolGraceRouteImport.update({
+  id: '/virtual-preschool-grace',
+  path: '/virtual-preschool-grace',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VirtualPreschoolWorldRoute = VirtualPreschoolWorldRouteImport.update({
+  id: '/virtual-preschool-world',
+  path: '/virtual-preschool-world',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogSlugRoute = BlogSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => BlogRoute,
+} as any)
+const LearningGamesIndexRoute = LearningGamesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => LearningGamesRoute,
+} as any)
+const LearningGamesColorsShapesRoute =
+  LearningGamesColorsShapesRouteImport.update({
+    id: '/colors-shapes',
+    path: '/colors-shapes',
+    getParentRoute: () => LearningGamesRoute,
+  } as any)
+const LearningGamesCountRoute = LearningGamesCountRouteImport.update({
+  id: '/count',
+  path: '/count',
+  getParentRoute: () => LearningGamesRoute,
+} as any)
+const LearningGamesDressRoute = LearningGamesDressRouteImport.update({
+  id: '/dress',
+  path: '/dress',
+  getParentRoute: () => LearningGamesRoute,
+} as any)
+const LearningGamesFruitBasketRoute =
+  LearningGamesFruitBasketRouteImport.update({
+    id: '/fruit-basket',
+    path: '/fruit-basket',
+    getParentRoute: () => LearningGamesRoute,
+  } as any)
+const LearningGamesMazeRoute = LearningGamesMazeRouteImport.update({
+  id: '/maze',
+  path: '/maze',
+  getParentRoute: () => LearningGamesRoute,
+} as any)
+const LearningGamesMemoryRoute = LearningGamesMemoryRouteImport.update({
+  id: '/memory',
+  path: '/memory',
+  getParentRoute: () => LearningGamesRoute,
+} as any)
+const LearningGamesOddOneRoute = LearningGamesOddOneRouteImport.update({
+  id: '/odd-one',
+  path: '/odd-one',
+  getParentRoute: () => LearningGamesRoute,
+} as any)
+const LearningGamesPatternRoute = LearningGamesPatternRouteImport.update({
+  id: '/pattern',
+  path: '/pattern',
+  getParentRoute: () => LearningGamesRoute,
+} as any)
+const LearningGamesSchoolBagRoute = LearningGamesSchoolBagRouteImport.update({
+  id: '/school-bag',
+  path: '/school-bag',
+  getParentRoute: () => LearningGamesRoute,
+} as any)
+const LearningGamesSizeOrderRoute = LearningGamesSizeOrderRouteImport.update({
+  id: '/size-order',
+  path: '/size-order',
+  getParentRoute: () => LearningGamesRoute,
+} as any)
+const LearningGamesSnakeRoute = LearningGamesSnakeRouteImport.update({
+  id: '/snake',
+  path: '/snake',
+  getParentRoute: () => LearningGamesRoute,
+} as any)
+const LearningGamesSortRoute = LearningGamesSortRouteImport.update({
+  id: '/sort',
+  path: '/sort',
+  getParentRoute: () => LearningGamesRoute,
+} as any)
+const SeasonalPacksSeasonRoute = SeasonalPacksSeasonRouteImport.update({
+  id: '/seasonal-packs_/$season',
+  path: '/seasonal-packs/$season',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/blog': typeof BlogRoute
-  '/blog/$slug': typeof BlogSlugRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
+  '/blog': typeof BlogRouteWithChildren
   '/book-visit': typeof BookVisitRoute
   '/contact': typeof ContactRoute
   '/daily-life': typeof DailyLifeRoute
@@ -126,17 +272,41 @@ export interface FileRoutesByFullPath {
   '/facilities': typeof FacilitiesRoute
   '/faq': typeof FaqRoute
   '/gallery': typeof GalleryRoute
+  '/learning-games': typeof LearningGamesRouteWithChildren
   '/nutrition': typeof NutritionRoute
+  '/parent-notes': typeof ParentNotesRoute
+  '/parent-zone': typeof ParentZoneRoute
   '/philosophy': typeof PhilosophyRoute
   '/program': typeof ProgramRoute
+  '/reviews': typeof ReviewsRoute
   '/safety-care': typeof SafetyCareRoute
+  '/seasonal-packs': typeof SeasonalPacksRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/virtual-preschool': typeof VirtualPreschoolRoute
+  '/virtual-preschool-final': typeof VirtualPreschoolFinalRoute
+  '/virtual-preschool-grace': typeof VirtualPreschoolGraceRoute
+  '/virtual-preschool-world': typeof VirtualPreschoolWorldRoute
+  '/blog/$slug': typeof BlogSlugRoute
+  '/learning-games/colors-shapes': typeof LearningGamesColorsShapesRoute
+  '/learning-games/count': typeof LearningGamesCountRoute
+  '/learning-games/dress': typeof LearningGamesDressRoute
+  '/learning-games/fruit-basket': typeof LearningGamesFruitBasketRoute
+  '/learning-games/maze': typeof LearningGamesMazeRoute
+  '/learning-games/memory': typeof LearningGamesMemoryRoute
+  '/learning-games/odd-one': typeof LearningGamesOddOneRoute
+  '/learning-games/pattern': typeof LearningGamesPatternRoute
+  '/learning-games/school-bag': typeof LearningGamesSchoolBagRoute
+  '/learning-games/size-order': typeof LearningGamesSizeOrderRoute
+  '/learning-games/snake': typeof LearningGamesSnakeRoute
+  '/learning-games/sort': typeof LearningGamesSortRoute
+  '/seasonal-packs/$season': typeof SeasonalPacksSeasonRoute
+  '/learning-games/': typeof LearningGamesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/blog': typeof BlogRoute
-  '/blog/$slug': typeof BlogSlugRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
+  '/blog': typeof BlogRouteWithChildren
   '/book-visit': typeof BookVisitRoute
   '/contact': typeof ContactRoute
   '/daily-life': typeof DailyLifeRoute
@@ -146,17 +316,40 @@ export interface FileRoutesByTo {
   '/faq': typeof FaqRoute
   '/gallery': typeof GalleryRoute
   '/nutrition': typeof NutritionRoute
+  '/parent-notes': typeof ParentNotesRoute
+  '/parent-zone': typeof ParentZoneRoute
   '/philosophy': typeof PhilosophyRoute
   '/program': typeof ProgramRoute
+  '/reviews': typeof ReviewsRoute
   '/safety-care': typeof SafetyCareRoute
+  '/seasonal-packs': typeof SeasonalPacksRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/virtual-preschool': typeof VirtualPreschoolRoute
+  '/virtual-preschool-final': typeof VirtualPreschoolFinalRoute
+  '/virtual-preschool-grace': typeof VirtualPreschoolGraceRoute
+  '/virtual-preschool-world': typeof VirtualPreschoolWorldRoute
+  '/blog/$slug': typeof BlogSlugRoute
+  '/learning-games/colors-shapes': typeof LearningGamesColorsShapesRoute
+  '/learning-games/count': typeof LearningGamesCountRoute
+  '/learning-games/dress': typeof LearningGamesDressRoute
+  '/learning-games/fruit-basket': typeof LearningGamesFruitBasketRoute
+  '/learning-games/maze': typeof LearningGamesMazeRoute
+  '/learning-games/memory': typeof LearningGamesMemoryRoute
+  '/learning-games/odd-one': typeof LearningGamesOddOneRoute
+  '/learning-games/pattern': typeof LearningGamesPatternRoute
+  '/learning-games/school-bag': typeof LearningGamesSchoolBagRoute
+  '/learning-games/size-order': typeof LearningGamesSizeOrderRoute
+  '/learning-games/snake': typeof LearningGamesSnakeRoute
+  '/learning-games/sort': typeof LearningGamesSortRoute
+  '/seasonal-packs/$season': typeof SeasonalPacksSeasonRoute
+  '/learning-games': typeof LearningGamesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/blog': typeof BlogRoute
-  '/blog/$slug': typeof BlogSlugRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
+  '/blog': typeof BlogRouteWithChildren
   '/book-visit': typeof BookVisitRoute
   '/contact': typeof ContactRoute
   '/daily-life': typeof DailyLifeRoute
@@ -165,19 +358,43 @@ export interface FileRoutesById {
   '/facilities': typeof FacilitiesRoute
   '/faq': typeof FaqRoute
   '/gallery': typeof GalleryRoute
+  '/learning-games': typeof LearningGamesRouteWithChildren
   '/nutrition': typeof NutritionRoute
+  '/parent-notes': typeof ParentNotesRoute
+  '/parent-zone': typeof ParentZoneRoute
   '/philosophy': typeof PhilosophyRoute
   '/program': typeof ProgramRoute
+  '/reviews': typeof ReviewsRoute
   '/safety-care': typeof SafetyCareRoute
+  '/seasonal-packs': typeof SeasonalPacksRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/virtual-preschool': typeof VirtualPreschoolRoute
+  '/virtual-preschool-final': typeof VirtualPreschoolFinalRoute
+  '/virtual-preschool-grace': typeof VirtualPreschoolGraceRoute
+  '/virtual-preschool-world': typeof VirtualPreschoolWorldRoute
+  '/blog/$slug': typeof BlogSlugRoute
+  '/learning-games/colors-shapes': typeof LearningGamesColorsShapesRoute
+  '/learning-games/count': typeof LearningGamesCountRoute
+  '/learning-games/dress': typeof LearningGamesDressRoute
+  '/learning-games/fruit-basket': typeof LearningGamesFruitBasketRoute
+  '/learning-games/maze': typeof LearningGamesMazeRoute
+  '/learning-games/memory': typeof LearningGamesMemoryRoute
+  '/learning-games/odd-one': typeof LearningGamesOddOneRoute
+  '/learning-games/pattern': typeof LearningGamesPatternRoute
+  '/learning-games/school-bag': typeof LearningGamesSchoolBagRoute
+  '/learning-games/size-order': typeof LearningGamesSizeOrderRoute
+  '/learning-games/snake': typeof LearningGamesSnakeRoute
+  '/learning-games/sort': typeof LearningGamesSortRoute
+  '/seasonal-packs_/$season': typeof SeasonalPacksSeasonRoute
+  '/learning-games/': typeof LearningGamesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/blog'
-    | '/blog/$slug'
     | '/about'
+    | '/admin'
+    | '/blog'
     | '/book-visit'
     | '/contact'
     | '/daily-life'
@@ -186,17 +403,41 @@ export interface FileRouteTypes {
     | '/facilities'
     | '/faq'
     | '/gallery'
+    | '/learning-games'
     | '/nutrition'
+    | '/parent-notes'
+    | '/parent-zone'
     | '/philosophy'
     | '/program'
+    | '/reviews'
     | '/safety-care'
+    | '/seasonal-packs'
+    | '/unsubscribe'
     | '/virtual-preschool'
+    | '/virtual-preschool-final'
+    | '/virtual-preschool-grace'
+    | '/virtual-preschool-world'
+    | '/blog/$slug'
+    | '/learning-games/colors-shapes'
+    | '/learning-games/count'
+    | '/learning-games/dress'
+    | '/learning-games/fruit-basket'
+    | '/learning-games/maze'
+    | '/learning-games/memory'
+    | '/learning-games/odd-one'
+    | '/learning-games/pattern'
+    | '/learning-games/school-bag'
+    | '/learning-games/size-order'
+    | '/learning-games/snake'
+    | '/learning-games/sort'
+    | '/seasonal-packs/$season'
+    | '/learning-games/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/blog'
-    | '/blog/$slug'
     | '/about'
+    | '/admin'
+    | '/blog'
     | '/book-visit'
     | '/contact'
     | '/daily-life'
@@ -206,16 +447,39 @@ export interface FileRouteTypes {
     | '/faq'
     | '/gallery'
     | '/nutrition'
+    | '/parent-notes'
+    | '/parent-zone'
     | '/philosophy'
     | '/program'
+    | '/reviews'
     | '/safety-care'
+    | '/seasonal-packs'
+    | '/unsubscribe'
     | '/virtual-preschool'
+    | '/virtual-preschool-final'
+    | '/virtual-preschool-grace'
+    | '/virtual-preschool-world'
+    | '/blog/$slug'
+    | '/learning-games/colors-shapes'
+    | '/learning-games/count'
+    | '/learning-games/dress'
+    | '/learning-games/fruit-basket'
+    | '/learning-games/maze'
+    | '/learning-games/memory'
+    | '/learning-games/odd-one'
+    | '/learning-games/pattern'
+    | '/learning-games/school-bag'
+    | '/learning-games/size-order'
+    | '/learning-games/snake'
+    | '/learning-games/sort'
+    | '/seasonal-packs/$season'
+    | '/learning-games'
   id:
     | '__root__'
     | '/'
-    | '/blog'
-    | '/blog/$slug'
     | '/about'
+    | '/admin'
+    | '/blog'
     | '/book-visit'
     | '/contact'
     | '/daily-life'
@@ -224,18 +488,42 @@ export interface FileRouteTypes {
     | '/facilities'
     | '/faq'
     | '/gallery'
+    | '/learning-games'
     | '/nutrition'
+    | '/parent-notes'
+    | '/parent-zone'
     | '/philosophy'
     | '/program'
+    | '/reviews'
     | '/safety-care'
+    | '/seasonal-packs'
+    | '/unsubscribe'
     | '/virtual-preschool'
+    | '/virtual-preschool-final'
+    | '/virtual-preschool-grace'
+    | '/virtual-preschool-world'
+    | '/blog/$slug'
+    | '/learning-games/colors-shapes'
+    | '/learning-games/count'
+    | '/learning-games/dress'
+    | '/learning-games/fruit-basket'
+    | '/learning-games/maze'
+    | '/learning-games/memory'
+    | '/learning-games/odd-one'
+    | '/learning-games/pattern'
+    | '/learning-games/school-bag'
+    | '/learning-games/size-order'
+    | '/learning-games/snake'
+    | '/learning-games/sort'
+    | '/seasonal-packs_/$season'
+    | '/learning-games/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  BlogRoute: typeof BlogRoute
-  BlogSlugRoute: typeof BlogSlugRoute
   AboutRoute: typeof AboutRoute
+  AdminRoute: typeof AdminRoute
+  BlogRoute: typeof BlogRouteWithChildren
   BookVisitRoute: typeof BookVisitRoute
   ContactRoute: typeof ContactRoute
   DailyLifeRoute: typeof DailyLifeRoute
@@ -244,11 +532,21 @@ export interface RootRouteChildren {
   FacilitiesRoute: typeof FacilitiesRoute
   FaqRoute: typeof FaqRoute
   GalleryRoute: typeof GalleryRoute
+  LearningGamesRoute: typeof LearningGamesRouteWithChildren
   NutritionRoute: typeof NutritionRoute
+  ParentNotesRoute: typeof ParentNotesRoute
+  ParentZoneRoute: typeof ParentZoneRoute
   PhilosophyRoute: typeof PhilosophyRoute
   ProgramRoute: typeof ProgramRoute
+  ReviewsRoute: typeof ReviewsRoute
   SafetyCareRoute: typeof SafetyCareRoute
+  SeasonalPacksRoute: typeof SeasonalPacksRoute
+  UnsubscribeRoute: typeof UnsubscribeRoute
   VirtualPreschoolRoute: typeof VirtualPreschoolRoute
+  VirtualPreschoolFinalRoute: typeof VirtualPreschoolFinalRoute
+  VirtualPreschoolGraceRoute: typeof VirtualPreschoolGraceRoute
+  VirtualPreschoolWorldRoute: typeof VirtualPreschoolWorldRoute
+  SeasonalPacksSeasonRoute: typeof SeasonalPacksSeasonRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -260,25 +558,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/blog': {
-      id: '/blog'
-      path: '/blog'
-      fullPath: '/blog'
-      preLoaderRoute: typeof BlogRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/blog/$slug': {
-      id: '/blog/$slug'
-      path: '/blog/$slug'
-      fullPath: '/blog/$slug'
-      preLoaderRoute: typeof BlogSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/about': {
       id: '/about'
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog': {
+      id: '/blog'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof BlogRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/book-visit': {
@@ -337,11 +635,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GalleryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/learning-games': {
+      id: '/learning-games'
+      path: '/learning-games'
+      fullPath: '/learning-games'
+      preLoaderRoute: typeof LearningGamesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/nutrition': {
       id: '/nutrition'
       path: '/nutrition'
       fullPath: '/nutrition'
       preLoaderRoute: typeof NutritionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/parent-notes': {
+      id: '/parent-notes'
+      path: '/parent-notes'
+      fullPath: '/parent-notes'
+      preLoaderRoute: typeof ParentNotesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/parent-zone': {
+      id: '/parent-zone'
+      path: '/parent-zone'
+      fullPath: '/parent-zone'
+      preLoaderRoute: typeof ParentZoneRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/philosophy': {
@@ -358,11 +677,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProgramRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reviews': {
+      id: '/reviews'
+      path: '/reviews'
+      fullPath: '/reviews'
+      preLoaderRoute: typeof ReviewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/safety-care': {
       id: '/safety-care'
       path: '/safety-care'
       fullPath: '/safety-care'
       preLoaderRoute: typeof SafetyCareRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/seasonal-packs': {
+      id: '/seasonal-packs'
+      path: '/seasonal-packs'
+      fullPath: '/seasonal-packs'
+      preLoaderRoute: typeof SeasonalPacksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/unsubscribe': {
+      id: '/unsubscribe'
+      path: '/unsubscribe'
+      fullPath: '/unsubscribe'
+      preLoaderRoute: typeof UnsubscribeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/virtual-preschool': {
@@ -372,14 +712,186 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VirtualPreschoolRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/virtual-preschool-final': {
+      id: '/virtual-preschool-final'
+      path: '/virtual-preschool-final'
+      fullPath: '/virtual-preschool-final'
+      preLoaderRoute: typeof VirtualPreschoolFinalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/virtual-preschool-grace': {
+      id: '/virtual-preschool-grace'
+      path: '/virtual-preschool-grace'
+      fullPath: '/virtual-preschool-grace'
+      preLoaderRoute: typeof VirtualPreschoolGraceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/virtual-preschool-world': {
+      id: '/virtual-preschool-world'
+      path: '/virtual-preschool-world'
+      fullPath: '/virtual-preschool-world'
+      preLoaderRoute: typeof VirtualPreschoolWorldRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog/$slug': {
+      id: '/blog/$slug'
+      path: '/$slug'
+      fullPath: '/blog/$slug'
+      preLoaderRoute: typeof BlogSlugRouteImport
+      parentRoute: typeof BlogRoute
+    }
+    '/learning-games/': {
+      id: '/learning-games/'
+      path: '/'
+      fullPath: '/learning-games/'
+      preLoaderRoute: typeof LearningGamesIndexRouteImport
+      parentRoute: typeof LearningGamesRoute
+    }
+    '/learning-games/colors-shapes': {
+      id: '/learning-games/colors-shapes'
+      path: '/colors-shapes'
+      fullPath: '/learning-games/colors-shapes'
+      preLoaderRoute: typeof LearningGamesColorsShapesRouteImport
+      parentRoute: typeof LearningGamesRoute
+    }
+    '/learning-games/count': {
+      id: '/learning-games/count'
+      path: '/count'
+      fullPath: '/learning-games/count'
+      preLoaderRoute: typeof LearningGamesCountRouteImport
+      parentRoute: typeof LearningGamesRoute
+    }
+    '/learning-games/dress': {
+      id: '/learning-games/dress'
+      path: '/dress'
+      fullPath: '/learning-games/dress'
+      preLoaderRoute: typeof LearningGamesDressRouteImport
+      parentRoute: typeof LearningGamesRoute
+    }
+    '/learning-games/fruit-basket': {
+      id: '/learning-games/fruit-basket'
+      path: '/fruit-basket'
+      fullPath: '/learning-games/fruit-basket'
+      preLoaderRoute: typeof LearningGamesFruitBasketRouteImport
+      parentRoute: typeof LearningGamesRoute
+    }
+    '/learning-games/maze': {
+      id: '/learning-games/maze'
+      path: '/maze'
+      fullPath: '/learning-games/maze'
+      preLoaderRoute: typeof LearningGamesMazeRouteImport
+      parentRoute: typeof LearningGamesRoute
+    }
+    '/learning-games/memory': {
+      id: '/learning-games/memory'
+      path: '/memory'
+      fullPath: '/learning-games/memory'
+      preLoaderRoute: typeof LearningGamesMemoryRouteImport
+      parentRoute: typeof LearningGamesRoute
+    }
+    '/learning-games/odd-one': {
+      id: '/learning-games/odd-one'
+      path: '/odd-one'
+      fullPath: '/learning-games/odd-one'
+      preLoaderRoute: typeof LearningGamesOddOneRouteImport
+      parentRoute: typeof LearningGamesRoute
+    }
+    '/learning-games/pattern': {
+      id: '/learning-games/pattern'
+      path: '/pattern'
+      fullPath: '/learning-games/pattern'
+      preLoaderRoute: typeof LearningGamesPatternRouteImport
+      parentRoute: typeof LearningGamesRoute
+    }
+    '/learning-games/school-bag': {
+      id: '/learning-games/school-bag'
+      path: '/school-bag'
+      fullPath: '/learning-games/school-bag'
+      preLoaderRoute: typeof LearningGamesSchoolBagRouteImport
+      parentRoute: typeof LearningGamesRoute
+    }
+    '/learning-games/size-order': {
+      id: '/learning-games/size-order'
+      path: '/size-order'
+      fullPath: '/learning-games/size-order'
+      preLoaderRoute: typeof LearningGamesSizeOrderRouteImport
+      parentRoute: typeof LearningGamesRoute
+    }
+    '/learning-games/snake': {
+      id: '/learning-games/snake'
+      path: '/snake'
+      fullPath: '/learning-games/snake'
+      preLoaderRoute: typeof LearningGamesSnakeRouteImport
+      parentRoute: typeof LearningGamesRoute
+    }
+    '/learning-games/sort': {
+      id: '/learning-games/sort'
+      path: '/sort'
+      fullPath: '/learning-games/sort'
+      preLoaderRoute: typeof LearningGamesSortRouteImport
+      parentRoute: typeof LearningGamesRoute
+    }
+    '/seasonal-packs_/$season': {
+      id: '/seasonal-packs_/$season'
+      path: '/seasonal-packs/$season'
+      fullPath: '/seasonal-packs/$season'
+      preLoaderRoute: typeof SeasonalPacksSeasonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
+interface BlogRouteChildren {
+  BlogSlugRoute: typeof BlogSlugRoute
+}
+
+const BlogRouteChildren: BlogRouteChildren = {
+  BlogSlugRoute: BlogSlugRoute,
+}
+
+const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
+
+interface LearningGamesRouteChildren {
+  LearningGamesColorsShapesRoute: typeof LearningGamesColorsShapesRoute
+  LearningGamesCountRoute: typeof LearningGamesCountRoute
+  LearningGamesDressRoute: typeof LearningGamesDressRoute
+  LearningGamesFruitBasketRoute: typeof LearningGamesFruitBasketRoute
+  LearningGamesMazeRoute: typeof LearningGamesMazeRoute
+  LearningGamesMemoryRoute: typeof LearningGamesMemoryRoute
+  LearningGamesOddOneRoute: typeof LearningGamesOddOneRoute
+  LearningGamesPatternRoute: typeof LearningGamesPatternRoute
+  LearningGamesSchoolBagRoute: typeof LearningGamesSchoolBagRoute
+  LearningGamesSizeOrderRoute: typeof LearningGamesSizeOrderRoute
+  LearningGamesSnakeRoute: typeof LearningGamesSnakeRoute
+  LearningGamesSortRoute: typeof LearningGamesSortRoute
+  LearningGamesIndexRoute: typeof LearningGamesIndexRoute
+}
+
+const LearningGamesRouteChildren: LearningGamesRouteChildren = {
+  LearningGamesColorsShapesRoute: LearningGamesColorsShapesRoute,
+  LearningGamesCountRoute: LearningGamesCountRoute,
+  LearningGamesDressRoute: LearningGamesDressRoute,
+  LearningGamesFruitBasketRoute: LearningGamesFruitBasketRoute,
+  LearningGamesMazeRoute: LearningGamesMazeRoute,
+  LearningGamesMemoryRoute: LearningGamesMemoryRoute,
+  LearningGamesOddOneRoute: LearningGamesOddOneRoute,
+  LearningGamesPatternRoute: LearningGamesPatternRoute,
+  LearningGamesSchoolBagRoute: LearningGamesSchoolBagRoute,
+  LearningGamesSizeOrderRoute: LearningGamesSizeOrderRoute,
+  LearningGamesSnakeRoute: LearningGamesSnakeRoute,
+  LearningGamesSortRoute: LearningGamesSortRoute,
+  LearningGamesIndexRoute: LearningGamesIndexRoute,
+}
+
+const LearningGamesRouteWithChildren = LearningGamesRoute._addFileChildren(
+  LearningGamesRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  BlogRoute: BlogRoute,
-  BlogSlugRoute: BlogSlugRoute,
   AboutRoute: AboutRoute,
+  AdminRoute: AdminRoute,
+  BlogRoute: BlogRouteWithChildren,
   BookVisitRoute: BookVisitRoute,
   ContactRoute: ContactRoute,
   DailyLifeRoute: DailyLifeRoute,
@@ -388,11 +900,21 @@ const rootRouteChildren: RootRouteChildren = {
   FacilitiesRoute: FacilitiesRoute,
   FaqRoute: FaqRoute,
   GalleryRoute: GalleryRoute,
+  LearningGamesRoute: LearningGamesRouteWithChildren,
   NutritionRoute: NutritionRoute,
+  ParentNotesRoute: ParentNotesRoute,
+  ParentZoneRoute: ParentZoneRoute,
   PhilosophyRoute: PhilosophyRoute,
   ProgramRoute: ProgramRoute,
+  ReviewsRoute: ReviewsRoute,
   SafetyCareRoute: SafetyCareRoute,
+  SeasonalPacksRoute: SeasonalPacksRoute,
+  UnsubscribeRoute: UnsubscribeRoute,
   VirtualPreschoolRoute: VirtualPreschoolRoute,
+  VirtualPreschoolFinalRoute: VirtualPreschoolFinalRoute,
+  VirtualPreschoolGraceRoute: VirtualPreschoolGraceRoute,
+  VirtualPreschoolWorldRoute: VirtualPreschoolWorldRoute,
+  SeasonalPacksSeasonRoute: SeasonalPacksSeasonRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
