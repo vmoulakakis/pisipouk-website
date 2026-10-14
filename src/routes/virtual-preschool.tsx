@@ -1,25 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { SiteLayout } from "@/components/site/SiteLayout";
-
-export const Route = createFileRoute("/virtual-preschool")({
-  head: () => ({ meta: [
-    { title: "Πισιπούκ | Ο Μαγικός Εκπαιδευτικός Κόσμος" },
-    { name: "description", content: "Εκπαιδευτικό εργαστήρι για 2–6 ετών: ζωγραφική αφής, ιστορίες, κατασκευές, παιχνίδια, εποχές, εκτύπωση και θετική ενθάρρυνση." }
-  ]}),
-  component: VirtualPreschool,
+import { useEffect } from "react";
+export const Route=createFileRoute("/virtual-preschool")({
+ head:()=>({meta:[{title:"Πισιπούκ | Ο Μαγικός Κόσμος Μάθησης"},{name:"description",content:"Διαδραστικό preschool 2–6: ηλικιακές δραστηριότητες, ζωγραφική, παραμύθια, εκπαιδευτικές αποστολές, εκτύπωση."}]}),
+ component:VirtualPreschool,
 });
 function VirtualPreschool(){
-  const [height,setHeight]=useState(2050);
-  useEffect(()=>{
-    const onMessage=(e:MessageEvent)=>{
-      if(e.origin!==window.location.origin || e.data?.type!=="pisipouk-learning-height")return;
-      if(typeof e.data.height==="number")setHeight(Math.max(900,Math.min(12000,e.data.height+12)));
-    };
-    window.addEventListener("message",onMessage);
-    return ()=>window.removeEventListener("message",onMessage);
-  },[]);
-  return <SiteLayout><main className="bg-[#fff9f0]">
-    <iframe title="Ο Μαγικός Εκπαιδευτικός Κόσμος του Πισιπούκ" src="/pisipouk-learning-world.html?v=20261013r2" className="block w-full border-0" style={{height}} loading="eager"/>
-  </main></SiteLayout>
+ useEffect(()=>{window.location.replace("/pisipouk-learning-world.html?release=20261014-prd");},[]);
+ return <main style={{minHeight:"80vh",display:"grid",placeItems:"center",background:"#fff8e9",padding:30,textAlign:"center",fontFamily:"system-ui"}}>
+ <div><h1>🐻 Ο Μαγικός Κόσμος του Πισιπούκ</h1><p>Άνοιξε τη νέα εκπαιδευτική εμπειρία με τις δραστηριότητες ανά ηλικία.</p><a href="/pisipouk-learning-world.html?release=20261014-prd" style={{display:"inline-block",padding:"15px 26px",borderRadius:20,background:"#ffc547",fontWeight:900,color:"#49331e"}}>Μπες στον κόσμο του Πισιπούκ →</a></div></main>;
 }
