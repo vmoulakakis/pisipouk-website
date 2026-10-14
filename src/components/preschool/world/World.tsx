@@ -311,6 +311,7 @@ export function PreschoolWorld() {
                 <button
                   key={h.name}
                   className="pw-hotspot"
+                  aria-label={h.name}
                   style={{ left: h.x + "%", top: h.y + "%" }}
                   onClick={() =>
                     h.id
