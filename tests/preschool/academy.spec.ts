@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-const base = (process.env.PRESCHOOL_TEST_BASE_URL || "http://localhost:3000").replace(/\/$/, "");
+const base = (process.env.PRESCHOOL_TEST_BASE_URL || "http://localhost:5173").replace(/\/$/, "");
 const academy = base + "/preschool/academy.html";
 
 test.describe("Pisipouk Magic Academy — isolated preschool release checks", () => {
