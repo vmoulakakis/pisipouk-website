@@ -8,7 +8,7 @@ import {monthlyPack,monthlyRotation} from "../games/curriculum";
 import "./library.css";
 
 const NAME=["2–3","3–4","4–5","5–6"];
-function MonthlyStrip({type}:{type:string}){const m=monthlyPack();return <div className="pw2-monthly-strip" style={{background:m.color}}><span>{m.icon} <b>{m.name} {m.key.slice(0,4)}</b> · {m.theme}</span><small>Μηνιαία επιμέλεια ${type}: αλλάζουν η σειρά και οι προτεινόμενες δραστηριότητες· διατηρούνται όλα τα παλαιότερα σχέδια. Δεν παράγονται αυτόματα νέα αρχεία χωρίς έλεγχο.</small></div>}
+function MonthlyStrip({type}:{type:string}){const m=monthlyPack();return <div className="pw2-monthly-strip" style={{background:m.color}}><span>{m.icon} <b>{m.name} {m.key.slice(0,4)}</b> · {m.theme}</span><small>Μηνιαία επιμέλεια {type}: αλλάζουν η σειρά και οι προτεινόμενες δραστηριότητες· διατηρούνται όλα τα παλαιότερα σχέδια. Δεν παράγονται αυτόματα νέα αρχεία χωρίς έλεγχο.</small></div>}
 
 const AGE_ORIG="/pisipouk-v2-staging/ages/";
 type Props={age:number;ageKey:string};
