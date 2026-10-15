@@ -29,6 +29,7 @@ export function PhaserPhysicsGarden({ageKey}:{ageKey:string}){
     const parentUpdate=(n:number)=>{if(!disposed)setCount(n)};
     class NaturePhysicsScene extends Phaser.Scene{
      texturesReady=false;
+     fruits: Array<{destroy:()=>void}>=[];
      constructor(){super({key:"PisipoukMatterNature"});}
      preload(){this.load.image("pisipoukOriginal","/preschool-world/bear.webp");}
      create(){
@@ -81,10 +82,8 @@ export function PhaserPhysicsGarden({ageKey}:{ageKey:string}){
       produced=0;parentUpdate(produced);
       spawn.current=()=>this.spawnBall(350+Math.random()*220);
       reset.current=()=>{
-       for(const body of this.matter.world.localWorld.bodies.slice()){
-        if((body as any).label==="pisipouk_fruit")this.matter.world.remove(body);
-       }
-       this.children.list.filter(go=>go.getData("fruit")).forEach(go=>go.destroy());
+       this.fruits.forEach(fruit=>fruit.destroy());
+       this.fruits=[];
        produced=0;parentUpdate(0);
       };
      }
@@ -95,7 +94,7 @@ export function PhaserPhysicsGarden({ageKey}:{ageKey:string}){
       ball.setAngularVelocity((Math.random()-.5)*.05);
       ball.setVelocityX((Math.random()-.5)*3);
       ball.setData("fruit",true);ball.setDepth(5);
-      (ball.body as any).label="pisipouk_fruit";
+      this.fruits.push(ball);
       produced++;parentUpdate(produced);
      }
     }
