@@ -1658,3 +1658,91 @@
     font-size: 23px;
   }
 }
+
+
+/* PISIPOUK 2026 · Illustrated playpacks and maker studios; never leaks outside preschool. */
+.pw-app .pw-activity-library{min-width:0}
+.pw-app .pw-activity-picker,.pw-app .pw-pattern-studio,.pw-app .pw-craft-studio{
+  margin:32px 0 42px;padding:clamp(17px,2.9vw,36px);border:5px solid #fff;
+  border-radius:30px;background:linear-gradient(158deg,#e3f8ff,#fef5d9 60%,#ffeaf4);
+  box-shadow:0 10px 0 #b8d7dba3,0 19px 38px #25526c24;isolation:isolate;
+}
+.pw-app .pw-activity-picker{margin-top:20px}
+.pw-app .pw-studio-title{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;margin-bottom:24px}
+.pw-app .pw-studio-title small{display:block;color:#976226;font-weight:950;letter-spacing:1px;margin-bottom:7px}
+.pw-app .pw-studio-title h2{font-size:clamp(26px,3vw,39px);line-height:1.15;color:#334461;margin:0 0 7px}
+.pw-app .pw-studio-title h3{font-size:clamp(21px,2vw,28px);margin:0 0 7px;color:#334461}
+.pw-app .pw-studio-title p{font-size:14px;line-height:1.65;margin:6px 0;max-width:680px}
+.pw-app .pw-studio-title>strong{border-radius:21px;padding:10px 15px;background:#fff3ab;border:3px solid #fff;
+  color:#725224;box-shadow:0 4px 0 #cfba70;white-space:nowrap;font-size:15px}
+.pw-app .pw-pattern-gallery{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:13px;max-height:580px;overflow:auto;padding:5px 6px 14px 2px}
+.pw-app .pw-pattern-gallery button{display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:6px;
+  padding:8px;border:3px solid #fff;background:#fffdfa;border-radius:20px;min-height:135px;
+  box-shadow:0 7px 0 #c5d8dc;transition:transform .16s ease,box-shadow .16s}
+.pw-app .pw-pattern-gallery button:hover,.pw-app .pw-pattern-gallery button:focus-visible{transform:translateY(-4px);box-shadow:0 10px 0 #a9c8ce}
+.pw-app .pw-pattern-gallery button[aria-pressed="true"]{border-color:#f09a3d;background:#fff5d4}
+.pw-app .pw-pattern-gallery button img{display:block;object-fit:contain;aspect-ratio:1;width:100%;border-radius:12px;
+  background:radial-gradient(circle at 30% 10%,#fff,#def7e7)}
+.pw-app .pw-pattern-gallery button span{font-size:12px;font-weight:850;color:#334461;text-wrap:balance;text-align:center;line-height:1.3;overflow-wrap:anywhere}
+.pw-app .pw-studio-board{display:grid;grid-template-columns:minmax(190px,.9fr) minmax(200px,1.1fr);gap:18px;margin-top:25px;align-items:start}
+.pw-app .pw-studio-controls,.pw-app .pw-pattern-paint,.pw-app .pw-pattern-example{
+  background:#fffdf7;border-radius:24px;border:3px solid white;padding:20px;box-shadow:0 8px 18px #27486117;
+}
+.pw-app .pw-studio-controls h3{font-size:clamp(21px,2.5vw,28px);margin:5px 0 13px}
+.pw-app .pw-studio-controls p{font-size:13px;line-height:1.8}
+.pw-app .pw-studio-colors{display:flex;gap:9px;flex-wrap:wrap;margin:21px 0}
+.pw-app .pw-studio-colors button{width:45px;height:45px;min-height:45px;min-width:45px;border-radius:50%;border:4px solid #fff;
+ box-shadow:0 0 0 1px #92aeb8,0 3px 0 #afb9ae}
+.pw-app .pw-studio-colors button[aria-pressed="true"]{outline:4px solid #3a5e81;outline-offset:2px}
+.pw-app .pw-pattern-paint{padding:8px;cursor:crosshair;min-height:320px;display:grid;place-items:center}
+.pw-app .pw-pattern-paint>svg{display:block;width:100%;height:auto;max-height:530px;touch-action:manipulation}
+.pw-app .pw-pattern-paint svg .a,.pw-app .pw-pattern-paint svg .b,.pw-app .pw-pattern-paint svg .c,
+.pw-app .pw-pattern-paint svg .d{cursor:pointer}
+.pw-app .pw-pattern-example{grid-column:2;text-align:center}
+.pw-app .pw-pattern-example img{display:block;width:180px;max-width:100%;margin:auto}
+.pw-app .pw-pattern-example figcaption{font-size:12px;color:#55666d}
+.pw-app .pw-studio-help{color:#637178;font-size:12px}
+.pw-app .pw-craft-lesson{display:grid;grid-template-columns:minmax(200px,.78fr) minmax(0,1.3fr);
+  gap:24px;background:#fffaf0;border:3px solid white;border-radius:27px;padding:clamp(16px,3vw,30px);margin-top:24px}
+.pw-app .pw-craft-finished{position:sticky;top:10px;align-self:start;background:#fff;border:4px solid #fff;
+  border-radius:25px;box-shadow:0 7px 0 #b7cece;padding:10px}
+.pw-app .pw-craft-finished img{width:100%;aspect-ratio:1;object-fit:contain;background:#eaf8f6;border-radius:17px}
+.pw-app .pw-craft-finished p{text-align:center;font-weight:850;font-size:13px;color:#4d6b71}
+.pw-app .pw-craft-badges{display:flex;flex-wrap:wrap;gap:7px}
+.pw-app .pw-craft-badges span{background:#e3f5d9;border-radius:50px;padding:7px 12px;font-size:12px;font-weight:900}
+.pw-app .pw-craft-detail h3{font-size:clamp(23px,2.6vw,32px);margin:18px 0 13px}
+.pw-app .pw-craft-detail>p{font-size:14px;line-height:1.8}
+.pw-app .pw-craft-steps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin:20px 0}
+.pw-app .pw-craft-steps button{display:flex;gap:9px;align-items:center;min-width:0;text-align:left;
+  background:#fff;border:3px solid #e8e4d6;border-radius:19px;padding:9px;min-height:95px}
+.pw-app .pw-craft-steps button.active,.pw-app .pw-craft-steps button[aria-pressed="true"]{border-color:#ffac42;background:#fff3cd}
+.pw-app .pw-step-art{position:relative;display:block;flex:0 0 70px}
+.pw-app .pw-step-art img{display:block;width:70px;aspect-ratio:1;object-fit:cover;border-radius:12px}
+.pw-app .pw-step-art b{position:absolute;top:-6px;left:-6px;border-radius:50%;width:27px;height:27px;display:grid;place-items:center;background:#ffb93f;color:#493326;border:2px solid white}
+.pw-app .pw-craft-steps button strong{display:block;font-size:13px}
+.pw-app .pw-craft-steps button small{display:block;font-size:11px;line-height:1.6;letter-spacing:0;white-space:normal;overflow-wrap:anywhere}
+.pw-app .pw-craft-callout{background:#eaf4d9;padding:19px;border-radius:20px}
+.pw-app .pw-craft-callout strong{font-size:17px}
+.pw-app .pw-craft-callout p{font-size:14px}
+.pw-app .pw-game-visual{margin:16px 0;display:flex;gap:15px;align-items:center;background:linear-gradient(110deg,#fff6d6,#e5f7ff);padding:12px;border-radius:20px;border:2px solid white}
+.pw-app .pw-game-visual img{width:min(165px,45%);height:auto;aspect-ratio:1;object-fit:contain;border-radius:15px;background:white}
+.pw-app .pw-game-visual figcaption{font-size:13px;font-weight:850;line-height:1.5}
+.pw-app .pw-game-hint{background:#e6f4fa;border-left:5px solid #57a8ce;padding:14px 15px;border-radius:13px;font-size:13px;line-height:1.6}
+.pw-app .pw-replay-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:15px}
+.pw-app .pw-replay-actions button:first-child{background:#fee4a2;border-color:#d89f45}
+.pw-app .pw-replay-actions button:last-child{background:#e4edf8}
+@media(max-width:900px){
+ .pw-app .pw-pattern-gallery{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .pw-app .pw-studio-board{grid-template-columns:1fr 1fr}.pw-app .pw-pattern-example{grid-column:2}
+}
+@media(max-width:700px){
+ .pw-app .pw-pattern-gallery{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;max-height:520px}
+ .pw-app .pw-pattern-gallery button{min-height:130px;padding:6px}
+ .pw-app .pw-studio-board,.pw-app .pw-craft-lesson{grid-template-columns:1fr}
+ .pw-app .pw-pattern-example{grid-column:1}
+ .pw-app .pw-craft-steps{grid-template-columns:1fr}
+ .pw-app .pw-craft-finished{position:static;max-width:340px;margin:auto}
+ .pw-app .pw-studio-title{flex-direction:column}
+ .pw-app .pw-game-visual{flex-direction:column;align-items:start}
+}
+@media(prefers-reduced-motion:reduce){.pw-app .pw-pattern-gallery button{transition:none!important}}
