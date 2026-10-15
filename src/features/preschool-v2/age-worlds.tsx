@@ -1,7 +1,8 @@
 import { Link, Outlet } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight, BookOpen, Gamepad2, Home, Palette, Scissors, Sparkles } from "lucide-react";
 import { StageAgeGame } from "./age-games";
-import {gamesForAge, monthlyPack} from "./games/curriculum";
+import {monthlyPack} from "./games/curriculum";
+import {GameCatalog} from "./games/GameCatalog";
 import { PatternLibrary, CraftLibrary, StoryLibrary } from "./library/LibraryViews";
 import "./age-worlds.css";
 import "./physics/physics-garden.css";
@@ -36,11 +37,11 @@ export function AgeShell({ageKey}:{ageKey:string}){
 }
 export function AgeWorldHome({ageKey}:{ageKey:string}){
  const a=ageIndex(ageKey);if(a<0)return null;
- const url=BASE+ageKey,pack=monthlyPack(),games=gamesForAge(a);
+ const url=BASE+ageKey,pack=monthlyPack();
  return <div className="pw2-home">
   <div className="pw2-world-hero"><div><span className="pw2-overline">Ο ΔΙΚΟΣ ΜΟΥ ΚΟΣΜΟΣ · {ageKey.replace("-","–")} ΕΤΩΝ</span><h1>{AGE_NAMES[a]}</h1><p>Μαθαίνουμε μέσα από το παιχνίδι, την τέχνη, τα συναισθήματα και την περιέργεια!</p><Link className="pw2-main-button" to={url+"/game"}>Έλα να παίξουμε! <ArrowRight/></Link></div><div className="pw2-world-hero-art"><span>{AGE_SYMBOLS[a]}</span><img src="/preschool-world/bear.webp" alt="Ο Πισιπούκ σε περιμένει"/></div></div>
   <div className="pw2-monthly-banner" style={{background:pack.color}}><span>{pack.icon} <strong>{pack.name} {pack.key.split("-")[0]}</strong> · {pack.theme}</span><small>Μηνιαία θεματολογία για όλες τις δραστηριότητες. Η προηγούμενη βιβλιοθήκη διατηρείται.</small></div><div className="pw2-physics-banner"><div><span className="pw2-overline">ΝΕΟΣ ΜΗΧΑΝΙΣΜΟΣ ΠΑΙΧΝΙΔΙΩΝ</span><strong>Ο κήπος της βαρύτητας</strong><p>Δοκίμασε πραγματική φυσική κίνησης με Phaser + Matter.js.</p></div><Link to={url+"/physics"} className="pw2-main-button">Παίζω με τη φυσική <ArrowRight size={18}/></Link></div><div className="pw2-portal-grid"><Link to={url+"/game"}><span>🎮</span><strong>Παίζω</strong><small>Πραγματικό παιχνίδι</small></Link><Link to={url+"/patterns"}><span>🖍️</span><strong>Ζωγραφίζω</strong><small>Πατρόν για εκτύπωση</small></Link><Link to={url+"/crafts"}><span>✂️</span><strong>Κατασκευάζω</strong><small>4 βήματα & υλικά</small></Link><Link to={url+"/stories"}><span>📚</span><strong>Ακούω ιστορίες</strong><small>Σελίδες με αφήγηση</small></Link></div>
-  <section className="pw2-planned-games"><div className="pw2-planned-intro"><h2>20 παιχνίδια για ηλικίες {ageKey.replace("-","–")} ετών</h2><p>Άνοιξε οποιοδήποτε παιχνίδι. Οι δραστηριότητες έχουν διαφορετικούς εκπαιδευτικούς στόχους, αλληλεπιδράσεις και μηνιαίες παραλλαγές.</p></div><div className="pw2-game-catalog">{games.map(g=><Link key={g.id} className="pw2-game-live" to={g.index===0?url+"/game":url+"/play/"+g.index}><small>{String(g.index+1).padStart(2,"0")}</small><strong>{g.title}</strong><b>Παίζω <ArrowRight size={16}/></b></Link>)}</div></section>
+  <GameCatalog age={a} ageKey={ageKey}/>
  </div>
 }
 export function AgeGameRoute({ageKey}:{ageKey:string}){return <StageAgeGame age={ageIndex(ageKey)} ageKey={ageKey}/>}
