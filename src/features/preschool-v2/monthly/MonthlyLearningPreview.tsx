@@ -21,7 +21,7 @@ export function MonthlyLearningPreview(){
    <article><div><Gamepad2/><strong>20 παιχνίδια</strong></div><p>Κάθε ηλικία έχει 20 ανοιχτά παιχνίδια με μηνιαίες παραλλαγές.</p><ol>{g.slice(0,5).map(x=><li key={x.id}>{x.title}</li>)}</ol></article>
    <article><div><Palette/><strong>20 ζωγραφιές</strong></div><p>Μηνιαία αλλαγή προτάσεων και σειράς, διατηρώντας όλες τις εικόνες.</p><ol>{p.slice(0,5).map(x=><li key={x.id}>{x.title}</li>)}</ol></article>
    <article><div><Scissors/><strong>20 κατασκευές</strong></div><p>Εναλλαγή εγκεκριμένων οδηγιών και εκτυπώσιμων σχεδίων.</p><ol>{c.slice(0,5).map(x=><li key={x.id}>{x.title}</li>)}</ol></article>
-   <article><div><BookOpen/><strong>20 ιστορίες</strong></div><p>Αλλαγή των προτεινόμενων ιστοριών, χωρίς απώλεια παλαιότερων.</p><ol>{s.slice(0,5).map(x,i)=><li key={i}>{x.title}</li>)}</ol></article>
+   <article><div><BookOpen/><strong>20 ιστορίες</strong></div><p>Αλλαγή των προτεινόμενων ιστοριών, χωρίς απώλεια παλαιότερων.</p><ol>{s.slice(0,5).map((x,i)=><li key={i}>{x.title}</li>)}</ol></article>
   </div>
   <div className="plm-status"><strong>Τι ανανεώνεται αυτόματα;</strong> Οι μηνιαίες προτάσεις, η εποχιακή θεματολογία, το υλικό που εμφανίζεται πρώτο και αρκετές παράμετροι των παιχνιδιών. <strong>Τι δεν παράγεται ακόμη αυτόματα;</strong> 80 νέα γραφικά παιχνίδια, καινούργια διανυσματικά πατρόν και πλήρως εικονογραφημένες ιστορίες. Αυτά απαιτούν εγκεκριμένα αρχεία και παιδαγωγική αξιολόγηση πριν από δημοσίευση.</div>
  </div>;
