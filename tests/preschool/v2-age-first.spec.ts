@@ -52,24 +52,36 @@ test.describe("Pisipouk World 2.0: age-first staging smoke", () => {
   await page.getByRole("button",{name:/Εκτέλεση!/}).click();
   await expect(page.locator(".pw2-response")).toContainText("έφτασε στο αστέρι",{timeout:9000});
  });
- test("A4 sheet visible and original SVG downloadable",async ({page})=>{
+ test("20 authored line-art patterns available and A4 SVG downloadable",async ({page})=>{
   await page.goto(base+"/ages/2-3/patterns");
-  await expect(page.locator(".pw2-a4-svg")).toBeVisible();
+  await expect(page.locator(".pw2-pattern-gallery button")).toHaveCount(20);
+  await expect(page.locator(".pw2-pattern-live svg")).toBeVisible();
   const downloadPromise=page.waitForEvent("download");
-  await page.getByRole("button",{name:/Λήψη SVG/}).click();
+  await page.getByRole("button",{name:/Α4 SVG/}).click();
   const download=await downloadPromise;
-  expect(download.suggestedFilename()).toMatch(/pisipouk-patron-1\.svg/);
+  expect(download.suggestedFilename()).toMatch(/pisipouk-p1-a4\.svg/);
  });
- test("age craft has four navigable steps",async ({page})=>{
+ test("20 crafts and four navigable instructions",async ({page})=>{
   await page.goto(base+"/ages/4-5/crafts");
-  await expect(page.getByText("ΒΗΜΑ 1 / 4")).toBeVisible();
-  await page.getByRole("button",{name:/Επόμενο βήμα/}).click();
-  await expect(page.getByText("ΒΗΜΑ 2 / 4")).toBeVisible();
+  await expect(page.locator(".pw2-pattern-gallery button")).toHaveCount(20);
+  await expect(page.locator(".pw2-step-indicator")).toContainText("Βήμα 1 από 4");
+  await page.getByRole("button",{name:/Επόμενο/}).click();
+  await expect(page.locator(".pw2-step-indicator")).toContainText("Βήμα 2 από 4");
  });
- test("age-specific story has paginated Greek copy",async ({page})=>{
+ test("20 original Greek narratives, pages and ending choice",async ({page})=>{
   await page.goto(base+"/ages/5-6/stories");
-  await expect(page.getByText("ΣΕΛΙΔΑ 1 ΑΠΟ 5")).toBeVisible();
+  await expect(page.locator(".pw2-pattern-gallery button")).toHaveCount(20);
+  await expect(page.locator(".pw2-story-reader .pw2-overline")).toContainText("ΣΕΛΙΔΑ 1 / 4");
   await page.getByRole("button",{name:/Επόμενη σελίδα/}).click();
-  await expect(page.getByText("ΣΕΛΙΔΑ 2 ΑΠΟ 5")).toBeVisible();
+  await expect(page.locator(".pw2-story-reader .pw2-overline")).toContainText("ΣΕΛΙΔΑ 2 / 4");
  });
+ test("Phaser Matter engine creates a canvas and adds a simulated fruit",async ({page})=>{
+  await page.goto(base+"/ages/2-3/physics");
+  await expect(page.locator(".pw2-physics-canvas canvas")).toBeVisible({timeout:30000});
+  await page.getByRole("button",{name:/Ρίξε ένα μήλο/}).click();
+  await expect(page.locator(".pw2-physics-controls b")).toContainText("1/20");
+  await page.getByRole("button",{name:/Καθάρισε/}).click();
+  await expect(page.locator(".pw2-physics-controls b")).toContainText("0/20");
+ });
+
 });
