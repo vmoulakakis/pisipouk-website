@@ -856,6 +856,24 @@ const PROMPTS: Record<PlayPack, readonly [string,string,string,string,string][]>
     ]
   ]
 };
+
+/** A scenario only gets an "example picture" when the illustration is thematically relevant. */
+const VISUALS: Record<PlayPack, (number|null)[]> = {
+ art:[4,12,18,19,5,6,1,14,18,12,12,14,8,7,19,1,7,18,7,1],
+ craft:[7,12,8,2,13,10,9,18,9,10,15,18,9,14,15,11,7,10,8,1],
+ nature:[5,5,12,7,5,8,8,14,16,7,12,18,13,17,19,18,18,7,18,18],
+ music:[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],
+ story:[3,7,3,1,16,1,13,14,11,7,19,4,20,1,10,8,1,1,20,1],
+ feelings:[1,1,1,3,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1]
+};
+const GUIDE:Record<PlayPack,string>={
+ art:"Παρατήρησε τα χρώματα και φτιάξε τη δική σου εικόνα.",
+ craft:"Κοίτα το παράδειγμα και θυμήσου τα ασφαλή υλικά.",
+ nature:"Παρατήρησε τη φύση και σκέψου τι χρειάζεται κάθε πλάσμα.",
+ music:"Άκουσε προσεκτικά την εκφώνηση ή δοκίμασε ένα μουσικό πλήκτρο.",
+ story:"Θυμήσου τι συνέβη στην ιστορία και διάλεξε μια όμορφη συνέχεια.",
+ feelings:"Σκέψου πώς νιώθουν οι φίλοι και πώς μπορούμε να τους σεβαστούμε."
+};
 export const PACK_LABELS:Record<PlayPack,string> = {"art":"Χρώματα & Τέχνη","craft":"Κατασκευές","nature":"Φύση & Εξερεύνηση","music":"Μουσική","story":"Ιστορίες","feelings":"Φιλία & Συναισθήματα"};
 export const PACK_KEYS:PlayPack[] = ["art","craft","nature","music","story","feelings"];
 export function createPack(key:string,age:Age):Task[] {
@@ -863,8 +881,8 @@ export function createPack(key:string,age:Age):Task[] {
  if (!rows) return [];
  return rows.map(([title,prompt,correct,a,b],i)=>({
    title,prompt,options:age===0?[correct,a]:[correct,a,b],answer:0,mechanic:"choice" as const,
-   visual:"p"+((i%20)+1),
-   hint:"Κοίτα προσεκτικά την εικόνα και διάλεξε με ηρεμία."
+   visual:VISUALS[key as PlayPack][i] ? "p"+VISUALS[key as PlayPack][i] : undefined,
+   hint:GUIDE[key as PlayPack]
  }));
 }
 export const PACK_COUNTS = Object.fromEntries(PACK_KEYS.map(k=>[k,PROMPTS[k].length])) as Record<PlayPack,number>;
