@@ -1,0 +1,32 @@
+.pwc-calendar{max-width:1400px;margin:0 auto;padding:12px clamp(8px,2vw,25px) 45px;color:#294c65;font-family:ui-rounded,"Trebuchet MS",system-ui,sans-serif}
+.pwc-calendar *{box-sizing:border-box}.pwc-calendar button{cursor:pointer;font:inherit}.pwc-calendar a{text-decoration:none}
+.pwc-calendar :is(button,a):focus-visible{outline:4px solid #1b558c;outline-offset:3px}
+.pwc-back{display:inline-flex;align-items:center;gap:9px;margin:6px 0 15px;font-weight:900;color:#276491!important}
+.pwc-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;border:5px solid #fff;border-radius:30px;background:linear-gradient(125deg,#ffefd0,#d8f1e9);padding:23px 30px;box-shadow:0 14px 29px #3b52741a}
+.pwc-heading h1{font-size:clamp(1.6rem,3.2vw,2.6rem);margin:7px 0;display:flex;align-items:center;gap:12px}.pwc-heading p{margin:0;line-height:1.6;max-width:730px}
+.pwc-current{background:#fff;border:2px solid #f5eed3;border-radius:18px;padding:13px;font-weight:900;white-space:nowrap}
+.pwc-layout{display:grid;grid-template-columns:minmax(0,1.16fr) minmax(320px,.84fr);gap:18px;margin:18px 0}
+.pwc-calendar-panel,.pwc-region-panel,.pwc-focus,.pwc-recs{border:3px solid #fff;border-radius:24px;background:#fff;box-shadow:0 8px 23px #33546b17;padding:19px}
+.pwc-cal-navigation{display:flex;align-items:center;justify-content:space-between;gap:13px;margin-bottom:17px}.pwc-cal-navigation h2{font-size:1.5rem;margin:0;text-transform:capitalize}
+.pwc-cal-navigation button{border:2px solid #cbdfea;border-radius:12px;min-width:48px;min-height:48px;background:#edf8ff;font-size:2rem}
+.pwc-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+.pwc-weekday{text-align:center;padding:8px 0;font-size:.75rem;font-weight:900;color:#7890a2}
+.pwc-grid button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;aspect-ratio:1;min-height:44px;background:#f5f8fb;border:2px solid transparent;border-radius:13px;font-size:1rem;font-weight:900;color:#334f63;padding:5px}
+.pwc-grid button.has-event{background:#fff2d0;border-color:#f3ddb1}.pwc-grid button.chosen{background:#216ca7;color:#fff;border-color:#144b7b}.pwc-grid button.now:not(.chosen){border-color:#478cb1}
+.pwc-day-icon{font-size:1.3rem;line-height:1.1}.pwc-grid button small{position:absolute;right:3px;bottom:2px;font-size:.5rem}
+.pwc-cal-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:13px 0;font-size:.8rem;color:#657c8b}.pwc-cal-actions button{min-height:47px;border:2px solid #c4dfec;border-radius:12px;background:#e6f4fc;font-weight:850;padding:9px 15px;color:#205e89}
+.pwc-events{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding-top:13px;border-top:2px solid #e8f2f5}.pwc-events button{display:flex;flex-direction:column;align-items:flex-start;gap:4px;background:#fff9ea;border:2px solid #f4eddf;border-radius:13px;padding:12px;text-align:left}
+.pwc-events button.selected{background:#e3f3e9;border-color:#82ba99}.pwc-events button span{color:#a16b28;font-weight:900}.pwc-events button strong{font-size:.84rem}.pwc-events button small{font-size:.73rem;color:#607f93}
+.pwc-context{display:flex;flex-direction:column;gap:16px}.pwc-region-panel h2{display:flex;align-items:center;gap:7px;font-size:1.2rem;margin:0}.pwc-region-panel p{line-height:1.5;font-size:.85rem;color:#647989}
+.pwc-regions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0}.pwc-regions button{display:flex;align-items:center;gap:8px;min-height:61px;border:2px solid #d5e5ed;background:#f8fbfb;border-radius:15px;padding:10px;font-weight:850;text-align:left;font-size:.8rem}
+.pwc-regions button.selected{background:#fff0c7;border-color:#d8b166}.pwc-regions button:first-letter{font-size:1.7rem}
+.pwc-place-description{color:#28586f!important}.pwc-landmarks{display:flex;align-items:center;justify-content:space-evenly;gap:7px;background:#ecf7ee;border-radius:16px;padding:10px}.pwc-landmarks span{font-size:2.4rem}
+.pwc-focus{background:#fff8e5}.pwc-focus h2{font-size:clamp(1.2rem,2.5vw,1.75rem);margin:10px 0}.pwc-focus p{line-height:1.65}
+.pwc-focus-link{display:flex;justify-content:space-between;gap:11px;font-size:.8rem;flex-wrap:wrap}.pwc-focus-link a{color:#22649a!important;font-weight:900;text-decoration:underline}.pwc-focus-link small{font-weight:750;color:#8a703a}
+.pwc-offline{display:flex;flex-direction:column;gap:7px;background:#e8f4e6;border-radius:15px;padding:14px;line-height:1.55;font-size:.85rem}
+.pwc-recs-head{display:flex;justify-content:space-between;align-items:center;gap:13px;flex-wrap:wrap}.pwc-recs-head h2{margin:6px 0}.pwc-age{display:flex;gap:6px}.pwc-age button{background:#edf6fd;border:2px solid #cce2ef;border-radius:13px;min-height:48px;padding:9px 14px;font-weight:850;font-size:.85rem}.pwc-age button[aria-pressed=true]{background:#2368ab;color:#fff;border-color:#2368ab}
+.pwc-recommend-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;margin:13px 0}.pwc-recommend-grid article{display:flex;flex-direction:column;gap:7px;border:2px solid #e8eef3;border-radius:17px;background:#f9fcff;padding:13px}
+.pwc-recommend-grid h3{display:flex;align-items:center;gap:6px;font-size:1rem;line-height:1.35;min-height:48px;margin:0 0 8px}.pwc-recommend-grid article>a,.pwc-recommend-grid article>div{display:flex;align-items:center;justify-content:space-between;gap:5px;min-height:42px;border-bottom:1px solid #dde8ef;padding:6px 0;font-size:.79rem;color:#315a78}.pwc-recommend-grid article>a{font-weight:800;color:#236b9d!important}
+.pwc-editorial-note{font-size:.78rem;color:#617889;line-height:1.6;margin-top:10px}
+@media(max-width:1100px){.pwc-layout{grid-template-columns:1fr}.pwc-context{display:grid;grid-template-columns:1fr 1fr}.pwc-recommend-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){.pwc-calendar{padding:7px 0}.pwc-heading{padding:15px;border-radius:20px}.pwc-heading h1{font-size:1.45rem}.pwc-current{display:none}.pwc-calendar-panel,.pwc-region-panel,.pwc-focus,.pwc-recs{padding:11px}.pwc-cal-navigation h2{font-size:1.23rem}.pwc-grid{gap:2px}.pwc-grid button{border-radius:9px;min-height:43px;padding:2px}.pwc-day-icon{font-size:1rem}.pwc-events{grid-template-columns:1fr}.pwc-context{grid-template-columns:1fr}.pwc-regions{grid-template-columns:repeat(2,minmax(0,1fr))}.pwc-recommend-grid{grid-template-columns:1fr}.pwc-age button{min-width:0;padding:6px 10px}.pwc-landmarks span{font-size:2rem}}
