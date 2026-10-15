@@ -11,7 +11,7 @@ export function ContextRibbon({age}:{age?:number}){
    <strong>{context.featured?.name||"Η εποχή στον κόσμο μας"}</strong>
    <span>{context.featured?.description||context.region.note}</span>
   </div>
-  <Link to="/pisipouk-v2-staging/adults/monthly" title="Άνοιξε το εσωτερικό εκπαιδευτικό ημερολόγιο">
+  <Link to="/pisipouk-v2-staging/adults/calendar" title="Άνοιξε το εσωτερικό εκπαιδευτικό ημερολόγιο">
    <CalendarDays size={19}/> Ημερολόγιο <ArrowRight size={17}/>
   </Link>
  </section>;
