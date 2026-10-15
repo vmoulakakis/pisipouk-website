@@ -1764,3 +1764,24 @@
 .pw-app .pw-story-selector span{font-size:12px;line-height:1.35;font-weight:800;overflow-wrap:anywhere;text-align:center}
 @media(max-width:800px){.pw-app .pw-story-selector{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:520px){.pw-app .pw-story-selector{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Reuse already-licensed high-resolution village key art as quiet atmospheric scenery. */
+.pw-app .pw-activity-picker,.pw-app .pw-pattern-studio,.pw-app .pw-craft-studio{position:relative;overflow:hidden}
+.pw-app .pw-activity-picker:before,.pw-app .pw-pattern-studio:before,.pw-app .pw-craft-studio:before{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:-1;
+  background:url("/preschool-world/village.webp") center / cover no-repeat;opacity:.13;
+}
+.pw-app .pw-game{position:relative;overflow:hidden;
+  background:linear-gradient(142deg,#fff,#f2fbff 55%,#fff2dd)}
+.pw-app .pw-game:before{content:"";position:absolute;top:0;right:0;width:35%;height:150px;
+  background:url("/preschool-world/village-mobile.webp") center/cover no-repeat;
+  opacity:.075;border-radius:0 0 0 90px;pointer-events:none}
+.pw-app .pw-craft-steps button:nth-child(1) .pw-step-art{background:#fff;border:3px solid #fff}
+.pw-app .pw-craft-steps button:nth-child(2) .pw-step-art{border:3px dashed #dc9051;border-radius:13px}
+.pw-app .pw-craft-steps button:nth-child(3) .pw-step-art{border:3px solid #ffcb68;border-radius:13px}
+.pw-app .pw-craft-steps button:nth-child(4) .pw-step-art{border:5px ridge #c99c58;border-radius:13px}
+.pw-app .pw-craft-callout{box-shadow:0 5px 0 #d2e4be}
+@media(prefers-reduced-motion:no-preference){
+ .pw-app .pw-game-visual img{animation:pw-dreamy 5s ease-in-out infinite alternate}
+ @keyframes pw-dreamy{from{transform:translateY(0)}to{transform:translateY(-7px)}}
+}
