@@ -13,10 +13,12 @@ test.describe("PISIPOUK mouse pencil and marker drawing studio",()=>{
   await expect(page.getByRole("heading",{name:/Η ελεύθερη ζωγραφιά μου/})).toBeVisible();
  });
  test("mouse draws freehand pencil stroke and undo/redo restores it",async({page})=>{
-  const stage=page.locator(".pw2-drawing-layer"),bounds=await stage.boundingBox();
+  await page.getByRole("button",{name:/Μολύβι/}).click();
+  const stage=page.locator(".pw2-drawing-layer");
+  await stage.scrollIntoViewIfNeeded();
+  const bounds=await stage.boundingBox();
   expect(bounds).not.toBeNull();
   const x=bounds!.x+bounds!.width*.2,y=bounds!.y+bounds!.height*.48;
-  await page.getByRole("button",{name:/Μολύβι/}).click();
   await page.mouse.move(x,y);await page.mouse.down();
   await page.mouse.move(x+95,y+30,{steps:12});await page.mouse.up();
   await expect(stage.locator('[data-test-drawn-stroke="true"]')).toHaveCount(1);
@@ -26,9 +28,11 @@ test.describe("PISIPOUK mouse pencil and marker drawing studio",()=>{
   await expect(stage.locator('[data-test-drawn-stroke="true"]')).toHaveCount(1);
  });
  test("marker draws semi-transparent strokes and eraser removes them",async({page})=>{
-  const stage=page.locator(".pw2-drawing-layer"),b=await stage.boundingBox();
-  expect(b).not.toBeNull();const x=b!.x+b!.width*.42,y=b!.y+b!.height*.52;
   await page.getByRole("button",{name:/Μαρκαδόρος/}).click();
+  const stage=page.locator(".pw2-drawing-layer");
+  await stage.scrollIntoViewIfNeeded();
+  const b=await stage.boundingBox();
+  expect(b).not.toBeNull();const x=b!.x+b!.width*.42,y=b!.y+b!.height*.52;
   await page.mouse.move(x,y);await page.mouse.down();
   await page.mouse.move(x+67,y,{steps:9});await page.mouse.up();
   await expect(stage.locator('path[data-test-drawn-stroke]')).toHaveAttribute("stroke-opacity","0.48");
