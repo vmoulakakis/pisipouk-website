@@ -6,11 +6,16 @@ test.describe("80 educational games + monthly preview: stage only",()=>{
  for(const age of ages){
   test("every game in age "+age+" is linked, distinct and playable",async({page})=>{
    await page.goto(base+"/"+age);
-   const catalog=page.locator(".pw2-game-catalog > a");
-   await expect(catalog).toHaveCount(20);
-   const titles=await catalog.locator("strong").allTextContents();
+   const urls:string[]=[];
+   const titles:string[]=[];
+   const catalog=page.locator(".pgc-grid > a");
+   for(let group=0;group<4;group++){
+    await page.locator(".pgc-tabs button").nth(group).click();
+    await expect(catalog).toHaveCount(5);
+    urls.push(...(await catalog.evaluateAll(nodes=>nodes.map(n=>n.getAttribute("href")||""))));
+    titles.push(...(await catalog.locator("strong").allTextContents()));
+   }
    expect(new Set(titles).size).toBe(20);
-   const urls=await catalog.evaluateAll(nodes=>nodes.map(n=>n.getAttribute("href")));
    expect(new Set(urls).size).toBe(20);
    for(let i=1;i<=19;i++){
     await page.goto(base+"/"+age+"/play/"+i);
