@@ -1746,3 +1746,21 @@
  .pw-app .pw-game-visual{flex-direction:column;align-items:start}
 }
 @media(prefers-reduced-motion:reduce){.pw-app .pw-pattern-gallery button{transition:none!important}}
+
+/* Illustrated Greek storybook carousel: 20 distinct narrative choices. */
+.pw-app .pw-story-selector{
+ display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;max-height:560px;
+ overflow:auto;padding:10px 5px 19px;margin:22px 0 28px;
+}
+.pw-app .pw-story-selector button{
+ display:flex;flex-direction:column;align-items:stretch;gap:7px;background:#fffdf5;
+ padding:8px;border-radius:20px;border:3px solid #fff;
+ min-height:155px;box-shadow:0 7px 0 #bdcbd1;color:#32425f;
+ transition:transform .17s ease,box-shadow .17s ease;
+}
+.pw-app .pw-story-selector button:hover{transform:translateY(-3px);box-shadow:0 10px 0 #b2c7cf}
+.pw-app .pw-story-selector button[aria-pressed="true"]{background:#fff0d2;border-color:#f9aa57}
+.pw-app .pw-story-selector img{width:100%;aspect-ratio:1;object-fit:contain;background:linear-gradient(#e8faff,#fff7e8);border-radius:13px}
+.pw-app .pw-story-selector span{font-size:12px;line-height:1.35;font-weight:800;overflow-wrap:anywhere;text-align:center}
+@media(max-width:800px){.pw-app .pw-story-selector{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:520px){.pw-app .pw-story-selector{grid-template-columns:repeat(2,minmax(0,1fr))}}
