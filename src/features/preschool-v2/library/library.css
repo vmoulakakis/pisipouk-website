@@ -15,3 +15,11 @@
 .pw2-monthly-strip span{font-size:1.04rem;font-weight:850;white-space:nowrap}
 .pw2-monthly-strip small{max-width:610px;font-size:.78rem;line-height:1.5;color:#304b63}
 @media(max-width:740px){.pw2-monthly-strip{flex-direction:column;align-items:flex-start;gap:5px;padding:12px}.pw2-monthly-strip span{white-space:normal;font-size:.94rem}}
+
+.pw2-pattern-gallery .pw2-free-drawing{background:linear-gradient(135deg,#fce6bf,#eaf6ff)}
+.pw2-blank-paper{width:100%;max-width:130px;min-height:107px;display:flex;align-items:center;justify-content:center;background:#fff;border-radius:12px;border:3px dashed #c8dceb;font-size:3rem;box-shadow:0 5px 9px #314b6217}
+.pw2-free-suggestion{font-size:3rem;line-height:1.4;padding:30px 9px;background:#fff8dc;border-radius:18px;width:100%;text-align:center}
+.pw2-free-suggestion p{font-size:.91rem!important;margin:5px auto!important}
+.pw2-library-editor{min-width:0}
+.pw2-pattern-guide{align-self:start}
+@media(max-width:740px){.pw2-blank-paper{min-height:95px}.pw2-free-suggestion{padding:15px;font-size:2rem}}
