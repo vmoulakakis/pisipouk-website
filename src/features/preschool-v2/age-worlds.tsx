@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight, BookOpen, Gamepad2, Home, Palette, Scissors, Spa
 import { StageAgeGame } from "./age-games";
 import { PatternLibrary, CraftLibrary, StoryLibrary } from "./library/LibraryViews";
 import "./age-worlds.css";
+import "./physics/physics-garden.css";
 
 export const AGE_CODES=["2-3","3-4","4-5","5-6"] as const;
 export const AGE_NAMES=["Μικροί εξερευνητές","Χρωματιστές ανακαλύψεις","Μικροί δημιουργοί","Μεγάλοι εφευρέτες"];
