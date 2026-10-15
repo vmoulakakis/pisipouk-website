@@ -1,9 +1,10 @@
-import { useMemo, useState, type MouseEvent } from "react";
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight, BookOpen, ChevronLeft, ChevronRight, Download, Palette, Printer, RotateCcw, Volume2 } from "lucide-react";
 import { CRAFTS, PATTERNS, PALETTE, artwork, artworkDataUrl } from "./studioContent";
 import { printableSvg, saveSvg, printTemplate } from "./PatternStudio";
 import { STORIES } from "./story-data";
+import { DrawingWorkspace } from "./DrawingWorkspace";
 import {monthlyPack,monthlyRotation} from "../games/curriculum";
 import "./library.css";
 
@@ -15,27 +16,43 @@ type Props={age:number;ageKey:string};
 function Help({message}:{message:string}){return <p className="pw2-library-note">{message}</p>}
 function Header({eyebrow,title,subtitle}:{eyebrow:string,title:string,subtitle:string}){return <header className="pw2-library-header"><span className="pw2-overline">{eyebrow}</span><h1>{title}</h1><p>{subtitle}</p></header>}
 export function PatternLibrary({age,ageKey}:Props){
- const [chosen,setChosen]=useState(()=>monthlyRotation(PATTERNS,new Date(),age)[0].id),[color,setColor]=useState(PALETTE[0]),[nonce,setNonce]=useState(0),[showGuide,setShowGuide]=useState(true);
+ const [chosen,setChosen]=useState(()=>monthlyRotation(PATTERNS,new Date(),age)[0].id);
+ const [showGuide,setShowGuide]=useState(true);
  const [search,setSearch]=useState("");
  if(age<0||age>3)return null;
- const selected=PATTERNS.find(p=>p.id===chosen)||PATTERNS[0];
- const preview=artwork(selected,age,false);
+ const selected=PATTERNS.find(p=>p.id===chosen)||null;
  const gallery=monthlyRotation(PATTERNS,new Date(),age).filter(p=>p.title.toLocaleLowerCase("el").includes(search.toLocaleLowerCase("el")));
- const onPaint=(e:MouseEvent<HTMLDivElement>)=>{
-  const el=e.target as Element;
-  const s=el.closest?.(".a,.b,.c,.d") as SVGElement|null;
-  if(s){s.style.fill=color;s.style.transition="fill .15s";}
- };
- const svgPrintable=()=>printableSvg(selected.title,preview);
  return <div className="pw2-library">
-  <Header eyebrow={"20 ΠΡΩΤΟΤΥΠΑ ΣΧΕΔΙΑ · "+NAME[age]+" ΕΤΩΝ"} title="Το Μαγικό Ατελιέ" subtitle="Διάλεξε σχέδιο, χρωμάτισε στην οθόνη ή τύπωσε το περίγραμμα σε A4. Για ηλικίες 2–3 τα περιγράμματα είναι μεγαλύτερα και πιο χοντρά."/>
-  <MonthlyStrip type="ζωγραφικής"/><div className="pw2-library-bar"><label htmlFor="pw2-pattern-search">Βρες σχέδιο:</label><input id="pw2-pattern-search" type="search" placeholder="Λουλούδι, Πισιπούκ, ζωάκι…" value={search} onChange={e=>setSearch(e.target.value)}/><span>{gallery.length} / {PATTERNS.length}</span></div>
-  <div className="pw2-pattern-gallery">{gallery.map(p=><button type="button" key={p.id} className={chosen===p.id?"selected":""} aria-pressed={chosen===p.id} onClick={()=>{setChosen(p.id);setNonce(n=>n+1)}}><img loading="lazy" src={artworkDataUrl(p,age,true)} alt=""/><span>{p.title}</span></button>)}</div>
-  <div className="pw2-paint-layout"><div className="pw2-library-editor"><h2>{selected.title}</h2><div className="pw2-library-palette" aria-label="Επιλογή χρώματος">{PALETTE.map(c=><button type="button" key={c} aria-label={"Χρώμα "+c} aria-pressed={color===c} onClick={()=>setColor(c)} style={{backgroundColor:c}}/>)}</div>
-  <div key={selected.id+"-"+nonce} className="pw2-pattern-live" role="group" aria-label="Άγγιξε ένα μέρος του σχεδίου για να το χρωματίσεις" onClick={onPaint} dangerouslySetInnerHTML={{__html:preview}}/>
-  <div className="pw2-library-actions"><button type="button" className="pw2-outline" onClick={()=>setNonce(n=>n+1)}><RotateCcw size={18}/> Καθαρό σχέδιο</button><button className="pw2-main-button" type="button" onClick={()=>saveSvg(svgPrintable(),"pisipouk-"+selected.id+"-a4.svg")}><Download size={18}/> Α4 SVG</button><button className="pw2-outline" type="button" onClick={()=>printTemplate(selected.title,preview)}><Printer size={18}/> PDF / Εκτύπωση</button></div></div>
-  <div className="pw2-pattern-guide"><h2>Έμπνευση & χρώματα</h2><button type="button" onClick={()=>setShowGuide(v=>!v)} aria-pressed={showGuide}>{showGuide?"Κρύψε":"Δείξε"} το παράδειγμα</button>{showGuide&&<img src={artworkDataUrl(selected,age,true)} alt={"Πολύχρωμο παράδειγμα: "+selected.title}/>}<p>Η ζωγραφιά του παιδιού μπορεί να έχει οποιοδήποτε χρώμα. Δεν υπάρχει σωστό και λάθος!</p><Link to={AGE_ORIG+ageKey} className="pw2-text-link">Ο κόσμος μου <ArrowLeft size={17}/></Link></div></div>
- <Help message="Το περιεχόμενο βασίζεται σε 20 πρωτότυπα διανυσματικά σχέδια του ξεχωριστού playpacks branch. Είναι 20 σχέδια με ηλικιακά διαφοροποιημένη γραμμή, όχι 80 διαφορετικές εικονογραφήσεις. Χρειάζονται τελικό εικαστικό και παιδαγωγικό QA."/>
+  <Header eyebrow={"20 ΠΡΩΤΟΤΥΠΑ ΣΧΕΔΙΑ · "+NAME[age]+" ΕΤΩΝ"} title="Το Μαγικό Ατελιέ"
+   subtitle="Τώρα ζωγραφίζεις πραγματικά με το ποντίκι, το δάχτυλο ή τη γραφίδα: μολύβι, μαρκαδόρο, γόμα και γέμισμα χρώματος. Αποθήκευσε και εκτύπωσε το δικό σου σχέδιο."/>
+  <MonthlyStrip type="ζωγραφικής"/>
+  <div className="pw2-library-bar"><label htmlFor="pw2-pattern-search">Βρες σχέδιο:</label>
+   <input id="pw2-pattern-search" type="search" placeholder="Λουλούδι, Πισιπούκ, ζωάκι…" value={search} onChange={e=>setSearch(e.target.value)}/>
+   <span>{gallery.length} πρωτότυπα σχέδια</span>
+  </div>
+  <div className="pw2-pattern-gallery">
+   <button type="button" className={chosen==="free"?"selected":"pw2-free-drawing"} aria-pressed={chosen==="free"} onClick={()=>setChosen("free")}>
+    <span className="pw2-blank-paper" aria-hidden="true">✏️</span><span>Κενός καμβάς — ζωγραφίζω ελεύθερα</span>
+   </button>
+   {gallery.map(p=><button type="button" key={p.id} className={chosen===p.id?"selected":""} aria-pressed={chosen===p.id} onClick={()=>setChosen(p.id)}>
+    <img loading="lazy" src={artworkDataUrl(p,age,true)} alt=""/><span>{p.title}</span>
+   </button>)}
+  </div>
+  <div className="pw2-paint-layout">
+   <div className="pw2-library-editor">
+    <h2>{selected?.title||"Η ελεύθερη ζωγραφιά μου"}</h2>
+    <DrawingWorkspace pattern={selected} age={age}/>
+   </div>
+   <div className="pw2-pattern-guide">
+    <h2>Η δική σου δημιουργία</h2>
+    <button type="button" onClick={()=>setShowGuide(v=>!v)} aria-pressed={showGuide}>{showGuide?"Κρύψε":"Δείξε"} το παράδειγμα</button>
+    {selected&&showGuide&&<img src={artworkDataUrl(selected,age,true)} alt={"Χρωματιστό παράδειγμα: "+selected.title}/>}
+    {!selected&&<div className="pw2-free-suggestion">🌈 🐻 🎨<p>Εδώ μπορείς να ζωγραφίσεις ό,τι φαντάζεσαι!</p></div>}
+    <p>Επίλεξε μολύβι ή μαρκαδόρο, κράτα πατημένο το ποντίκι και σύρε. Δοκίμασε και γέμισμα στα περιγράμματα. Δεν υπάρχει σωστό ή λάθος.</p>
+    <Link to={AGE_ORIG+ageKey} className="pw2-text-link">Ο κόσμος μου <ArrowLeft size={17}/></Link>
+   </div>
+  </div>
+  <Help message="20 πρωτότυπα διανυσματικά πατρόν και λευκός καμβάς. Τα εργαλεία ζωγραφικής λειτουργούν στον browser χωρίς αποστολή προσωπικών δεδομένων. Πριν από production παραμένει απαραίτητος ο έλεγχος κινητών, εκτύπωσης και εργονομίας."/>
  </div>;
 }
 export function CraftLibrary({age,ageKey}:Props){
