@@ -5,3 +5,8 @@
 .pgc-page-buttons{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:17px}.pgc-page-buttons button{min-height:55px;border:2px solid #c8deea;border-radius:16px;padding:10px 18px;background:#fff;font-weight:850;color:#285d80}.pgc-page-buttons button:disabled{opacity:.4;cursor:default}.pgc-page-buttons span{color:#607889;font-weight:850;font-size:.85rem}
 @media(max-width:780px){.pgc-tabs{gap:5px}.pgc-tabs button{flex-direction:column;gap:3px;font-size:.74rem;min-height:64px;padding:6px}.pgc-grid{grid-template-columns:1fr}.pgc-card{grid-template-columns:65px minmax(0,1fr) 16px;min-height:105px;padding:10px}.pgc-card-art{width:60px;height:60px;font-size:2.3rem}.pgc-card>div>span{font-size:.72rem}.pgc-page-buttons button{font-size:.78rem;padding:9px}.pgc-page-buttons span{font-size:.72rem}}
 @media(prefers-reduced-motion:reduce){.pgc-catalog *{transition:none!important}}
+
+.pgc-today{display:flex;align-items:center;justify-content:space-between;gap:15px;background:linear-gradient(110deg,#ecf8e5,#e5f1ff);border:2px solid #d5e8da;border-radius:18px;padding:14px;margin:16px 0}
+.pgc-today>div:first-child{display:flex;flex-direction:column;gap:5px}.pgc-today>div:first-child span{font-size:.72rem;letter-spacing:.08em;font-weight:900;color:#53816b}.pgc-today>div:first-child strong{font-size:1.1rem}
+.pgc-today-games{display:flex;gap:7px;flex-wrap:wrap}.pgc-today-games a{display:inline-flex;align-items:center;gap:7px;min-height:46px;background:#fff;color:#2c668b!important;border:2px solid #cfdfeb;border-radius:13px;padding:9px 12px;font-size:.78rem;font-weight:850}
+@media(max-width:740px){.pgc-today{flex-direction:column;align-items:stretch}.pgc-today-games{flex-direction:column}.pgc-today-games a{justify-content:space-between}}
