@@ -112,3 +112,10 @@
 .pw2-monthly-banner span{font-weight:850}.pw2-monthly-banner small{max-width:440px;color:#365e6d;line-height:1.5}
 .p2-monthly-admin-link{display:flex;align-items:center;justify-content:center;gap:11px;border:2px solid #b4d3e7;background:#e8f4ff;border-radius:17px;min-height:60px;margin:22px auto;padding:12px 19px;font-weight:900;color:#23619a!important;max-width:690px}
 @media(max-width:740px){.pw2-monthly-banner{padding:12px;flex-direction:column;align-items:flex-start}.pw2-monthly-banner small{font-size:.78rem}.p2-monthly-admin-link{font-size:.83rem}}
+
+.pw2-spatial-banner{display:flex;align-items:center;justify-content:space-between;gap:15px;background:linear-gradient(100deg,#e4f2e5,#e9efff);border-radius:23px;border:3px solid white;box-shadow:0 9px 22px #2f506019;padding:16px 21px;margin:18px 0}
+.pw2-spatial-banner>div{display:flex;align-items:center;gap:12px}
+.pw2-spatial-banner>div>svg{width:37px;height:37px;flex:0 0 auto;color:#397980}
+.pw2-spatial-banner span{display:flex;flex-direction:column;gap:5px}.pw2-spatial-banner span strong{font-size:1.15rem;font-weight:900}.pw2-spatial-banner span small{font-size:.82rem;line-height:1.4;color:#557985}
+.pw2-spatial-banner .pw2-main-button{flex:0 0 auto}
+@media(max-width:750px){.pw2-spatial-banner{padding:13px;flex-direction:column;align-items:stretch}.pw2-spatial-banner .pw2-main-button{width:100%}}
