@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { shuffle } from "./random";
+import { differentOrder } from "./random";
 import { PATTERNS, artworkDataUrl } from "./studioContent";
 import {
   Check,
@@ -128,8 +128,14 @@ export function Game({
     osc.stop(ctx.currentTime + 0.4);
   };
   const seq = activeTask.sequence || [];
-  // Build card and choice order once per round, not again on each component render.
-  const displayOptions = useMemo(() => shuffle([...activeTask.options]), [activeTask, round]);
+  const previousChoices = useRef<string[]>([]);
+  const previousDeck = useRef<number[]>([]);
+  // Stable within one round; a new round is guaranteed to have a different layout.
+  const displayOptions = useMemo(() => {
+    const next = differentOrder(activeTask.options,previousChoices.current);
+    previousChoices.current = next;
+    return next;
+  }, [activeTask, round]);
   const answerValue = activeTask.options[activeTask.answer];
   const select = (v: string) => {
     if (done) return;
@@ -143,12 +149,13 @@ export function Game({
       setMessage("Ας το ξαναδοκιμάσουμε από την αρχή.");
     }
   };
-  const deck = useMemo(
-    () => shuffle(activeTask.options.flatMap((v, i) => [
-      { v, key: i * 2 }, { v, key: i * 2 + 1 },
-    ])),
-    [activeTask, round],
-  );
+  const deckIndices = useMemo(() => {
+    const cards = activeTask.options.flatMap((_,i) => [i*2,i*2+1]);
+    const next = differentOrder(cards,previousDeck.current);
+    previousDeck.current = next;
+    return next;
+  }, [activeTask, round]);
+  const deck = deckIndices.map(id => ({v:activeTask.options[Math.floor(id/2)],key:id}));
   const flip = (i: number) => {
     if (busy.current || open.includes(i) || matched.includes(deck[i].v) || done)
       return;
