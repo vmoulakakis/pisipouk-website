@@ -1,0 +1,50 @@
+name: PISIPOUK V2 Staging Quality Gate
+
+on:
+  push:
+    branches:
+      - design/pisipouk-world-v2-ux-20261015
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies with locked versions
+        run: npm ci
+      - name: Compile full website without deploying
+        run: npm run build
+      - name: Install Chromium for preschool tests
+        run: npx playwright install --with-deps chromium
+      - name: Start isolated local website for staging tests
+        shell: bash
+        run: |
+          npm run dev -- --host 127.0.0.1 --port 5173 >/tmp/pisipouk-v2-preview.log 2>&1 &
+          for i in {1..40}; do
+            if curl -fsS http://127.0.0.1:5173/pisipouk-v2-staging/ >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/pisipouk-v2-preview.log
+          exit 1
+      - name: Verify dates, world-day calendar, geographic adaptation and mouse painting
+        env:
+          PISIPOUK_PREVIEW_URL: http://127.0.0.1:5173
+        run: npx playwright test tests/preschool/v2-awareness-calendar.spec.ts tests/preschool/v2-drawing-studio.spec.ts --workers=2 --reporter=line
+      - name: Keep failed test evidence
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: pisipouk-v2-test-results
+          path: test-results/
+          retention-days: 7
