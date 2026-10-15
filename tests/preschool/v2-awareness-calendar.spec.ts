@@ -54,8 +54,7 @@ test.describe("Pisipouk contextual calendar and awareness",()=>{
  test("all age-specific craft/story/pattern libraries retain full catalogs",async({page})=>{
   for(const kind of ["patterns","crafts","stories"]){
    await page.goto(base+"/ages/4-5/"+kind);
-   const count=await page.locator(".pw2-pattern-gallery button").count();
-   expect(count).toBe(kind==="patterns"?21:20);
+   await expect(page.locator(".pw2-pattern-gallery button")).toHaveCount(kind==="patterns"?21:20);
    await expect(page.locator(".pwc-ribbon")).toBeVisible();
   }
  });
