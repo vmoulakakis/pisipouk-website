@@ -1,4 +1,5 @@
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
+import { shuffle } from "./random";
 import {
   Leaf,
   Flower2,
@@ -32,6 +33,7 @@ export function Playground({
   onComplete: (id: string) => void;
 }) {
   const [game, setGame] = useState<"sort" | "puzzle">("sort"),
+    [round, setRound] = useState(0),
     [selected, setSelected] = useState<string | null>(null),
     [sorted, setSorted] = useState<string[]>([]),
     [placed, setPlaced] = useState<number[]>([]),
@@ -42,9 +44,10 @@ export function Playground({
     [busy, setBusy] = useState(false);
   const bins = useRef<Record<string, HTMLButtonElement | null>>({});
   const drag = useRef<string | null>(null);
-  const items = ITEMS.slice(0, [2, 4, 6, 8][age]),
-    n = age < 2 ? 2 : 3,
-    total = n * n;
+  const items = useMemo(() => shuffle(ITEMS).slice(0, [2, 4, 6, 8][age]), [age, round]);
+  const n = age < 2 ? 2 : 3, total = n * n;
+  const order = useMemo(() => shuffle(Array.from({ length: total }, (_, i) => i)), [total, round]);
+  const puzzleImage = round % 2 === 0 ? "/preschool-world/village-mobile.webp" : "/preschool-world/village.webp";
   const solveSort = (name: string, kind: string) => {
     const item = items.find((i) => i.name === name);
     if (item?.kind === kind) {
@@ -59,20 +62,20 @@ export function Playground({
       if (next.length === items.length) onComplete(`sort-${age}`);
     } else setMessage("Κοίτα πάλι. Το αντικείμενο είναι φυτό ή ζώο;");
   };
-  const reset = () => {
+  const reset = (fresh = false) => {
     setSorted([]);
     setPlaced([]);
     setSelected(null);
     setPiece(null);
+    if (fresh) setRound((r) => r + 1);
     setMessage(
       game === "sort"
         ? "Διάλεξε ένα αντικείμενο και μετά το καλάθι του."
         : "Διάλεξε ένα κομμάτι και τη θέση του. Η μικρή εικόνα σε βοηθά.",
     );
   };
-  const order = Array.from({ length: total }, (_, i) => total - 1 - i);
   const tile = (i: number) => ({
-    backgroundImage: "url(/preschool-world/village-mobile.webp)",
+    backgroundImage: `url(${puzzleImage})`,
     backgroundSize: `${n * 100}% ${n * 100}%`,
     backgroundPosition: `${((i % n) / (n - 1)) * 100}% ${(Math.floor(i / n) / (n - 1)) * 100}%`,
   });
@@ -88,6 +91,7 @@ export function Playground({
           aria-pressed={game === "sort"}
           onClick={() => {
             setGame("sort");
+            reset(false);
             setMessage("Διάλεξε ένα αντικείμενο και μετά το καλάθι του.");
           }}
         >
@@ -97,6 +101,7 @@ export function Playground({
           aria-pressed={game === "puzzle"}
           onClick={() => {
             setGame("puzzle");
+            reset(false);
             setMessage(
               "Διάλεξε ένα κομμάτι και τη θέση του. Η μικρή εικόνα σε βοηθά.",
             );
@@ -177,7 +182,7 @@ export function Playground({
             <h3>Φτιάχνω το χωριό μας.</h3>
             <img
               className="pw-puzzle-reference"
-              src="/preschool-world/village-mobile.webp"
+              src={puzzleImage}
               alt="Η ολοκληρωμένη εικόνα του χωριού για βοήθεια"
             />
             <div
@@ -239,10 +244,10 @@ export function Playground({
         {message}
       </p>
       <div className="pw-tools">
-        <button onClick={reset}>
-          <RotateCcw />
-          Παίζω ξανά
+        <button onClick={() => reset(true)}>
+          <RotateCcw /> Παίζω ξανά · Νέος γύρος
         </button>
+        <button onClick={() => reset(false)}>↶ Ξανά το ίδιο</button>
         <button
           disabled={busy}
           onClick={async () => {
