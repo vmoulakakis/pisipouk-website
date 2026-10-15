@@ -36,7 +36,7 @@ export function LearningCalendar(){
   <div className="pwc-layout">
    <section className="pwc-calendar-panel" aria-label="Ημερολόγιο">
     <div className="pwc-cal-navigation"><button type="button" onClick={()=>monthJump(-1)} aria-label="Προηγούμενος μήνας">‹</button><h2>{monthLabel}</h2><button type="button" onClick={()=>monthJump(1)} aria-label="Επόμενος μήνας">›</button></div>
-    <div className="pwc-grid" role="grid" aria-label="Ημερολόγιο "+monthLabel}>
+    <div className="pwc-grid" role="grid" aria-label={"Ημερολόγιο "+monthLabel}}>
      {weekdays.map(x=><span className="pwc-weekday" key={x} role="columnheader">{x}</span>)}
      {Array.from({length:mondayOffset},(_,i)=><span key={"blank"+i} aria-hidden="true"/>)}
      {Array.from({length:daysInMonth},(_,i)=>{const date=shortDate(year,month,i+1),todayEvents=events.filter(e=>e.date===date),first=todayEvents[0];return <button role="gridcell" key={date} type="button" onClick={()=>setSelected(date)} aria-label={(i+1)+" "+monthLabel+(todayEvents.length?": "+todayEvents.map(e=>e.name).join(", "):"")} aria-selected={day===date} className={(day===date?"chosen ":"")+(date===today?"now ":"")+(first?"has-event":"")}>
