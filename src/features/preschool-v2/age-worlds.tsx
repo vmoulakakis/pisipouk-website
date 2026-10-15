@@ -1,5 +1,5 @@
 import { Link, Outlet } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, BookOpen, Gamepad2, Home, Palette, Scissors, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, BookOpen, Gamepad2, Home, Palette, Scissors, Compass, Sparkles } from "lucide-react";
 import { StageAgeGame } from "./age-games";
 import {monthlyPack} from "./games/curriculum";
 import {GameCatalog} from "./games/GameCatalog";
@@ -32,6 +32,7 @@ export function AgeShell({ageKey}:{ageKey:string}){
    <Link to={BASE+ageKey+"/patterns"} activeProps={{className:"is-active"}}><Palette/> Ζωγραφιές A4</Link>
    <Link to={BASE+ageKey+"/crafts"} activeProps={{className:"is-active"}}><Scissors/> Κατασκευές</Link>
    <Link to={BASE+ageKey+"/stories"} activeProps={{className:"is-active"}}><BookOpen/> Ιστορίες</Link>
+   <Link to={BASE+ageKey+"/explore"} activeProps={{className:"is-active"}}><Compass/> Εξερευνώ</Link>
   </nav>
   <ContextRibbon age={a}/>
   <Outlet/>
@@ -43,6 +44,7 @@ export function AgeWorldHome({ageKey}:{ageKey:string}){
  return <div className="pw2-home">
   <div className="pw2-world-hero"><div><span className="pw2-overline">Ο ΔΙΚΟΣ ΜΟΥ ΚΟΣΜΟΣ · {ageKey.replace("-","–")} ΕΤΩΝ</span><h1>{AGE_NAMES[a]}</h1><p>Μαθαίνουμε μέσα από το παιχνίδι, την τέχνη, τα συναισθήματα και την περιέργεια!</p><Link className="pw2-main-button" to={url+"/game"}>Έλα να παίξουμε! <ArrowRight/></Link></div><div className="pw2-world-hero-art"><span>{AGE_SYMBOLS[a]}</span><img src="/preschool-world/bear.webp" alt="Ο Πισιπούκ σε περιμένει"/></div></div>
   <div className="pw2-monthly-banner" style={{background:pack.color}}><span>{pack.icon} <strong>{pack.name} {pack.key.split("-")[0]}</strong> · {pack.theme}</span><small>Μηνιαία θεματολογία για όλες τις δραστηριότητες. Η προηγούμενη βιβλιοθήκη διατηρείται.</small></div><div className="pw2-physics-banner"><div><span className="pw2-overline">ΝΕΟΣ ΜΗΧΑΝΙΣΜΟΣ ΠΑΙΧΝΙΔΙΩΝ</span><strong>Ο κήπος της βαρύτητας</strong><p>Δοκίμασε πραγματική φυσική κίνησης με Phaser + Matter.js.</p></div><Link to={url+"/physics"} className="pw2-main-button">Παίζω με τη φυσική <ArrowRight size={18}/></Link></div><div className="pw2-portal-grid"><Link to={url+"/game"}><span>🎮</span><strong>Παίζω</strong><small>Πραγματικό παιχνίδι</small></Link><Link to={url+"/patterns"}><span>🖍️</span><strong>Ζωγραφίζω</strong><small>Πατρόν για εκτύπωση</small></Link><Link to={url+"/crafts"}><span>✂️</span><strong>Κατασκευάζω</strong><small>4 βήματα & υλικά</small></Link><Link to={url+"/stories"}><span>📚</span><strong>Ακούω ιστορίες</strong><small>Σελίδες με αφήγηση</small></Link></div>
+  <div className="pw2-spatial-banner"><div><Compass size={27}/><span><strong>Ανακαλύπτω την Ελλάδα</strong><small>Περιοχές, τοπία, πάνω–κάτω, δεξιά–αριστερά. Ένα πραγματικό παιχνίδι χωρικής εξερεύνησης.</small></span></div><Link to={url+"/explore"} className="pw2-main-button">Παίζω με τον χάρτη <ArrowRight size={18}/></Link></div>
   <GameCatalog age={a} ageKey={ageKey}/>
  </div>
 }
