@@ -40,7 +40,7 @@ test.describe("Pisipouk contextual calendar and awareness",()=>{
   const months=(2026-Number(now.slice(0,4)))*12+(10-Number(now.slice(5,7)));
   const buttonName=months>=0?"Επόμενος μήνας":"Προηγούμενος μήνας";
   for(let i=0;i<Math.abs(months);i++)await page.getByRole("button",{name:buttonName}).click();
-  await page.getByRole("button",{name:/16 .*Παγκόσμια Ημέρα Διατροφής/}).click();
+  await page.getByRole("gridcell",{name:/16 .*Παγκόσμια Ημέρα Διατροφής/}).click();
   await expect(page.locator(".pwc-focus h2")).toContainText("Παγκόσμια Ημέρα Διατροφής");
  });
  test("age world surfaces holiday-awareness ribbon and spatial experience",async({page})=>{
