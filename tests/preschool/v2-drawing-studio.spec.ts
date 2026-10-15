@@ -37,8 +37,12 @@ test.describe("PISIPOUK mouse pencil and marker drawing studio",()=>{
   await page.mouse.move(x+67,y,{steps:9});await page.mouse.up();
   await expect(stage.locator('path[data-test-drawn-stroke]')).toHaveAttribute("stroke-opacity","0.48");
   await page.getByRole("button",{name:/Γόμα/}).click();
-  await page.mouse.move(x+22,y);await page.mouse.down();
-  await page.mouse.move(x+45,y,{steps:5});await page.mouse.up();
+  await stage.scrollIntoViewIfNeeded();
+  const eraserBox=await stage.boundingBox();
+  expect(eraserBox).not.toBeNull();
+  const ex=eraserBox!.x+eraserBox!.width*.42,ey=eraserBox!.y+eraserBox!.height*.52;
+  await page.mouse.move(ex+22,ey);await page.mouse.down();
+  await page.mouse.move(ex+45,ey,{steps:5});await page.mouse.up();
   await expect(stage.locator('[data-test-drawn-stroke="true"]')).toHaveCount(0);
  });
  test("selected pattern remains in view when switching to the free drawing page and back",async({page})=>{
