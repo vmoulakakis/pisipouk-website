@@ -2,6 +2,8 @@ import {useEffect,useMemo,useRef,useState,type MouseEvent,type ReactNode} from "
 import {Link} from "@tanstack/react-router";
 import {ArrowLeft,ArrowRight,Heart,RotateCcw,Volume2,BookOpen} from "lucide-react";
 import {gamesForAge,makeGame,monthlyPack,DEVELOPMENT_NOTES} from "./curriculum";
+import {dayContext} from "../context/awareness";
+import {useLearningContext} from "../context/useLearningContext";
 import "./learning-engine.css";
 
 type Props={age:number;ageKey:string;index:number};
@@ -74,14 +76,16 @@ function Mechanic({age,index,month,round}:{age:number;index:number;month:number;
  }
 }
 export function EducationalGame({age,ageKey,index}:Props){
- const monthly=monthlyPack(),game=makeGame(age,index),[round,setRound]=useState(0);
+ const {today,place}=useLearningContext();
+ const context=dayContext(today,place);
+ const monthly=monthlyPack(new Date(today+"T12:00:00")),game=makeGame(age,index),[round,setRound]=useState(0);
  if(age<0||age>3||index<1||index>19)return <p>Δεν βρέθηκε παιχνίδι.</p>;
  return <section className="pgx-game" style={{"--pgx-accent":monthly.color} as React.CSSProperties}>
   <div className="pgx-breadcrumb"><Link to={"/pisipouk-v2-staging/ages/"+ageKey}><ArrowLeft size={18}/> Ο κόσμος μου</Link><span>Παιχνίδι {index+1} / 20</span></div>
-  <div className="pgx-heading"><div><span className="pw2-overline">{monthly.icon} {monthly.name} · {monthly.theme}</span><h1>{game.title}</h1><p>{game.objective}</p><p className="pgx-psychology">🌱 {game.psychology}</p><small>{game.duration} · {age===0?"Με ενήλικο":"Προαιρετικά μαζί με ενήλικο"}</small></div><img src="/preschool-world/bear.webp" alt="Πισιπούκ"/></div>
-  <div className="pgx-playboard" key={monthly.key+"-"+age+"-"+index+"-"+round}><Mechanic age={age} index={index} month={new Date().getMonth()} round={round}/></div>
+  <div className="pgx-heading"><div><span className="pw2-overline">{context.featured?.icon||monthly.icon} {context.featured?.name||monthly.name} · {context.season} · {context.region.name}</span><h1>{game.title}</h1><p>{game.objective}</p><p className="pgx-psychology">🌱 {game.psychology}</p><small>{game.duration} · {age===0?"Με ενήλικο":"Προαιρετικά μαζί με ενήλικο"}</small></div><img src="/preschool-world/bear.webp" alt="Πισιπούκ"/></div>
+  <div className="pgx-playboard" key={monthly.key+"-"+age+"-"+index+"-"+round}><Mechanic age={age} index={index} month={Number(today.slice(5,7))-1} round={round}/></div>
   <div className="pgx-bottom"><button type="button" onClick={()=>setRound(v=>v+1)}><RotateCcw size={18}/> Ξανά / νέος γύρος</button><span>{DEVELOPMENT_NOTES[age]}</span><Link to={"/pisipouk-v2-staging/ages/"+ageKey+"/play/"+(index===19?1:index+1)}>Επόμενο <ArrowRight size={18}/></Link></div>
-  <p className="pgx-offline"><BookOpen size={19}/><span><b>Χωρίς οθόνη:</b> {monthly.offline}</span></p>
+  <p className="pgx-offline"><BookOpen size={19}/><span><b>Χωρίς οθόνη · {context.region.name}:</b> {context.offline}</span></p>
   <p className="pgx-qa">Λειτουργικό πρωτότυπο παιχνιδιού. Τα τελικά HD assets, επαγγελματικά Rive animations και ο εκπαιδευτικός έλεγχος παραμένουν σε εκκρεμότητα.</p>
  </section>;
 }
