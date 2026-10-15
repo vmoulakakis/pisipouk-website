@@ -1,7 +1,7 @@
 import { Link, Outlet } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight, BookOpen, Gamepad2, Home, Palette, Scissors, Sparkles } from "lucide-react";
 import { StageAgeGame } from "./age-games";
-import { StagePatterns, StageCrafts, StageAgeStory } from "./age-printables";
+import { PatternLibrary, CraftLibrary, StoryLibrary } from "./library/LibraryViews";
 import "./age-worlds.css";
 
 export const AGE_CODES=["2-3","3-4","4-5","5-6"] as const;
@@ -48,6 +48,6 @@ export function AgeWorldHome({ageKey}:{ageKey:string}){
  </div>
 }
 export function AgeGameRoute({ageKey}:{ageKey:string}){return <StageAgeGame age={ageIndex(ageKey)} ageKey={ageKey}/>}
-export function AgePatternsRoute({ageKey}:{ageKey:string}){return <StagePatterns age={ageIndex(ageKey)} ageKey={ageKey}/>}
-export function AgeCraftsRoute({ageKey}:{ageKey:string}){return <StageCrafts age={ageIndex(ageKey)} ageKey={ageKey}/>}
-export function AgeStoriesRoute({ageKey}:{ageKey:string}){return <StageAgeStory age={ageIndex(ageKey)} ageKey={ageKey}/>}
+export function AgePatternsRoute({ageKey}:{ageKey:string}){return <PatternLibrary age={ageIndex(ageKey)} ageKey={ageKey}/>}
+export function AgeCraftsRoute({ageKey}:{ageKey:string}){return <CraftLibrary age={ageIndex(ageKey)} ageKey={ageKey}/>}
+export function AgeStoriesRoute({ageKey}:{ageKey:string}){return <StoryLibrary age={ageIndex(ageKey)} ageKey={ageKey}/>}
