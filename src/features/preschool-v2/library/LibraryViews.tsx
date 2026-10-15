@@ -6,6 +6,8 @@ import { printableSvg, saveSvg, printTemplate } from "./PatternStudio";
 import { STORIES } from "./story-data";
 import { DrawingWorkspace } from "./DrawingWorkspace";
 import {monthlyPack,monthlyRotation} from "../games/curriculum";
+import {curateItems,dayContext} from "../context/awareness";
+import {useLearningContext} from "../context/useLearningContext";
 import "./library.css";
 
 const NAME=["2–3","3–4","4–5","5–6"];
@@ -19,9 +21,10 @@ export function PatternLibrary({age,ageKey}:Props){
  const [chosen,setChosen]=useState(()=>monthlyRotation(PATTERNS,new Date(),age)[0].id);
  const [showGuide,setShowGuide]=useState(true);
  const [search,setSearch]=useState("");
+ const {today,place}=useLearningContext();
  if(age<0||age>3)return null;
  const selected=PATTERNS.find(p=>p.id===chosen)||null;
- const gallery=monthlyRotation(PATTERNS,new Date(),age).filter(p=>p.title.toLocaleLowerCase("el").includes(search.toLocaleLowerCase("el")));
+ const gallery=curateItems(monthlyRotation(PATTERNS,new Date(today+"T12:00:00"),age),today,place).filter(p=>p.title.toLocaleLowerCase("el").includes(search.toLocaleLowerCase("el")));
  return <div className="pw2-library">
   <Header eyebrow={"20 ΠΡΩΤΟΤΥΠΑ ΣΧΕΔΙΑ · "+NAME[age]+" ΕΤΩΝ"} title="Το Μαγικό Ατελιέ"
    subtitle="Τώρα ζωγραφίζεις πραγματικά με το ποντίκι, το δάχτυλο ή τη γραφίδα: μολύβι, μαρκαδόρο, γόμα και γέμισμα χρώματος. Αποθήκευσε και εκτύπωσε το δικό σου σχέδιο."/>
@@ -57,11 +60,12 @@ export function PatternLibrary({age,ageKey}:Props){
 }
 export function CraftLibrary({age,ageKey}:Props){
  const [chosen,setChosen]=useState(()=>monthlyRotation(CRAFTS,new Date(),age)[0].id),[step,setStep]=useState(0);
+ const {today,place}=useLearningContext();
  if(age<0||age>3)return null;
  const item=CRAFTS.find(c=>c.id===chosen)||CRAFTS[0],art=PATTERNS.find(p=>p.id===item.pattern)||PATTERNS[0];
  const outline=artwork(art,age,false);
  return <div className="pw2-library"><Header eyebrow={"20 ΚΑΤΑΣΚΕΥΕΣ · "+NAME[age]+" ΕΤΩΝ"} title="Εργαστήρι δημιουργίας" subtitle="Διάλεξε κατασκευή, δες τα υλικά, ακολούθησε τέσσερα βήματα και τύπωσε πρωτότυπο πατρόν. Όλες οι κατασκευές γίνονται με επίβλεψη ενηλίκου."/>
- <MonthlyStrip type="κατασκευών"/><div className="pw2-pattern-gallery">{monthlyRotation(CRAFTS,new Date(),age).map(c=>{const p=PATTERNS.find(x=>x.id===c.pattern)||PATTERNS[0];return <button type="button" aria-pressed={chosen===c.id} className={chosen===c.id?"selected":""} key={c.id} onClick={()=>{setChosen(c.id);setStep(0)}}><img src={artworkDataUrl(p,age,true)} loading="lazy" alt=""/><span>{c.title}</span></button>})}</div>
+ <MonthlyStrip type="κατασκευών"/><div className="pw2-pattern-gallery">{curateItems(monthlyRotation(CRAFTS,new Date(today+"T12:00:00"),age),today,place).map(c=>{const p=PATTERNS.find(x=>x.id===c.pattern)||PATTERNS[0];return <button type="button" aria-pressed={chosen===c.id} className={chosen===c.id?"selected":""} key={c.id} onClick={()=>{setChosen(c.id);setStep(0)}}><img src={artworkDataUrl(p,age,true)} loading="lazy" alt=""/><span>{c.title}</span></button>})}</div>
  <div className="pw2-craft-expanded"><div className="pw2-craft-art"><img src={artworkDataUrl(art,age,true)} alt={"Ενδεικτική εικονογράφηση της κατασκευής "+item.title}/><p>Εικονογραφημένο θέμα, όχι φωτογραφία πραγματικού τελικού αποτελέσματος.</p></div>
  <div className="pw2-craft-how"><span className="pw2-overline">{item.minutes} ΛΕΠΤΑ · ΜΕ ΕΝΗΛΙΚΟ</span><h2>{item.title}</h2><p><strong>Υλικά:</strong> {item.materials}</p><p className="pw2-step-indicator">Βήμα {step+1} από {item.steps.length}</p><div className="pw2-step-hero"><span>{["🖍️","✂️","🧩","🌟"][step]}</span><strong>{item.steps[step]}</strong></div>
  <div className="pw2-library-actions"><button type="button" className="pw2-outline" disabled={step===0} onClick={()=>setStep(n=>Math.max(0,n-1))}><ChevronLeft/> Προηγούμενο</button><button type="button" className="pw2-main-button" onClick={()=>setStep(n=>(n+1)%item.steps.length)}>{step===3?"Από την αρχή":"Επόμενο"}<ChevronRight/></button></div>
@@ -72,6 +76,7 @@ export function CraftLibrary({age,ageKey}:Props){
 }
 export function StoryLibrary({age,ageKey}:Props){
  const [chosen,setChosen]=useState(()=>STORIES.indexOf(monthlyRotation(STORIES,new Date(),age)[0])),[page,setPage]=useState(0),[ending,setEnding]=useState<number|null>(null);
+ const {today,place}=useLearningContext();
  const story=STORIES[chosen]||STORIES[0];
  const text=page<story.pages.length?story.pages[page]:ending!==null?story.endings[ending]:story.question;
  const picture=PATTERNS[chosen%PATTERNS.length]||PATTERNS[0];
@@ -79,7 +84,7 @@ export function StoryLibrary({age,ageKey}:Props){
  const reset=(index:number)=>{setChosen(index);setPage(0);setEnding(null)};
  if(age<0||age>3)return null;
  return <div className="pw2-library"><Header eyebrow="20 ΠΡΩΤΟΤΥΠΑ ΕΛΛΗΝΙΚΑ ΠΑΡΑΜΥΘΙΑ" title="Η Δεντροβιβλιοθήκη" subtitle="20 ιστορίες με εικονογραφημένη προεπισκόπηση, σελίδες, επιλογές και διαφορετικό τέλος. Με ελληνική φωνή όταν τη διαθέτει η συσκευή."/>
- <MonthlyStrip type="παραμυθιών"/><div className="pw2-pattern-gallery">{monthlyRotation(STORIES,new Date(),age).map((st,i)=><button type="button" key={st.title} className={STORIES.indexOf(st)===chosen?"selected":""} aria-pressed={STORIES.indexOf(st)===chosen} onClick={()=>reset(STORIES.indexOf(st))}><img loading="lazy" src={artworkDataUrl(PATTERNS[i%PATTERNS.length],age,true)} alt=""/><span>{st.title}</span></button>)}</div>
+ <MonthlyStrip type="παραμυθιών"/><div className="pw2-pattern-gallery">{curateItems(monthlyRotation(STORIES,new Date(today+"T12:00:00"),age),today,place).map((st,i)=><button type="button" key={st.title} className={STORIES.indexOf(st)===chosen?"selected":""} aria-pressed={STORIES.indexOf(st)===chosen} onClick={()=>reset(STORIES.indexOf(st))}><img loading="lazy" src={artworkDataUrl(PATTERNS[i%PATTERNS.length],age,true)} alt=""/><span>{st.title}</span></button>)}</div>
  <div className="pw2-story-book"><div className="pw2-story-illustration"><img src={artworkDataUrl(picture,age,true)} alt={"Ενδεικτικό εικαστικό: "+picture.title}/><span className="pw2-overline">Ο ΠΙΣΙΠΟΥΚ ΔΙΑΒΑΖΕΙ</span></div><div className="pw2-story-reader"><span className="pw2-overline">ΙΣΤΟΡΙΑ {chosen+1}/20 · ΣΕΛΙΔΑ {Math.min(page+1,story.pages.length)} / {story.pages.length}</span><h2>{story.title}</h2><p>{text}</p><div className="pw2-library-actions"><button type="button" className="pw2-outline" onClick={speak}><Volume2/> Άκουσέ το</button></div>
  {page>=story.pages.length&&ending===null&&<div className="pw2-story-choices" role="group" aria-label={story.question}>{story.choices.map((c,i)=><button type="button" key={c} className="pw2-main-button" onClick={()=>setEnding(i)}>{c}</button>)}</div>}
  <div className="pw2-library-actions"><button type="button" className="pw2-outline" disabled={page===0&&ending===null} onClick={()=>{if(ending!==null)setEnding(null);else setPage(n=>Math.max(0,n-1))}}><ChevronLeft/> Πίσω</button><button type="button" className="pw2-main-button" onClick={()=>{if(ending!==null||page>=story.pages.length)reset(chosen);else setPage(n=>n+1)}}>{ending!==null?"Ξανά η ιστορία":page>=story.pages.length?"Από την αρχή":"Επόμενη σελίδα"}<ChevronRight/></button></div></div></div>
