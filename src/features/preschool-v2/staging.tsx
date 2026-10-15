@@ -2,7 +2,7 @@ import { Link, Outlet } from "@tanstack/react-router";
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
 import {
-  ArrowLeft, ArrowRight, BookOpen, Check, ChevronLeft, ChevronRight, Compass,
+  ArrowLeft, ArrowRight, BookOpen, Check, ChevronLeft, ChevronRight, Compass, CalendarDays,
   Download, Gamepad2, Hand, Heart, Home, LockKeyhole, Music2, Palette, Printer,
   RotateCcw, Sparkles, Volume2, X, Scissors, Leaf, Undo2, Eraser
 } from "lucide-react";
@@ -176,5 +176,5 @@ export function StageStories() {
   </div>;
 }
 export function StageAdults(){
-  return <div className="p2-adults-screen"><div className="p2-breadcrumb"><Link to={BASE+"/"}><ArrowLeft size={17}/> Χωριό</Link><span> / Χώρος ενηλίκων</span></div><span className="p2-kicker">ΣΧΕΔΙΑΣΜΟΣ ΧΩΡΟΥ ΕΝΗΛΙΚΩΝ</span><h1>Δραστηριότητες & δημιουργίες</h1><p>Ο χώρος ενηλίκων θα είναι ξεχωριστή εμπειρία με πραγματικό έλεγχο πρόσβασης. Αυτή είναι μόνο οπτική προδιαγραφή, όχι διαθέσιμο διαχειριστικό σύστημα.</p><div className="p2-adult-grid"><div><Printer size={28}/><h2>Εκτυπώσιμα</h2><p>A4/A5, ασπρόμαυρα και έγχρωμα.</p><span>Υπό σχεδιασμό</span></div><div><BookOpen size={28}/><h2>Πλάνο εβδομάδας</h2><p>Εγκεκριμένες δραστηριότητες για τέσσερις ηλικίες.</p><span>Υπό σχεδιασμό</span></div><div><LockKeyhole size={28}/><h2>Ασφαλής κοινοποίηση</h2><p>Πραγματικό email με έλεγχο ενηλίκου και συναίνεση.</p><span>Υπό σχεδιασμό</span></div></div><Link to="/pisipouk-v2-staging/adults/monthly" className="p2-monthly-admin-link"><BookOpen size={22}/> Προβολή δωδεκάμηνου εκπαιδευτικού προγράμματος <ArrowRight size={20}/></Link></div>;
+  return <div className="p2-adults-screen"><div className="p2-breadcrumb"><Link to={BASE+"/"}><ArrowLeft size={17}/> Χωριό</Link><span> / Χώρος ενηλίκων</span></div><span className="p2-kicker">ΣΧΕΔΙΑΣΜΟΣ ΧΩΡΟΥ ΕΝΗΛΙΚΩΝ</span><h1>Δραστηριότητες & δημιουργίες</h1><p>Ο χώρος ενηλίκων θα είναι ξεχωριστή εμπειρία με πραγματικό έλεγχο πρόσβασης. Αυτή είναι μόνο οπτική προδιαγραφή, όχι διαθέσιμο διαχειριστικό σύστημα.</p><div className="p2-adult-grid"><div><Printer size={28}/><h2>Εκτυπώσιμα</h2><p>A4/A5, ασπρόμαυρα και έγχρωμα.</p><span>Υπό σχεδιασμό</span></div><div><BookOpen size={28}/><h2>Πλάνο εβδομάδας</h2><p>Εγκεκριμένες δραστηριότητες για τέσσερις ηλικίες.</p><span>Υπό σχεδιασμό</span></div><div><LockKeyhole size={28}/><h2>Ασφαλής κοινοποίηση</h2><p>Πραγματικό email με έλεγχο ενηλίκου και συναίνεση.</p><span>Υπό σχεδιασμό</span></div></div><Link to="/pisipouk-v2-staging/adults/calendar" className="p2-monthly-admin-link"><CalendarDays size={22}/> Ημερολόγιο αργιών, παγκόσμιων ημερών και εποχών <ArrowRight size={20}/></Link><Link to="/pisipouk-v2-staging/adults/monthly" className="p2-monthly-admin-link"><BookOpen size={22}/> Προβολή δωδεκάμηνου εκπαιδευτικού προγράμματος <ArrowRight size={20}/></Link></div>;
 }
