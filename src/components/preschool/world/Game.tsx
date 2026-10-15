@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { shuffle } from "./random";
+import { PATTERNS, artworkDataUrl } from "./studioContent";
 import {
   Check,
   Leaf,
@@ -184,6 +185,14 @@ export function Game({
         </button>
       </div>
       <p className="pw-prompt">{activeTask.prompt}</p>
+      {activeTask.visual && (() => {
+        const illustration = PATTERNS.find(p => p.id === activeTask.visual);
+        return illustration ? <figure className="pw-game-visual">
+          <img src={artworkDataUrl(illustration,2,true)} alt={"Εικονογραφημένο παράδειγμα: "+illustration.title} />
+          <figcaption>Παρατήρησε το σχέδιο και διάλεξε την απάντησή σου.</figcaption>
+        </figure> : null;
+      })()}
+      <div className="pw-game-hint"><strong>Πώς παίζουμε:</strong> 1. Παρατηρούμε την εικόνα · 2. Ακούμε ή διαβάζουμε την ερώτηση · 3. Αγγίζουμε την επιλογή μας. {activeTask.hint || "Δεν υπάρχει χρονόμετρο."}</div>
       {activeTask.mechanic === "count" && (
         <div className="pw-count">
           {Array.from({ length: activeTask.target || 1 }, (_, i) => (
