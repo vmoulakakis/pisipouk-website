@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { Age } from "./content";
 import { PATTERNS, CRAFTS, artwork, artworkDataUrl } from "./studioContent";
 import { printTemplate, printableSvg, saveSvg } from "./PatternStudio";
+import { nextDifferent } from "./random";
 
 export function CraftStudio({age}:{age:Age}) {
  const [selected,setSelected]=useState(CRAFTS[0].id);
@@ -33,6 +34,8 @@ export function CraftStudio({age}:{age:Age}) {
        </div></div>
        <p className="pw-safety">Ασφάλεια: ο ενήλικος χειρίζεται ψαλίδι, κοφτερά εργαλεία και συνδετήρες. Για ηλικίες 2–3 χρησιμοποιούμε αποκλειστικά μεγάλα έτοιμα κομμάτια και κατάλληλα μη τοξικά υλικά.</p>
        <div className="pw-tools">
+         <button type="button" onClick={()=>{setSelected(nextDifferent(CRAFTS.map(c=>c.id),selected));setStep(0);}}>↻ Νέα κατασκευή</button>
+         <button type="button" onClick={()=>setStep(0)}>↶ Ξανά η ίδια</button>
          <button type="button" onClick={()=>saveSvg(printableSvg(item.title,outline),"pisipouk-"+item.id+"-patron-a4.svg")}>↓ Κατέβασε Α4 πατρόν</button>
          <button type="button" onClick={()=>printTemplate(item.title,outline)}>🖨️ Εκτύπωση / PDF</button>
        </div>
