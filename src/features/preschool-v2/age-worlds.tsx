@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight, BookOpen, Gamepad2, Home, Palette, Scissors, Spa
 import { StageAgeGame } from "./age-games";
 import {monthlyPack} from "./games/curriculum";
 import {GameCatalog} from "./games/GameCatalog";
+import {ContextRibbon} from "./context/ContextRibbon";
 import { PatternLibrary, CraftLibrary, StoryLibrary } from "./library/LibraryViews";
 import "./age-worlds.css";
 import "./physics/physics-garden.css";
@@ -32,6 +33,7 @@ export function AgeShell({ageKey}:{ageKey:string}){
    <Link to={BASE+ageKey+"/crafts"} activeProps={{className:"is-active"}}><Scissors/> Κατασκευές</Link>
    <Link to={BASE+ageKey+"/stories"} activeProps={{className:"is-active"}}><BookOpen/> Ιστορίες</Link>
   </nav>
+  <ContextRibbon age={a}/>
   <Outlet/>
  </div>
 }
