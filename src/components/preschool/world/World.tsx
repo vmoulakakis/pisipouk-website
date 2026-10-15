@@ -424,10 +424,7 @@ export function PreschoolWorld() {
               </div>
             </div>
             <div className="pw-learning-layout">
-              {PACK_KEYS.some(k=>k===domain.id)
-                ? <ActivityLibrary key={domain.id+"-"+age} category={domain.id as typeof PACK_KEYS[number]} age={age} onComplete={() => done(`${domain.id}-${age}`)} />
-                : <Game key={domain.id+"-"+age} task={domain.tasks[age]} onComplete={() => done(`${domain.id}-${age}`)} />
-              }
+              <Game key={domain.id+"-"+age} task={domain.tasks[age]} onComplete={() => done(`${domain.id}-${age}`)} />
               <aside className="pw-craft">
                 <small>Η ΠΕΡΙΠΕΤΕΙΑ ΣΥΝΕΧΙΖΕΤΑΙ</small>
                 <h3>Φτιάχνουμε κάτι αληθινό.</h3>
@@ -462,6 +459,7 @@ export function PreschoolWorld() {
                 )}
               </aside>
             </div>
+            {PACK_KEYS.some(k=>k===domain.id) && <ActivityLibrary key={domain.id+"-"+age} category={domain.id as typeof PACK_KEYS[number]} age={age} onComplete={() => done(`${domain.id}-${age}`)} />}
             {domain.id === "craft" && <CraftStudio age={age}/>}
             <p role="status">{status}</p>
             <div className="pw-gentle-reward">
