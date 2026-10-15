@@ -1,4 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { differentOrder } from "./random";
+import { PATTERNS, artworkDataUrl } from "./studioContent";
 import {
   Check,
   Leaf,
@@ -54,12 +56,16 @@ export function Symbol({ name }: { name: string }) {
 }
 export function Game({
   task,
+  pool = [],
   onComplete,
 }: {
   task: Task;
+  pool?: Task[];
   onComplete: () => void;
 }) {
-  const [done, setDone] = useState(false),
+  const [activeTask, setActiveTask] = useState<Task>(task),
+    [round, setRound] = useState(0),
+    [done, setDone] = useState(false),
     [message, setMessage] = useState("Δοκίμασε με τον δικό σου ρυθμό."),
     [order, setOrder] = useState<string[]>([]),
     [open, setOpen] = useState<number[]>([]),
@@ -83,7 +89,7 @@ export function Game({
     setMessage("Το ανακάλυψες! Μου άρεσε που προσπάθησες.");
     onComplete();
   };
-  const reset = () => {
+  const reset = (fresh = false) => {
     playback.current++;
     if (memoryTimer.current) clearTimeout(memoryTimer.current);
     busy.current = false;
@@ -92,6 +98,14 @@ export function Game({
     setOrder([]);
     setOpen([]);
     setMatched([]);
+    if (fresh) {
+      const candidates = pool.filter((candidate) => candidate.title !== activeTask.title);
+      if (candidates.length) {
+        setActiveTask(candidates[Math.floor(Math.random() * candidates.length)]);
+      }
+      setRound((n) => n + 1);
+      setMessage("Νέος γύρος! Νέες εικόνες και καινούργια ανακάλυψη.");
+    }
   };
   const note = (name: string) => {
     const AudioCtor = window.AudioContext || (window as any).webkitAudioContext;
@@ -113,7 +127,28 @@ export function Game({
     osc.start();
     osc.stop(ctx.currentTime + 0.4);
   };
-  const seq = task.sequence || [];
+  const lastRhythm = useRef<string[]>([]);
+  const seq = useMemo(() => {
+    const initial = activeTask.sequence || [];
+    if (activeTask.mechanic !== "rhythm" || !initial.length) return initial;
+    if (round === 0) {lastRhythm.current = initial;return initial;}
+    const possibilities = activeTask.options;
+    const next = Array.from({length:initial.length},()=>possibilities[Math.floor(Math.random()*possibilities.length)]);
+    if(next.every((note,i)=>note===lastRhythm.current[i]) && possibilities.length>1){
+      next[0] = possibilities.find(v=>v!==next[0]) || next[0];
+    }
+    lastRhythm.current=next;
+    return next;
+  }, [activeTask,round]);
+  const previousChoices = useRef<string[]>([]);
+  const previousDeck = useRef<number[]>([]);
+  // Stable within one round; a new round is guaranteed to have a different layout.
+  const displayOptions = useMemo(() => {
+    const next = differentOrder(activeTask.options,previousChoices.current);
+    previousChoices.current = next;
+    return next;
+  }, [activeTask, round]);
+  const answerValue = activeTask.options[activeTask.answer];
   const select = (v: string) => {
     if (done) return;
     if (v === seq[order.length]) {
@@ -126,12 +161,13 @@ export function Game({
       setMessage("Ας το ξαναδοκιμάσουμε από την αρχή.");
     }
   };
-  const deck = task.options
-    .flatMap((v, i) => [
-      { v, key: i * 2 },
-      { v, key: i * 2 + 1 },
-    ])
-    .sort((a, b) => ((a.key * 7 + 3) % 11) - ((b.key * 7 + 3) % 11));
+  const deckIndices = useMemo(() => {
+    const cards = activeTask.options.flatMap((_,i) => [i*2,i*2+1]);
+    const next = differentOrder(cards,previousDeck.current);
+    previousDeck.current = next;
+    return next;
+  }, [activeTask, round]);
+  const deck = deckIndices.map(id => ({v:activeTask.options[Math.floor(id/2)],key:id}));
   const flip = (i: number) => {
     if (busy.current || open.includes(i) || matched.includes(deck[i].v) || done)
       return;
@@ -142,7 +178,7 @@ export function Game({
         const m = [...matched, deck[i].v];
         setMatched(m);
         setOpen([]);
-        if (m.length === task.options.length) finish();
+        if (m.length === activeTask.options.length) finish();
       } else {
         busy.current = true;
         setMessage("Κοίτα τις κάρτες. Θυμάσαι πού ήταν;");
@@ -154,28 +190,36 @@ export function Game({
     }
   };
   return (
-    <div className="pw-game" data-mechanic={task.mechanic}>
+    <div className="pw-game" data-mechanic={activeTask.mechanic}>
       <div className="pw-game-heading">
         <div>
           <small>ΠΑΙΖΩ & ΑΝΑΚΑΛΥΠΤΩ</small>
-          <h3>{task.title}</h3>
+          <h3>{activeTask.title}</h3>
         </div>
         <button
           aria-label="Άκουσε οδηγίες"
-          onClick={() => speak(task.prompt, setMessage)}
+          onClick={() => speak(activeTask.prompt, setMessage)}
         >
           <Volume2 />
         </button>
       </div>
-      <p className="pw-prompt">{task.prompt}</p>
-      {task.mechanic === "count" && (
+      <p className="pw-prompt">{activeTask.prompt}</p>
+      {activeTask.visual && (() => {
+        const illustration = PATTERNS.find(p => p.id === activeTask.visual);
+        return illustration ? <figure className="pw-game-visual">
+          <img src={artworkDataUrl(illustration,2,true)} alt={"Εικονογραφημένο παράδειγμα: "+illustration.title} />
+          <figcaption>Παρατήρησε το σχέδιο και διάλεξε την απάντησή σου.</figcaption>
+        </figure> : null;
+      })()}
+      <div className="pw-game-hint"><strong>Πώς παίζουμε:</strong> 1. Παρατηρούμε την εικόνα · 2. Ακούμε ή διαβάζουμε την ερώτηση · 3. Αγγίζουμε την επιλογή μας. {activeTask.hint || "Δεν υπάρχει χρονόμετρο."}</div>
+      {activeTask.mechanic === "count" && (
         <div className="pw-count">
-          {Array.from({ length: task.target || 1 }, (_, i) => (
+          {Array.from({ length: activeTask.target || 1 }, (_, i) => (
             <Leaf key={i} size={48} aria-label="φύλλο" />
           ))}
         </div>
       )}
-      {task.mechanic === "pattern" && (
+      {activeTask.mechanic === "pattern" && (
         <div className="pw-pattern">
           {seq.map((s, i) => (
             <Symbol key={i} name={s} />
@@ -183,7 +227,7 @@ export function Game({
           <span>?</span>
         </div>
       )}
-      {task.mechanic === "memory" ? (
+      {activeTask.mechanic === "memory" ? (
         <div className="pw-memory">
           {deck.map((c, i) => (
             <button
@@ -205,7 +249,7 @@ export function Game({
         </div>
       ) : (
         <>
-          {task.mechanic === "rhythm" && (
+          {activeTask.mechanic === "rhythm" && (
             <button
               className="pw-primary"
               onClick={async () => {
@@ -229,36 +273,36 @@ export function Game({
             </button>
           )}
           <div className="pw-answers">
-            {(task.mechanic === "sequence"
-              ? [...task.options].reverse()
-              : task.options
+            {(activeTask.mechanic === "sequence"
+              ? displayOptions
+              : displayOptions
             ).map((v, i) => (
               <button
-                key={v}
+                key={`${round}-${i}-${v}`}
                 disabled={
-                  done || (task.mechanic === "sequence" && order.includes(v))
+                  done || (activeTask.mechanic === "sequence" && order.includes(v))
                 }
                 onClick={() => {
                   if (
-                    task.mechanic === "sequence" ||
-                    task.mechanic === "rhythm"
+                    activeTask.mechanic === "sequence" ||
+                    activeTask.mechanic === "rhythm"
                   ) {
                     if (busy.current) return;
-                    if (task.mechanic === "rhythm") note(v);
+                    if (activeTask.mechanic === "rhythm") note(v);
                     select(v);
-                  } else if (i === task.answer) finish();
+                  } else if (v === answerValue) finish();
                   else
                     setMessage(
                       "Καλή δοκιμή! Παρατήρησε ξανά και διάλεξε κάτι άλλο.",
                     );
                 }}
               >
-                {task.mechanic === "pattern" && <Symbol name={v} />}
+                {activeTask.mechanic === "pattern" && <Symbol name={v} />}
                 <span>{v}</span>
               </button>
             ))}
           </div>
-          {seq.length > 0 && task.mechanic !== "pattern" && (
+          {seq.length > 0 && activeTask.mechanic !== "pattern" && (
             <p aria-label="Η σειρά μου">
               Η σειρά μου: {order.join(" → ") || "…"}
             </p>
@@ -269,10 +313,10 @@ export function Game({
         {done && <Check />}
         {message}
       </p>
-      <button onClick={reset}>
-        <RotateCcw size={18} />
-        Παίζω ξανά
-      </button>
+      <div className="pw-replay-actions">
+        <button type="button" onClick={() => reset(true)}><RotateCcw size={18} /> Παίζω ξανά · Νέος γύρος</button>
+        <button type="button" onClick={() => reset(false)}>↶ Ξανά το ίδιο</button>
+      </div>
     </div>
   );
 }
