@@ -11,6 +11,8 @@ export type Task = {
   mechanic: Mechanic;
   sequence?: string[];
   target?: number;
+  visual?: string;
+  hint?: string;
 };
 export type Domain = {
   id: string;
