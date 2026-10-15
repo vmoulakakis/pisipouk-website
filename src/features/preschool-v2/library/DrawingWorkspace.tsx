@@ -1,4 +1,4 @@
-import {useEffect,useMemo,useRef,useState,type MouseEvent,type PointerEvent} from "react";
+import {useEffect,useMemo,useRef,useState,type MouseEvent,type PointerEvent,type ReactNode} from "react";
 import {Brush,Download,Eraser,ImageDown,PaintBucket,Pencil,Printer,Redo2,RotateCcw,Undo2} from "lucide-react";
 import {printTemplate,printableSvg,saveSvg} from "./PatternStudio";
 import type {Pattern} from "./studioContent";
@@ -16,7 +16,6 @@ type ArtworkState={strokes:Stroke[];fills:Record<string,string>};
 type History={past:ArtworkState[];present:ArtworkState;future:ArtworkState[]};
 const EMPTY:ArtworkState={strokes:[],fills:{}};
 const FRESH=():History=>({past:[],present:EMPTY,future:[]});
-const SIZES=[4,8,13,20,28,38];
 const PALETTE=["#273b50","#f05d60","#f7ab43","#f1d24e","#73bb79","#299acc","#8770ce","#e187b5","#845b3b","#ffffff"];
 const ns="http://www.w3.org/2000/svg";
 const PREC=2;
@@ -94,7 +93,7 @@ export function DrawingWorkspace({pattern,age}:{pattern:Pattern|null;age:number}
   if(tool==="fill"||currentRef.current||!e.isPrimary||e.button>0)return;
   e.preventDefault();
   const p=coords(e);
-  const stroke:Stroke|null=tool==="eraser"?null:{id:key+"-"+Date.now()+"-"+(++idRef.current),color,width:strokeSize(tool,size),opacity:tool==="marker"?.48:1,tool,points:[p]};
+  const stroke:Stroke|null=tool==="eraser"?null:{id:key+"-"+Date.now()+"-"+(++idRef.current),color,width:strokeSize(tool,size),opacity:tool==="marker"?0.48:1,tool,points:[p]};
   currentRef.current={pointerId:e.pointerId,tool,start:p,points:[p],removed:new Set<string>(),brush:stroke};
   if(stroke)setDraft(stroke);
   if(tool==="eraser"){
@@ -198,7 +197,7 @@ export function DrawingWorkspace({pattern,age}:{pattern:Pattern|null;age:number}
     ["marker","Μαρκαδόρος",<Brush key="m"/>],
     ["fill","Γέμισμα",<PaintBucket key="f"/>],
     ["eraser","Γόμα",<Eraser key="e"/>]
-   ] as Array<[Tool,string,React.ReactNode]>).map(([id,label,icon])=>
+   ] as Array<[Tool,string,ReactNode]>).map(([id,label,icon])=>
     <button key={id} type="button" aria-pressed={tool===id} className={tool===id?"selected":""} onClick={()=>{setTool(id);setMessage(id==="fill"?"Κάνε κλικ μέσα σε ένα περίγραμμα για να το γεμίσεις.":id==="eraser"?"Πέρνα πάνω από μία γραμμή για να τη σβήσεις.":"Κράτα πατημένο το ποντίκι και ζωγράφισε ελεύθερα.");}}>{icon}<span>{label}</span></button>
    )}
   </div>
@@ -208,7 +207,7 @@ export function DrawingWorkspace({pattern,age}:{pattern:Pattern|null;age:number}
   </div>
   <div className="pw2-drawing-precision">
    <label htmlFor="pw2-pen-width">Πάχος {size}px</label><input id="pw2-pen-width" type="range" min="2" max="38" step="1" value={size} onChange={e=>setSize(Number(e.target.value))} disabled={tool==="fill"} />
-   <span className="pw2-brush-preview" style={{width:Math.max(8,Math.min(size,38)),height:Math.max(8,Math.min(size,38)),background:tool==="eraser"?"#fff":color,opacity:tool==="marker"?.48:1}}/>
+   <span className="pw2-brush-preview" style={{width:Math.max(8,Math.min(size,38)),height:Math.max(8,Math.min(size,38)),background:tool==="eraser"?"#fff":color,opacity:tool==="marker"?0.48:1}}/>
   </div>
   <div className="pw2-drawing-history" role="group" aria-label="Ιστορικό ζωγραφικής">
    <button type="button" onClick={undo} disabled={!history.past.length}><Undo2 size={19}/> Αναίρεση</button>
