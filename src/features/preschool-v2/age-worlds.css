@@ -107,3 +107,8 @@
 .p2-app:has(.pw2-app) .p2-top-nav,
 .p2-app:has(.pw2-app) .p2-bottom-nav{display:none!important}
 @media(max-width:740px){.p2-app:has(.pw2-app){padding-bottom:20px}.p2-app:has(.pw2-landing) .p2-content{padding-top:7px}}
+
+.pw2-monthly-banner{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;border:4px solid white;border-radius:20px;box-shadow:0 8px 20px #31536d1a;margin:18px 0;padding:14px 22px;color:#24435e}
+.pw2-monthly-banner span{font-weight:850}.pw2-monthly-banner small{max-width:440px;color:#365e6d;line-height:1.5}
+.p2-monthly-admin-link{display:flex;align-items:center;justify-content:center;gap:11px;border:2px solid #b4d3e7;background:#e8f4ff;border-radius:17px;min-height:60px;margin:22px auto;padding:12px 19px;font-weight:900;color:#23619a!important;max-width:690px}
+@media(max-width:740px){.pw2-monthly-banner{padding:12px;flex-direction:column;align-items:flex-start}.pw2-monthly-banner small{font-size:.78rem}.p2-monthly-admin-link{font-size:.83rem}}
