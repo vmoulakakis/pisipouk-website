@@ -127,7 +127,19 @@ export function Game({
     osc.start();
     osc.stop(ctx.currentTime + 0.4);
   };
-  const seq = activeTask.sequence || [];
+  const lastRhythm = useRef<string[]>([]);
+  const seq = useMemo(() => {
+    const initial = activeTask.sequence || [];
+    if (activeTask.mechanic !== "rhythm" || !initial.length) return initial;
+    if (round === 0) {lastRhythm.current = initial;return initial;}
+    const possibilities = activeTask.options;
+    const next = Array.from({length:initial.length},()=>possibilities[Math.floor(Math.random()*possibilities.length)]);
+    if(next.every((note,i)=>note===lastRhythm.current[i]) && possibilities.length>1){
+      next[0] = possibilities.find(v=>v!==next[0]) || next[0];
+    }
+    lastRhythm.current=next;
+    return next;
+  }, [activeTask,round]);
   const previousChoices = useRef<string[]>([]);
   const previousDeck = useRef<number[]>([]);
   // Stable within one round; a new round is guaranteed to have a different layout.
