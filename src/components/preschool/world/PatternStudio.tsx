@@ -1,4 +1,5 @@
 import { useState, type MouseEvent } from "react";
+import { nextDifferent } from "./random";
 import type { Age } from "./content";
 import { PATTERNS, PALETTE, artwork, artworkDataUrl } from "./studioContent";
 
@@ -20,7 +21,8 @@ export function saveSvg(svg:string,filename:string) {
   window.setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 export function printTemplate(title:string, svg:string){
-  const page=window.open("","_blank","noopener,noreferrer");
+  const page=window.open("","_blank");
+  if(page) page.opener=null;
   if(!page){saveSvg(printableSvg(title,svg),"pisipouk-patron-a4.svg");return;}
   page.document.write('<!DOCTYPE html><html lang="el"><head><meta charset="utf-8"><title>'+escapeXml(title)+'</title><style>@page{size:A4 portrait;margin:0}html,body{margin:0}svg{width:210mm;height:297mm;display:block}</style></head><body>'+printableSvg(title,svg)+'</body></html>');
   page.document.close();
