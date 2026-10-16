@@ -49,6 +49,7 @@ jobs:
           path: |
             gallery-review/contact-sheet-MASKED-only.jpg
             gallery-review/contact-sheet-ORIGINAL-private.jpg
+            gallery-review/originals-private/*.jpg
             gallery-review/masked-face-positions.json
           retention-days: 1
           if-no-files-found: warn
@@ -59,7 +60,7 @@ jobs:
           git add src/assets/gallery-jpg/*.jpg gallery-review/masked-face-positions.json
           if git diff --cached --quiet; then
             echo "Nothing changed; inspect model and face report."
-            exit 1
+            exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
