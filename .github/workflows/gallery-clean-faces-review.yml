@@ -48,10 +48,8 @@ jobs:
           name: gallery-27-photos-privacy-review
           path: |
             gallery-review/contact-sheet-MASKED-only.jpg
-            gallery-review/contact-sheet-ORIGINAL-private.jpg
-            gallery-review/originals-private/*.jpg
             gallery-review/masked-face-positions.json
-          retention-days: 1
+          retention-days: 7
           if-no-files-found: warn
 
       - name: Commit revised JPEGs to review branch, NEVER main
