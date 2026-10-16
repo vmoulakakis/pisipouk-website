@@ -1,7 +1,7 @@
 {
   "source_revision": "a2b4f2e80390aa6b64f6e95316ab288d81901726",
-  "privacy_policy": "Review branch only. Original never published; where no confident faces are detected, preserve current masked JPG.",
-  "detector": "OpenCV YuNet two-pass; minimum score 0.87",
+  "privacy_policy": "Gallery-specific review branch only. Manual overrides checked against original photos.",
+  "detector": "OpenCV YuNet 0.87 + hand-checked face positions (no poster/illustration masks)",
   "total": 27,
   "photos": [
     {
@@ -10,7 +10,7 @@
         899,
         1200
       ],
-      "status": "kept_previous_mask__REVIEW_REQUIRED",
+      "status": "clean_original_restored__MANUALLY_VERIFIED",
       "face_masks": []
     },
     {
@@ -19,7 +19,7 @@
         899,
         1200
       ],
-      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "status": "face_only_masks__MANUALLY_REVIEWED",
       "face_masks": [
         {
           "x": 182,
@@ -36,7 +36,7 @@
         900,
         1200
       ],
-      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "status": "face_only_masks__MANUALLY_REVIEWED",
       "face_masks": [
         {
           "x": 418,
@@ -74,7 +74,7 @@
         900,
         1200
       ],
-      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "status": "face_only_masks__MANUALLY_REVIEWED",
       "face_masks": [
         {
           "x": 635,
@@ -117,6 +117,104 @@
           "w": 38,
           "h": 45,
           "confidence": 0.89
+        },
+        {
+          "x": 290,
+          "y": 332,
+          "w": 69,
+          "h": 76,
+          "confidence": 1.0
+        },
+        {
+          "x": 360,
+          "y": 348,
+          "w": 56,
+          "h": 67,
+          "confidence": 1.0
+        },
+        {
+          "x": 326,
+          "y": 430,
+          "w": 71,
+          "h": 74,
+          "confidence": 1.0
+        },
+        {
+          "x": 441,
+          "y": 401,
+          "w": 66,
+          "h": 71,
+          "confidence": 1.0
+        },
+        {
+          "x": 485,
+          "y": 370,
+          "w": 62,
+          "h": 72,
+          "confidence": 1.0
+        },
+        {
+          "x": 537,
+          "y": 447,
+          "w": 70,
+          "h": 71,
+          "confidence": 1.0
+        },
+        {
+          "x": 596,
+          "y": 463,
+          "w": 68,
+          "h": 72,
+          "confidence": 1.0
+        },
+        {
+          "x": 684,
+          "y": 432,
+          "w": 65,
+          "h": 74,
+          "confidence": 1.0
+        },
+        {
+          "x": 646,
+          "y": 490,
+          "w": 68,
+          "h": 74,
+          "confidence": 1.0
+        },
+        {
+          "x": 695,
+          "y": 536,
+          "w": 68,
+          "h": 72,
+          "confidence": 1.0
+        },
+        {
+          "x": 633,
+          "y": 571,
+          "w": 70,
+          "h": 72,
+          "confidence": 1.0
+        },
+        {
+          "x": 640,
+          "y": 633,
+          "w": 70,
+          "h": 69,
+          "confidence": 1.0
+        },
+        {
+          "x": 321,
+          "y": 569,
+          "w": 64,
+          "h": 70,
+          "confidence": 1.0
+        },
+        {
+          "x": 319,
+          "y": 661,
+          "w": 66,
+          "h": 74,
+          "confidence": 1.0
         }
       ]
     },
@@ -126,7 +224,7 @@
         900,
         1200
       ],
-      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "status": "face_only_masks__MANUALLY_REVIEWED",
       "face_masks": [
         {
           "x": 266,
@@ -143,7 +241,7 @@
         900,
         1200
       ],
-      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "status": "face_only_masks__MANUALLY_REVIEWED",
       "face_masks": [
         {
           "x": 411,
@@ -160,7 +258,7 @@
         900,
         1200
       ],
-      "status": "kept_previous_mask__REVIEW_REQUIRED",
+      "status": "clean_original_restored__MANUALLY_VERIFIED",
       "face_masks": []
     },
     {
@@ -169,7 +267,7 @@
         900,
         1200
       ],
-      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "status": "face_only_masks__MANUALLY_REVIEWED",
       "face_masks": [
         {
           "x": 362,
@@ -186,7 +284,7 @@
         900,
         1200
       ],
-      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "status": "face_only_masks__MANUALLY_REVIEWED",
       "face_masks": [
         {
           "x": 255,
@@ -210,7 +308,7 @@
         908,
         1200
       ],
-      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "status": "face_only_masks__MANUALLY_REVIEWED",
       "face_masks": [
         {
           "x": 188,
@@ -227,7 +325,7 @@
         960,
         721
       ],
-      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "status": "face_only_masks__MANUALLY_REVIEWED",
       "face_masks": [
         {
           "x": 353,
@@ -258,11 +356,18 @@
           "confidence": 0.881
         },
         {
-          "x": 156,
-          "y": 449,
-          "w": 172,
-          "h": 157,
-          "confidence": 0.872
+          "x": 206,
+          "y": 459,
+          "w": 128,
+          "h": 119,
+          "confidence": 1.0
+        },
+        {
+          "x": 814,
+          "y": 503,
+          "w": 102,
+          "h": 119,
+          "confidence": 1.0
         }
       ]
     },
@@ -272,14 +377,14 @@
         721,
         960
       ],
-      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "status": "face_only_masks__MANUALLY_REVIEWED",
       "face_masks": [
         {
-          "x": 38,
-          "y": 22,
-          "w": 161,
-          "h": 204,
-          "confidence": 0.878
+          "x": 407,
+          "y": 276,
+          "w": 150,
+          "h": 136,
+          "confidence": 1.0
         }
       ]
     },
@@ -289,7 +394,7 @@
         1200,
         900
       ],
-      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "status": "face_only_masks__MANUALLY_REVIEWED",
       "face_masks": [
         {
           "x": 411,
@@ -341,7 +446,7 @@
         900,
         1200
       ],
-      "status": "kept_previous_mask__REVIEW_REQUIRED",
+      "status": "clean_original_restored__MANUALLY_VERIFIED",
       "face_masks": []
     },
     {
@@ -350,7 +455,7 @@
         1200,
         900
       ],
-      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "status": "face_only_masks__MANUALLY_REVIEWED",
       "face_masks": [
         {
           "x": 900,
@@ -409,15 +514,8 @@
         900,
         1200
       ],
-      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "status": "face_only_masks__MANUALLY_REVIEWED",
       "face_masks": [
-        {
-          "x": 417,
-          "y": 260,
-          "w": 110,
-          "h": 178,
-          "confidence": 0.936
-        },
         {
           "x": 815,
           "y": 463,
@@ -447,7 +545,7 @@
         1200,
         908
       ],
-      "status": "kept_previous_mask__REVIEW_REQUIRED",
+      "status": "clean_original_restored__MANUALLY_VERIFIED",
       "face_masks": []
     },
     {
@@ -456,7 +554,7 @@
         1200,
         900
       ],
-      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "status": "face_only_masks__MANUALLY_REVIEWED",
       "face_masks": [
         {
           "x": 725,
@@ -499,6 +597,13 @@
           "w": 44,
           "h": 48,
           "confidence": 0.887
+        },
+        {
+          "x": 263,
+          "y": 398,
+          "w": 92,
+          "h": 112,
+          "confidence": 1.0
         }
       ]
     },
@@ -508,7 +613,7 @@
         540,
         1200
       ],
-      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "status": "face_only_masks__MANUALLY_REVIEWED",
       "face_masks": [
         {
           "x": 50,
@@ -532,7 +637,7 @@
         1200,
         1200
       ],
-      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "status": "face_only_masks__MANUALLY_REVIEWED",
       "face_masks": [
         {
           "x": 905,
@@ -582,6 +687,20 @@
           "w": 162,
           "h": 210,
           "confidence": 0.88
+        },
+        {
+          "x": 367,
+          "y": 12,
+          "w": 172,
+          "h": 173,
+          "confidence": 1.0
+        },
+        {
+          "x": 329,
+          "y": 139,
+          "w": 101,
+          "h": 116,
+          "confidence": 1.0
         }
       ]
     },
@@ -591,8 +710,16 @@
         720,
         960
       ],
-      "status": "kept_previous_mask__REVIEW_REQUIRED",
-      "face_masks": []
+      "status": "face_only_masks__MANUALLY_REVIEWED",
+      "face_masks": [
+        {
+          "x": 296,
+          "y": 310,
+          "w": 112,
+          "h": 111,
+          "confidence": 1.0
+        }
+      ]
     },
     {
       "name": "FB_IMG_1789561050066.jpg",
@@ -600,7 +727,7 @@
         960,
         721
       ],
-      "status": "kept_previous_mask__REVIEW_REQUIRED",
+      "status": "clean_original_restored__MANUALLY_VERIFIED",
       "face_masks": []
     },
     {
@@ -609,7 +736,7 @@
         960,
         960
       ],
-      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "status": "face_only_masks__MANUALLY_REVIEWED",
       "face_masks": [
         {
           "x": 610,
@@ -626,7 +753,7 @@
         960,
         960
       ],
-      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "status": "face_only_masks__MANUALLY_REVIEWED",
       "face_masks": [
         {
           "x": 52,
@@ -650,7 +777,7 @@
         960,
         960
       ],
-      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "status": "face_only_masks__MANUALLY_REVIEWED",
       "face_masks": [
         {
           "x": 522,
@@ -686,6 +813,27 @@
           "w": 43,
           "h": 51,
           "confidence": 0.884
+        },
+        {
+          "x": 274,
+          "y": 341,
+          "w": 92,
+          "h": 116,
+          "confidence": 1.0
+        },
+        {
+          "x": 720,
+          "y": 475,
+          "w": 72,
+          "h": 80,
+          "confidence": 1.0
+        },
+        {
+          "x": 636,
+          "y": 534,
+          "w": 100,
+          "h": 94,
+          "confidence": 1.0
         }
       ]
     },
@@ -695,7 +843,7 @@
         1000,
         750
       ],
-      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "status": "face_only_masks__MANUALLY_REVIEWED",
       "face_masks": [
         {
           "x": 309,
@@ -717,6 +865,13 @@
           "w": 46,
           "h": 53,
           "confidence": 0.886
+        },
+        {
+          "x": 439,
+          "y": 218,
+          "w": 64,
+          "h": 83,
+          "confidence": 1.0
         }
       ]
     },
@@ -726,7 +881,7 @@
         1200,
         900
       ],
-      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "status": "face_only_masks__MANUALLY_REVIEWED",
       "face_masks": [
         {
           "x": 218,
@@ -748,11 +903,33 @@
           "w": 22,
           "h": 28,
           "confidence": 0.885
+        },
+        {
+          "x": 583,
+          "y": 399,
+          "w": 61,
+          "h": 72,
+          "confidence": 1.0
+        },
+        {
+          "x": 607,
+          "y": 456,
+          "w": 59,
+          "h": 67,
+          "confidence": 1.0
+        },
+        {
+          "x": 525,
+          "y": 315,
+          "w": 31,
+          "h": 36,
+          "confidence": 1.0
         }
       ]
     }
   ],
-  "masked_photos": 21,
-  "kept_existing": 6,
-  "face_masks": 69
+  "masked_photos": 22,
+  "clean_restored": 5,
+  "kept_existing": 0,
+  "face_masks": 94
 }
