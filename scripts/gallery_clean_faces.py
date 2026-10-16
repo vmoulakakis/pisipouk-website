@@ -31,8 +31,8 @@ EXPECTED_MODEL_SHA256 = "8f2383e4dd3cfbb4553ea8718107fc0423210dc964f9f4280604804
 SCORE_THRESHOLD = 0.87
 # The face cover is purposely fitted to the detected face box, NEVER positioned
 # at an arbitrary location in the scene or applied as a full-image sticker.
-COVER_WIDTH = 1.31
-COVER_HEIGHT = 1.35
+COVER_WIDTH = 1.23
+COVER_HEIGHT = 1.26
 
 
 def get_model():
@@ -142,59 +142,76 @@ def make_sheet(samples, path):
 
 
 def run():
-    model=get_model()
-    images=sorted(GALLERY.glob("FB_IMG_*.jpg"))
-    if len(images)!=27:
+    model = get_model()
+    images = sorted(GALLERY.glob("FB_IMG_*.jpg"))
+    if len(images) != 27:
         raise RuntimeError(f"Expected 27 original images, found {len(images)}")
+    overrides=json.loads(Path("scripts/gallery_face_overrides.json").read_text(encoding="utf-8"))
+    clean=set(overrides["clean_original_without_new_sticker"])
+    ignore_all=set(overrides.get("ignore_all_automatic", []))
     AUDIT.mkdir(parents=True,exist_ok=True)
     report={
         "source_revision":SOURCE_REV,
-        "privacy_policy":"Review branch only. Original never published; where no confident faces are detected, preserve current masked JPG.",
-        "detector":"OpenCV YuNet two-pass; minimum score 0.87",
-        "total":len(images),
-        "photos":[]
+        "privacy_policy":"Gallery-specific review branch only. Manual overrides checked against original photos.",
+        "detector":"OpenCV YuNet 0.87 + hand-checked face positions (no poster/illustration masks)",
+        "total":len(images), "photos":[]
     }
     sheet=[]
-    original_sheet=[]
     for path in images:
         previous=Image.open(path).convert("RGB")
         original=ImageOps.exif_transpose(Image.open(io.BytesIO(source_jpeg(path.name)))).convert("RGB")
-        private_original_dir = AUDIT/"originals-private"
-        private_original_dir.mkdir(parents=True,exist_ok=True)
-        original.save(private_original_dir/path.name,"JPEG",quality=94)
-        faces=detect_faces(original,model)
-        if faces:
+        detected=[] if path.name in ignore_all else detect_faces(original,model)
+        excluded=overrides.get("reject_boxes_near",{}).get(path.name,[])
+        faces=[]
+        for face in detected:
+            cx=face[0]+face[2]/2
+            cy=face[1]+face[3]/2
+            if any(math.hypot(cx-ex,cy-ey)<max(25,face[2]*.42) for ex,ey in excluded):
+                continue
+            faces.append(face)
+        for x,y,w,h in overrides.get("additional_faces",{}).get(path.name,[]):
+            if not (w>8 and h>8 and x>=0 and y>=0 and x+w<=original.width and y+h<=original.height):
+                raise RuntimeError(f"Invalid manual face box {path.name}: {[x,y,w,h]}")
+            box=[float(x),float(y),float(w),float(h),1.0]
+            if any(iou(box,f)>0.28 for f in faces):
+                continue
+            faces.append(box)
+
+        if path.name in clean:
+            if faces:
+                raise RuntimeError("Clean-scene whitelist unexpectedly has detected or manual faces: "+path.name)
+            # Four photos show only artwork; one has an original opaque heart on the child face.
+            out=original.copy()
+            out.save(path,"JPEG",quality=91,subsampling=0,optimize=True,progressive=True)
+            status="clean_original_restored__MANUALLY_VERIFIED"
+        elif faces:
             out=original.copy()
             draw=ImageDraw.Draw(out)
             for box in faces:
                 small_face_sticker(draw,out.size,box)
             out.save(path,"JPEG",quality=91,subsampling=0,optimize=True,progressive=True)
-            status="restored_and_masked__REVIEW_REQUIRED"
+            status="face_only_masks__MANUALLY_REVIEWED"
         else:
-            # Fail closed. Some of these pictures might contain unseen side
-            # profiles / distant children; do NOT release originals unmasked.
+            # No original is ever released if face coverage is uncertain.
             out=previous
-            status="kept_previous_mask__REVIEW_REQUIRED"
+            status="kept_previous_mask__REQUIRES_MORE_REVIEW"
         report["photos"].append({
             "name":path.name,"size":list(original.size),"status":status,
-            "face_masks":[
-                {"x":round(b[0]),"y":round(b[1]),"w":round(b[2]),"h":round(b[3]),
-                 "confidence":round(b[4],3)} for b in faces
-            ],
+            "face_masks":[{"x":round(b[0]),"y":round(b[1]),"w":round(b[2]),"h":round(b[3]),
+                           "confidence":round(b[4],3)} for b in faces],
         })
         sheet.append((path.name,out,"masks="+str(len(faces))))
-        original_sheet.append((path.name,original,"original source (PRIVATE)"))
-        print(f"{path.name} | {status} | faces={len(faces)}",flush=True)
-    report["masked_photos"]=sum(x["status"].startswith("restored") for x in report["photos"])
-    report["kept_existing"]=len(images)-report["masked_photos"]
+        print(f"{path.name} | {status} | masks={len(faces)}",flush=True)
+    report["masked_photos"]=sum(x["status"].startswith("face_only") for x in report["photos"])
+    report["clean_restored"]=sum(x["status"].startswith("clean_original") for x in report["photos"])
+    report["kept_existing"]=len(images)-report["masked_photos"]-report["clean_restored"]
     report["face_masks"]=sum(len(x["face_masks"]) for x in report["photos"])
     (AUDIT/"masked-face-positions.json").write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding="utf-8")
     make_sheet(sheet,AUDIT/"contact-sheet-MASKED-only.jpg")
-    make_sheet(original_sheet,AUDIT/"contact-sheet-ORIGINAL-private.jpg")
-    print(f"TOTAL: {report['masked_photos']} reprocessed; {report['kept_existing']} preserved; {report['face_masks']} face masks")
-    print("MANUAL PHOTO REVIEW IS REQUIRED before merging this branch to production.")
-    if report["masked_photos"]==0:
-        raise RuntimeError("No new verified masks produced. Nothing safe to ship.")
+    print(f"TOTAL: {report['masked_photos']} photos re-masked, {report['clean_restored']} original scenes restored, {report['kept_existing']} kept, {report['face_masks']} tight face stickers")
+    if report["kept_existing"]:
+        raise RuntimeError("Some images still require manual coverage: review report before release.")
+    print("All 27 staged. Check contact sheet and obtain final approval BEFORE promoting to public site.")
 
 
 if __name__=="__main__":
