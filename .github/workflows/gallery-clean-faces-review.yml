@@ -1,0 +1,71 @@
+name: Review corrected gallery face stickers
+
+on:
+  push:
+    branches:
+      - fix/gallery-face-stickers-20261016
+    paths:
+      - scripts/gallery_clean_faces.py
+      - .github/workflows/gallery-clean-faces-review.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gallery-face-review-only
+  cancel-in-progress: false
+
+jobs:
+  gallery-privacy-review:
+    name: Restore originals, mask faces, stage ONLY
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Fetch gallery branch and original source history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: fix/gallery-face-stickers-20261016
+
+      - name: Python for lossless original image recovery
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install reliable face detection and imaging tools
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "numpy<2.1" "opencv-python-headless==4.10.0.84" "Pillow>=10,<12"
+
+      - name: Restore 27 originals in memory; place face masks only
+        run: python scripts/gallery_clean_faces.py
+
+      - name: Save private masked contact sheet for HUMAN review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gallery-27-photos-privacy-review
+          path: |
+            gallery-review/contact-sheet-MASKED-only.jpg
+            gallery-review/masked-face-positions.json
+          retention-days: 7
+          if-no-files-found: warn
+
+      - name: Commit revised JPEGs to review branch, NEVER main
+        run: |
+          set -eu
+          git add src/assets/gallery-jpg/*.jpg gallery-review/masked-face-positions.json
+          if git diff --cached --quiet; then
+            echo "Nothing changed; inspect model and face report."
+            exit 1
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Gallery: restore clean photographs and place small verified face-only smileys [review only]"
+          git push origin HEAD:fix/gallery-face-stickers-20261016
+
+      - name: Human approval reminder
+        run: |
+          echo "MASKED images are ready for review in the branch."
+          echo "DO NOT MERGE OR PROMOTE without checking all 27 thumbnails, all child faces, and the original photo integrity."
