@@ -1,0 +1,758 @@
+{
+  "source_revision": "a2b4f2e80390aa6b64f6e95316ab288d81901726",
+  "privacy_policy": "Review branch only. Original never published; where no confident faces are detected, preserve current masked JPG.",
+  "detector": "OpenCV YuNet two-pass; minimum score 0.87",
+  "total": 27,
+  "photos": [
+    {
+      "name": "FB_IMG_1789560439522.jpg",
+      "size": [
+        899,
+        1200
+      ],
+      "status": "kept_previous_mask__REVIEW_REQUIRED",
+      "face_masks": []
+    },
+    {
+      "name": "FB_IMG_1789560446662.jpg",
+      "size": [
+        899,
+        1200
+      ],
+      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "face_masks": [
+        {
+          "x": 182,
+          "y": 107,
+          "w": 116,
+          "h": 169,
+          "confidence": 0.913
+        }
+      ]
+    },
+    {
+      "name": "FB_IMG_1789560486550.jpg",
+      "size": [
+        900,
+        1200
+      ],
+      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "face_masks": [
+        {
+          "x": 418,
+          "y": 293,
+          "w": 217,
+          "h": 289,
+          "confidence": 0.938
+        },
+        {
+          "x": 175,
+          "y": 143,
+          "w": 84,
+          "h": 105,
+          "confidence": 0.925
+        },
+        {
+          "x": 553,
+          "y": 96,
+          "w": 71,
+          "h": 98,
+          "confidence": 0.925
+        },
+        {
+          "x": 35,
+          "y": 186,
+          "w": 88,
+          "h": 109,
+          "confidence": 0.898
+        }
+      ]
+    },
+    {
+      "name": "FB_IMG_1789560511188.jpg",
+      "size": [
+        900,
+        1200
+      ],
+      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "face_masks": [
+        {
+          "x": 635,
+          "y": 738,
+          "w": 35,
+          "h": 46,
+          "confidence": 0.929
+        },
+        {
+          "x": 521,
+          "y": 744,
+          "w": 34,
+          "h": 43,
+          "confidence": 0.917
+        },
+        {
+          "x": 462,
+          "y": 739,
+          "w": 40,
+          "h": 46,
+          "confidence": 0.91
+        },
+        {
+          "x": 385,
+          "y": 765,
+          "w": 34,
+          "h": 41,
+          "confidence": 0.902
+        },
+        {
+          "x": 571,
+          "y": 702,
+          "w": 36,
+          "h": 42,
+          "confidence": 0.899
+        },
+        {
+          "x": 322,
+          "y": 753,
+          "w": 38,
+          "h": 45,
+          "confidence": 0.89
+        }
+      ]
+    },
+    {
+      "name": "FB_IMG_1789560563190.jpg",
+      "size": [
+        900,
+        1200
+      ],
+      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "face_masks": [
+        {
+          "x": 266,
+          "y": 331,
+          "w": 197,
+          "h": 240,
+          "confidence": 0.934
+        }
+      ]
+    },
+    {
+      "name": "FB_IMG_1789560635114.jpg",
+      "size": [
+        900,
+        1200
+      ],
+      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "face_masks": [
+        {
+          "x": 411,
+          "y": 54,
+          "w": 196,
+          "h": 254,
+          "confidence": 0.886
+        }
+      ]
+    },
+    {
+      "name": "FB_IMG_1789560646865.jpg",
+      "size": [
+        900,
+        1200
+      ],
+      "status": "kept_previous_mask__REVIEW_REQUIRED",
+      "face_masks": []
+    },
+    {
+      "name": "FB_IMG_1789560673224.jpg",
+      "size": [
+        900,
+        1200
+      ],
+      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "face_masks": [
+        {
+          "x": 362,
+          "y": 455,
+          "w": 153,
+          "h": 186,
+          "confidence": 0.918
+        }
+      ]
+    },
+    {
+      "name": "FB_IMG_1789560687810.jpg",
+      "size": [
+        900,
+        1200
+      ],
+      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "face_masks": [
+        {
+          "x": 255,
+          "y": 533,
+          "w": 120,
+          "h": 156,
+          "confidence": 0.936
+        },
+        {
+          "x": 450,
+          "y": 557,
+          "w": 174,
+          "h": 166,
+          "confidence": 0.891
+        }
+      ]
+    },
+    {
+      "name": "FB_IMG_1789560707745.jpg",
+      "size": [
+        908,
+        1200
+      ],
+      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "face_masks": [
+        {
+          "x": 188,
+          "y": 89,
+          "w": 385,
+          "h": 600,
+          "confidence": 0.898
+        }
+      ]
+    },
+    {
+      "name": "FB_IMG_1789560720338.jpg",
+      "size": [
+        960,
+        721
+      ],
+      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "face_masks": [
+        {
+          "x": 353,
+          "y": 56,
+          "w": 77,
+          "h": 103,
+          "confidence": 0.94
+        },
+        {
+          "x": 521,
+          "y": 405,
+          "w": 79,
+          "h": 108,
+          "confidence": 0.929
+        },
+        {
+          "x": 278,
+          "y": 273,
+          "w": 71,
+          "h": 82,
+          "confidence": 0.921
+        },
+        {
+          "x": 83,
+          "y": 172,
+          "w": 114,
+          "h": 119,
+          "confidence": 0.881
+        },
+        {
+          "x": 156,
+          "y": 449,
+          "w": 172,
+          "h": 157,
+          "confidence": 0.872
+        }
+      ]
+    },
+    {
+      "name": "FB_IMG_1789560734042.jpg",
+      "size": [
+        721,
+        960
+      ],
+      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "face_masks": [
+        {
+          "x": 38,
+          "y": 22,
+          "w": 161,
+          "h": 204,
+          "confidence": 0.878
+        }
+      ]
+    },
+    {
+      "name": "FB_IMG_1789560756470.jpg",
+      "size": [
+        1200,
+        900
+      ],
+      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "face_masks": [
+        {
+          "x": 411,
+          "y": 443,
+          "w": 54,
+          "h": 65,
+          "confidence": 0.932
+        },
+        {
+          "x": 510,
+          "y": 324,
+          "w": 59,
+          "h": 77,
+          "confidence": 0.931
+        },
+        {
+          "x": 609,
+          "y": 278,
+          "w": 51,
+          "h": 64,
+          "confidence": 0.928
+        },
+        {
+          "x": 763,
+          "y": 445,
+          "w": 69,
+          "h": 90,
+          "confidence": 0.928
+        },
+        {
+          "x": 372,
+          "y": 258,
+          "w": 54,
+          "h": 72,
+          "confidence": 0.925
+        },
+        {
+          "x": 210,
+          "y": 436,
+          "w": 63,
+          "h": 71,
+          "confidence": 0.911
+        }
+      ]
+    },
+    {
+      "name": "FB_IMG_1789560790690.jpg",
+      "size": [
+        900,
+        1200
+      ],
+      "status": "kept_previous_mask__REVIEW_REQUIRED",
+      "face_masks": []
+    },
+    {
+      "name": "FB_IMG_1789560806512.jpg",
+      "size": [
+        1200,
+        900
+      ],
+      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "face_masks": [
+        {
+          "x": 900,
+          "y": 537,
+          "w": 68,
+          "h": 86,
+          "confidence": 0.941
+        },
+        {
+          "x": 230,
+          "y": 429,
+          "w": 59,
+          "h": 69,
+          "confidence": 0.921
+        },
+        {
+          "x": 776,
+          "y": 449,
+          "w": 52,
+          "h": 62,
+          "confidence": 0.919
+        },
+        {
+          "x": 83,
+          "y": 525,
+          "w": 81,
+          "h": 85,
+          "confidence": 0.911
+        },
+        {
+          "x": 710,
+          "y": 391,
+          "w": 30,
+          "h": 43,
+          "confidence": 0.909
+        },
+        {
+          "x": 392,
+          "y": 330,
+          "w": 36,
+          "h": 45,
+          "confidence": 0.908
+        },
+        {
+          "x": 564,
+          "y": 356,
+          "w": 34,
+          "h": 41,
+          "confidence": 0.898
+        }
+      ]
+    },
+    {
+      "name": "FB_IMG_1789560835032.jpg",
+      "size": [
+        900,
+        1200
+      ],
+      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "face_masks": [
+        {
+          "x": 417,
+          "y": 260,
+          "w": 110,
+          "h": 178,
+          "confidence": 0.936
+        },
+        {
+          "x": 815,
+          "y": 463,
+          "w": 84,
+          "h": 107,
+          "confidence": 0.927
+        },
+        {
+          "x": 168,
+          "y": 479,
+          "w": 80,
+          "h": 104,
+          "confidence": 0.925
+        },
+        {
+          "x": 661,
+          "y": 481,
+          "w": 84,
+          "h": 93,
+          "confidence": 0.906
+        }
+      ]
+    },
+    {
+      "name": "FB_IMG_1789560847486.jpg",
+      "size": [
+        1200,
+        908
+      ],
+      "status": "kept_previous_mask__REVIEW_REQUIRED",
+      "face_masks": []
+    },
+    {
+      "name": "FB_IMG_1789560858994.jpg",
+      "size": [
+        1200,
+        900
+      ],
+      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "face_masks": [
+        {
+          "x": 725,
+          "y": 245,
+          "w": 47,
+          "h": 57,
+          "confidence": 0.929
+        },
+        {
+          "x": 851,
+          "y": 385,
+          "w": 46,
+          "h": 57,
+          "confidence": 0.927
+        },
+        {
+          "x": 547,
+          "y": 393,
+          "w": 50,
+          "h": 58,
+          "confidence": 0.92
+        },
+        {
+          "x": 274,
+          "y": 319,
+          "w": 47,
+          "h": 53,
+          "confidence": 0.909
+        },
+        {
+          "x": 441,
+          "y": 374,
+          "w": 57,
+          "h": 63,
+          "confidence": 0.902
+        },
+        {
+          "x": 377,
+          "y": 289,
+          "w": 44,
+          "h": 48,
+          "confidence": 0.887
+        }
+      ]
+    },
+    {
+      "name": "FB_IMG_1789560906708.jpg",
+      "size": [
+        540,
+        1200
+      ],
+      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "face_masks": [
+        {
+          "x": 50,
+          "y": 487,
+          "w": 110,
+          "h": 173,
+          "confidence": 0.922
+        },
+        {
+          "x": 235,
+          "y": 398,
+          "w": 95,
+          "h": 130,
+          "confidence": 0.874
+        }
+      ]
+    },
+    {
+      "name": "FB_IMG_1789560940639.jpg",
+      "size": [
+        1200,
+        1200
+      ],
+      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "face_masks": [
+        {
+          "x": 905,
+          "y": 639,
+          "w": 122,
+          "h": 154,
+          "confidence": 0.934
+        },
+        {
+          "x": 635,
+          "y": 144,
+          "w": 75,
+          "h": 92,
+          "confidence": 0.92
+        },
+        {
+          "x": 853,
+          "y": 307,
+          "w": 86,
+          "h": 103,
+          "confidence": 0.918
+        },
+        {
+          "x": 51,
+          "y": 720,
+          "w": 166,
+          "h": 211,
+          "confidence": 0.905
+        },
+        {
+          "x": 95,
+          "y": 165,
+          "w": 116,
+          "h": 130,
+          "confidence": 0.896
+        },
+        {
+          "x": 767,
+          "y": 403,
+          "w": 116,
+          "h": 118,
+          "confidence": 0.88
+        },
+        {
+          "x": 702,
+          "y": 863,
+          "w": 162,
+          "h": 210,
+          "confidence": 0.88
+        }
+      ]
+    },
+    {
+      "name": "FB_IMG_1789560997132.jpg",
+      "size": [
+        720,
+        960
+      ],
+      "status": "kept_previous_mask__REVIEW_REQUIRED",
+      "face_masks": []
+    },
+    {
+      "name": "FB_IMG_1789561050066.jpg",
+      "size": [
+        960,
+        721
+      ],
+      "status": "kept_previous_mask__REVIEW_REQUIRED",
+      "face_masks": []
+    },
+    {
+      "name": "FB_IMG_1789561105222.jpg",
+      "size": [
+        960,
+        960
+      ],
+      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "face_masks": [
+        {
+          "x": 610,
+          "y": 283,
+          "w": 152,
+          "h": 182,
+          "confidence": 0.938
+        }
+      ]
+    },
+    {
+      "name": "FB_IMG_1789561116308.jpg",
+      "size": [
+        960,
+        960
+      ],
+      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "face_masks": [
+        {
+          "x": 52,
+          "y": 109,
+          "w": 130,
+          "h": 163,
+          "confidence": 0.932
+        },
+        {
+          "x": 361,
+          "y": 365,
+          "w": 103,
+          "h": 127,
+          "confidence": 0.921
+        }
+      ]
+    },
+    {
+      "name": "FB_IMG_1789561129623.jpg",
+      "size": [
+        960,
+        960
+      ],
+      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "face_masks": [
+        {
+          "x": 522,
+          "y": 338,
+          "w": 44,
+          "h": 55,
+          "confidence": 0.915
+        },
+        {
+          "x": 504,
+          "y": 649,
+          "w": 75,
+          "h": 86,
+          "confidence": 0.91
+        },
+        {
+          "x": 636,
+          "y": 464,
+          "w": 52,
+          "h": 67,
+          "confidence": 0.899
+        },
+        {
+          "x": 5,
+          "y": 359,
+          "w": 52,
+          "h": 68,
+          "confidence": 0.886
+        },
+        {
+          "x": 120,
+          "y": 372,
+          "w": 43,
+          "h": 51,
+          "confidence": 0.884
+        }
+      ]
+    },
+    {
+      "name": "FB_IMG_1789561193322.jpg",
+      "size": [
+        1000,
+        750
+      ],
+      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "face_masks": [
+        {
+          "x": 309,
+          "y": 230,
+          "w": 39,
+          "h": 53,
+          "confidence": 0.916
+        },
+        {
+          "x": 153,
+          "y": 264,
+          "w": 49,
+          "h": 68,
+          "confidence": 0.896
+        },
+        {
+          "x": 628,
+          "y": 322,
+          "w": 46,
+          "h": 53,
+          "confidence": 0.886
+        }
+      ]
+    },
+    {
+      "name": "FB_IMG_1789561245227.jpg",
+      "size": [
+        1200,
+        900
+      ],
+      "status": "restored_and_masked__REVIEW_REQUIRED",
+      "face_masks": [
+        {
+          "x": 218,
+          "y": 449,
+          "w": 29,
+          "h": 36,
+          "confidence": 0.932
+        },
+        {
+          "x": 1113,
+          "y": 506,
+          "w": 31,
+          "h": 39,
+          "confidence": 0.903
+        },
+        {
+          "x": 878,
+          "y": 478,
+          "w": 22,
+          "h": 28,
+          "confidence": 0.885
+        }
+      ]
+    }
+  ],
+  "masked_photos": 21,
+  "kept_existing": 6,
+  "face_masks": 69
+}
