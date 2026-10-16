@@ -159,6 +159,9 @@ def run():
     for path in images:
         previous=Image.open(path).convert("RGB")
         original=ImageOps.exif_transpose(Image.open(io.BytesIO(source_jpeg(path.name)))).convert("RGB")
+        private_original_dir = AUDIT/"originals-private"
+        private_original_dir.mkdir(parents=True,exist_ok=True)
+        original.save(private_original_dir/path.name,"JPEG",quality=94)
         faces=detect_faces(original,model)
         if faces:
             out=original.copy()
