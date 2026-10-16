@@ -155,6 +155,7 @@ def run():
         "photos":[]
     }
     sheet=[]
+    original_sheet=[]
     for path in images:
         previous=Image.open(path).convert("RGB")
         original=ImageOps.exif_transpose(Image.open(io.BytesIO(source_jpeg(path.name)))).convert("RGB")
@@ -179,12 +180,14 @@ def run():
             ],
         })
         sheet.append((path.name,out,"masks="+str(len(faces))))
+        original_sheet.append((path.name,original,"original source (PRIVATE)"))
         print(f"{path.name} | {status} | faces={len(faces)}",flush=True)
     report["masked_photos"]=sum(x["status"].startswith("restored") for x in report["photos"])
     report["kept_existing"]=len(images)-report["masked_photos"]
     report["face_masks"]=sum(len(x["face_masks"]) for x in report["photos"])
     (AUDIT/"masked-face-positions.json").write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding="utf-8")
     make_sheet(sheet,AUDIT/"contact-sheet-MASKED-only.jpg")
+    make_sheet(original_sheet,AUDIT/"contact-sheet-ORIGINAL-private.jpg")
     print(f"TOTAL: {report['masked_photos']} reprocessed; {report['kept_existing']} preserved; {report['face_masks']} face masks")
     print("MANUAL PHOTO REVIEW IS REQUIRED before merging this branch to production.")
     if report["masked_photos"]==0:
