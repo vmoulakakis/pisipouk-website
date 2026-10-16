@@ -9,6 +9,7 @@ faces, false positives, alignment, and guardian consent.
 from __future__ import annotations
 
 import io
+import hashlib
 import json
 import math
 import os
@@ -25,8 +26,8 @@ SOURCE_REV = "a2b4f2e80390aa6b64f6e95316ab288d81901726"
 GALLERY = Path("src/assets/gallery-jpg")
 AUDIT = Path("gallery-review")
 MODEL = Path("/tmp/pisipouk-yunet-2023mar.onnx")
-MODEL_URL = ("https://raw.githubusercontent.com/opencv/opencv_zoo/main/"
-             "models/face_detection_yunet/face_detection_yunet_2023mar.onnx")
+MODEL_URL = "https://huggingface.co/opencv/face_detection_yunet/resolve/main/face_detection_yunet_2023mar.onnx?download=true"
+EXPECTED_MODEL_SHA256 = "8f2383e4dd3cfbb4553ea8718107fc0423210dc964f9f4280604804ed2552fa4"
 SCORE_THRESHOLD = 0.87
 # The face cover is purposely fitted to the detected face box, NEVER positioned
 # at an arbitrary location in the scene or applied as a full-image sticker.
@@ -37,8 +38,8 @@ COVER_HEIGHT = 1.35
 def get_model():
     if not MODEL.is_file() or MODEL.stat().st_size < 200_000:
         urllib.request.urlretrieve(MODEL_URL, MODEL)
-    if MODEL.stat().st_size < 200_000:
-        raise RuntimeError("YuNet face model download incomplete: fail closed")
+    if MODEL.stat().st_size < 200_000 or hashlib.sha256(MODEL.read_bytes()).hexdigest() != EXPECTED_MODEL_SHA256:
+        raise RuntimeError("YuNet model incomplete or checksum mismatch: fail closed")
     return MODEL
 
 
