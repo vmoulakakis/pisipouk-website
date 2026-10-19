@@ -1,17 +1,29 @@
 {
   "version": 1,
-  "week": "2026-W42",
-  "updatedAt": "2026-10-12T13:15:12.549Z",
+  "week": "2026-W43",
+  "updatedAt": "2026-10-19T10:52:22.556Z",
   "source": "deterministic-exploration",
   "items": [
     "game-pattern",
     "game-colors-shapes",
     "print-dot-pattern",
-    "print-trace-paths",
+    "print-story-cards",
     "craft-owl",
     "craft-butterfly"
   ],
   "rotationHistory": [
+    {
+      "week": "2026-W43",
+      "at": "2026-10-19T10:52:22.556Z",
+      "source": "deterministic-exploration",
+      "replacements": [
+        {
+          "from": "print-trace-paths",
+          "to": "print-story-cards",
+          "reason": "exploration-slot"
+        }
+      ]
+    },
     {
       "week": "2026-W42",
       "at": "2026-10-12T13:15:12.549Z",
