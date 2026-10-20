@@ -38,6 +38,10 @@ import {
   type Domain,
 } from "./content";
 import { Game } from "./Game";
+import { ActivityLibrary } from "./ActivityLibrary";
+import { PatternStudio } from "./PatternStudio";
+import { CraftStudio } from "./CraftStudio";
+import { PACK_KEYS } from "./playpacks";
 import { Playground } from "./Playground";
 import { Drawing } from "./Drawing";
 import { StoryBook } from "./Stories";
@@ -420,11 +424,7 @@ export function PreschoolWorld() {
               </div>
             </div>
             <div className="pw-learning-layout">
-              <Game
-                key={`${domain.id}-${age}`}
-                task={domain.tasks[age]}
-                onComplete={() => done(`${domain.id}-${age}`)}
-              />
+              <Game key={domain.id+"-"+age} task={domain.tasks[age]} onComplete={() => done(`${domain.id}-${age}`)} />
               <aside className="pw-craft">
                 <small>Η ΠΕΡΙΠΕΤΕΙΑ ΣΥΝΕΧΙΖΕΤΑΙ</small>
                 <h3>Φτιάχνουμε κάτι αληθινό.</h3>
@@ -459,6 +459,8 @@ export function PreschoolWorld() {
                 )}
               </aside>
             </div>
+            {PACK_KEYS.some(k=>k===domain.id) && <ActivityLibrary key={domain.id+"-"+age} category={domain.id as typeof PACK_KEYS[number]} age={age} onComplete={() => done(`${domain.id}-${age}`)} />}
+            {domain.id === "craft" && <CraftStudio age={age}/>}
             <p role="status">{status}</p>
             <div className="pw-gentle-reward">
               <Star />
@@ -471,6 +473,7 @@ export function PreschoolWorld() {
           </section>
         )}
         <div hidden={panel !== "drawing"}>
+          <PatternStudio age={age} />
           <Drawing saveData={setDrawingData} grayscale={gray} paper={paper} />
         </div>
         {panel === "playground" && (
