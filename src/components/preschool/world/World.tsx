@@ -342,6 +342,15 @@ export function PreschoolWorld() {
                 </button>
               ))}
             </div>
+            <section aria-label="Ειδική ενότητα 28ης Οκτωβρίου 1940" style={{ margin: "22px 0", padding: "20px", background: "linear-gradient(120deg,#e5f3ff,#fff8e9)", border: "2px solid #b7d9ed", borderRadius: 24, display: "flex", gap: 18, flexWrap: "wrap", alignItems: "center" }}>
+              <span aria-hidden="true" style={{ fontSize: 45 }}>🇬🇷</span>
+              <div style={{ flex: "1 1 250px" }}>
+                <small style={{ color: "#53774b", fontWeight: 900, letterSpacing: ".12em" }}>ΕΙΔΙΚΟ STORY TIME · 28 ΟΚΤΩΒΡΙΟΥ 1940</small>
+                <h2 style={{ margin: "5px 0", color: "#124987", fontSize: "clamp(20px, 3vw, 29px)" }}>Το μεγάλο ΟΧΙ — 2 μίνι βιβλιαράκια</h2>
+                <p style={{ margin: 0, color: "#435a6c", lineHeight: 1.6 }}>Ανά ηλικία 2,5–3,5 και 4–6 ετών, εικονογραφημένα Α4 και κινούμενες οδηγίες διπλώματος.</p>
+              </div>
+              <a href="/oxi-1940" style={{ display: "inline-flex", background: "#11528d", color: "white", fontWeight: 900, padding: "14px 20px", textDecoration: "none", borderRadius: 35 }}>Άνοιξε την ενότητα →</a>
+            </section>
             <section className="pw-play-invite">
               <img
                 src="/preschool-world/bear.webp"
