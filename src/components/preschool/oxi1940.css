@@ -1,0 +1,70 @@
+/* Scoped to the new OXI learning world: no global styles or existing preschool overrides. */
+.oxi-root{min-height:80vh;background:radial-gradient(circle at 5% 0,#e7f4ff 0,transparent 28%),linear-gradient(180deg,#f7f4ed,#fffdf8 40%,#edf7fc);color:#263e53;padding:36px 16px 80px;font-family:"Nunito",system-ui,sans-serif}
+.oxi-wrap{max-width:1080px;margin:auto}
+.oxi-hero{position:relative;overflow:hidden;padding:48px clamp(20px,5vw,64px);border-radius:34px;background:linear-gradient(125deg,#123e72,#286ca7);color:white;box-shadow:0 18px 35px #0b3b8240}
+.oxi-kicker{font-size:12px;letter-spacing:.09em;font-weight:900;color:#e4cf92}
+.oxi-hero h1{font-size:clamp(32px,6vw,64px);line-height:1.05;font-weight:1000;margin:14px 0}
+.oxi-hero p{max-width:700px;line-height:1.65;margin-top:12px;font-size:16px}
+.oxi-hero-strong{font-size:clamp(18px,3vw,25px)!important;font-weight:900}
+.oxi-decor{font-size:clamp(24px,4vw,39px);letter-spacing:6px;margin-top:22px}
+.oxi-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin:28px 0}
+.oxi-card{border-radius:28px;overflow:hidden;background:#fff;border:1px solid #cfdfed;box-shadow:0 12px 35px #16395b1c;display:flex;flex-direction:column}
+.oxi-card-art{position:relative;min-height:198px;overflow:hidden;background:linear-gradient(160deg,#dfeffc,#fff4d5 72%);border-bottom:1px solid #d6e4ed}
+.oxi-card-olive,.oxi-card-flag,.oxi-card-village,.oxi-card-year{position:absolute}
+.oxi-card-olive{top:12px;left:22px;font-size:64px}
+.oxi-card-flag{top:23px;right:26px;font-size:66px}
+.oxi-card-village{bottom:16px;left:26px;font-size:48px}
+.oxi-card-year{left:50%;top:36%;transform:translate(-50%,-35%);font-size:clamp(62px,9vw,99px);color:#1e568b;font-weight:1000;letter-spacing:-5px;text-shadow:2px 4px #fff9}
+.oxi-card-content{display:flex;flex-direction:column;align-items:flex-start;gap:14px;padding:26px;flex:1}
+.oxi-age{display:inline-block;border-radius:999px;padding:6px 13px;background:#f5e7be;color:#58430d;font-size:13px;font-weight:900}
+.oxi-card h2{font-size:clamp(23px,2.6vw,29px);color:#124b7b;font-weight:1000}
+.oxi-card p{line-height:1.65;min-height:75px}
+.oxi-card small{font-size:12px;line-height:1.55;color:#536779}
+.oxi-primary,.oxi-secondary,.oxi-next,.oxi-reset,.oxi-back{display:inline-flex;align-items:center;justify-content:center;gap:9px;border-radius:16px;padding:13px 17px;font-weight:900;font-size:14px;cursor:pointer;text-decoration:none;transition:transform .12s ease,background .12s ease}
+.oxi-primary,.oxi-next{background:#165f9d;color:white}
+.oxi-primary:hover,.oxi-next:hover{background:#0b487e;transform:translateY(-1px)}
+.oxi-secondary{background:#f3f8fc;border:1px solid #9fc4df;color:#154f81}
+.oxi-secondary:hover{background:#dceefa}
+.oxi-back{color:#1b5886;background:#fff;border:1px solid #d2e3ee;margin-top:8px}
+.oxi-parent-note{margin:22px 0;color:#516677;font-size:13px;line-height:1.65}
+.oxi-play{max-width:900px}
+.oxi-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.oxi-play>h1{font-size:clamp(27px,4vw,43px);font-weight:1000;color:#164c79;margin:22px 0 5px}
+.oxi-play>p{font-size:15px;line-height:1.6}
+.oxi-progress{margin:22px 0 18px;display:grid;gap:8px;font-weight:900;color:#19537d;font-size:13px}
+.oxi-progress [role="progressbar"]{height:12px;border-radius:99px;background:#d7e7ee;overflow:hidden}
+.oxi-progress [role="progressbar"] div{background:#4f9c82;height:100%;transition:width .2s}
+.oxi-task-card{background:#fffdf8;border:2px solid #d3e3eb;border-radius:32px;box-shadow:0 14px 30px #1537551c;padding:clamp(20px,4vw,40px);min-height:470px}
+.oxi-task-head h2{font-weight:1000;font-size:clamp(25px,4vw,39px);color:#0c497b;margin:14px 0 8px}
+.oxi-task-head p{font-size:clamp(17px,2.5vw,22px);font-weight:850}
+.oxi-task-head small{display:block;margin-top:9px;color:#6b7c86;font-size:13px}
+.oxi-task-body{padding-top:22px}
+.oxi-examples{font-size:clamp(27px,5vw,48px);border:1px dashed #a9c8d7;border-radius:22px;background:#f5faff;padding:20px;text-align:center;line-height:1.8;letter-spacing:3px;word-wrap:break-word}
+.oxi-answers{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;padding:26px 0 8px}
+.oxi-answer{display:flex;min-width:110px;min-height:100px;flex:1 1 120px;max-width:210px;flex-direction:column;align-items:center;justify-content:center;gap:6px;border:3px solid #bed7e6;background:#fff;border-radius:23px;color:#164c79;font-size:clamp(21px,3vw,30px);font-weight:1000;padding:12px}
+.oxi-answer:hover:not(:disabled),.oxi-answer:focus-visible{border-color:#226ca7;background:#f0f9ff}
+.oxi-answer.is-correct{border-color:#388b6a;background:#e3faed}
+.oxi-answer.is-incorrect{border-color:#bd6c5e;background:#fff2ef}
+.oxi-icon{font-size:62px}.oxi-big{font-size:78px}.oxi-small{font-size:34px}
+.oxi-feedback{font-size:17px;font-weight:950;margin:15px auto;text-align:center;color:#215b54;line-height:1.5}
+.oxi-next{margin:12px auto;display:flex}
+.oxi-next:disabled{opacity:.5;cursor:not-allowed}
+.oxi-slots{display:flex;justify-content:center;gap:12px}
+.oxi-slot{width:80px;height:88px;border:3px dashed #7fafd1;background:#f5faff;border-radius:18px;display:flex;align-items:center;justify-content:center;font-weight:1000;font-size:50px;color:#154b7b}
+.oxi-reset{color:#24577c;border:1px solid #b6d1df;background:white;margin:10px auto}
+.oxi-tiles{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;padding:22px 0}
+.oxi-tile{border:2px solid #9fc6df;border-radius:18px;padding:12px;min-width:115px;min-height:100px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:white;font-size:14px;font-weight:900;gap:4px;cursor:grab}
+.oxi-tile span{font-size:34px}
+.oxi-tile.is-active{border-color:#ecaa4e;background:#fff1ce;box-shadow:0 0 0 2px #ecdca8}
+.oxi-bins{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.oxi-bin{min-height:150px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:14px;border:3px dashed #81b4d1;border-radius:20px;background:#f1faff;padding:15px;font-size:20px}
+.oxi-bin b{font-size:18px;color:#0d4c7a}
+.oxi-trace{margin:10px 0 20px;position:relative;overflow:hidden;border-radius:20px;border:2px solid #b8d5e8;background:#fafdff;aspect-ratio:900/320}
+.oxi-trace-guide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;white-space:nowrap;font-size:clamp(52px,11vw,110px);font-weight:1000;letter-spacing:.04em;color:#bed8e8;pointer-events:none}
+.oxi-trace canvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair}
+.oxi-trace-actions{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.oxi-celebrate{text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.oxi-celebrate h2{font-size:clamp(26px,4vw,37px);font-weight:1000;color:#145583}
+.oxi-celebrate p{font-size:18px}
+@media(max-width:700px){.oxi-root{padding:16px 10px 60px}.oxi-hero{border-radius:22px;padding:27px 20px}.oxi-grid{grid-template-columns:1fr;gap:20px}.oxi-card-art{min-height:166px}.oxi-card-content{padding:22px}.oxi-card p{min-height:0}.oxi-task-card{min-height:0}.oxi-bins{grid-template-columns:1fr}.oxi-answers{gap:10px}.oxi-answer{min-width:84px;flex-basis:95px;min-height:90px}.oxi-toolbar{align-items:flex-start}.oxi-trace-guide{font-size:clamp(40px,9vw,70px)}}
+@media(prefers-reduced-motion:reduce){.oxi-root *{transition:none!important;animation:none!important}}
