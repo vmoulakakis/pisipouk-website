@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type DragEvent, type PointerEvent } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, Check, Download, MousePointer2, RotateCcw, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Download, MousePointer2, RotateCcw } from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import "./oxi1940.css";
 
@@ -13,8 +13,8 @@ type Task =
   | { id: string; title: string; instruction: string; kind: "trace"; lesson: string };
 
 export const OXI_ASSETS = {
-  little: { title: "Μικροί εξερευνητές", age: "2,5–3,5 ετών", canva: "https://www.canva.com/d/Af9o_qKGSzyZJOW", filename: "oxi-1940-2-5-3-5.pdf" },
-  big: { title: "Μεγάλοι εξερευνητές", age: "4–6 ετών", canva: "https://www.canva.com/d/MIhXQfvj0kPD00Q", filename: "oxi-1940-4-6.pdf" },
+  little: { title: "Μικροί εξερευνητές", age: "2,5–3,5 ετών", canva: "https://www.canva.com/d/Af9o_qKGSzyZJOW", filename: "oxi-1940-2-5-3-5.pdf", pdf: "/printables/oxi-1940-2-5-3-5.pdf" },
+  big: { title: "Μεγάλοι εξερευνητές", age: "4–6 ετών", canva: "https://www.canva.com/d/MIhXQfvj0kPD00Q", filename: "oxi-1940-4-6.pdf", pdf: "/printables/oxi-1940-4-6.pdf" },
 } as const;
 
 // Every challenge has a single verifiable solution. No timer, negative score or user tracking.
@@ -63,8 +63,8 @@ function ChoiceActivity({ task, onFinish }: {task: Extract<Task,{kind:"choice"}>
 function SequenceActivity({task,onFinish}:{task:Extract<Task,{kind:"sequence"}>;onFinish:()=>void}){
   const [placed,setPlaced]=useState<string[]>([]);
   const correct=placed.join("")===task.answer.join("");
-  const put=(letter:string,index:number)=>{if(placed.length===task.answer.length)return;setPlaced(v=>[...v,letter]);};
-  return <div className="oxi-task-body"><div className="oxi-slots">{task.answer.map((_,i)=><div key={i} className="oxi-slot">{placed[i]??"_"}</div>)}</div><div className="oxi-answers">{task.tokens.map((item,i)=><button className="oxi-answer" disabled={placed.includes(item)} key={i} onClick={()=>put(item,i)}>{item}</button>)}</div><button className="oxi-reset" type="button" onClick={()=>setPlaced([])}><RotateCcw size={16}/> Ξανά</button>{placed.length===task.answer.length&&<p className="oxi-feedback" aria-live="polite">{correct?"🌟 Έγραψες σωστά το ΟΧΙ!":"Δοκίμασε ξανά με άλλη σειρά."}</p>}{correct&&<button className="oxi-next" onClick={onFinish}>Συνεχίζω <ArrowRight size={18}/></button>}</div>;
+  const put=(letter:string)=>{if(placed.length===task.answer.length)return;setPlaced(v=>[...v,letter]);};
+  return <div className="oxi-task-body"><div className="oxi-slots">{task.answer.map((_,i)=><div key={i} className="oxi-slot">{placed[i]??"_"}</div>)}</div><div className="oxi-answers">{task.tokens.map((item,i)=><button className="oxi-answer" disabled={placed.includes(item)} key={i} onClick={()=>put(item)}>{item}</button>)}</div><button className="oxi-reset" type="button" onClick={()=>setPlaced([])}><RotateCcw size={16}/> Ξανά</button>{placed.length===task.answer.length&&<p className="oxi-feedback" aria-live="polite">{correct?"🌟 Έγραψες σωστά το ΟΧΙ!":"Δοκίμασε ξανά με άλλη σειρά."}</p>}{correct&&<button className="oxi-next" onClick={onFinish}>Συνεχίζω <ArrowRight size={18}/></button>}</div>;
 }
 function SortActivity({task,onFinish}:{task:Extract<Task,{kind:"sort"}>;onFinish:()=>void}){
  const [placed,setPlaced]=useState<Record<string,number>>({});
@@ -90,7 +90,9 @@ export function Oxi1940Hub(){
 }
 function AgeCard({age}:{age:Age}){
  const v=OXI_ASSETS[age];
- return <article className="oxi-card"><div className="oxi-card-art" aria-hidden="true"><span className="oxi-card-olive">🌿</span><span className="oxi-card-year">1940</span><span className="oxi-card-flag">🇬🇷</span><span className="oxi-card-village">🏔️ 🕊️</span></div><div className="oxi-card-content"><span className="oxi-age">{v.age}</span><h2>{v.title}</h2><p>{age==="little"?"Μεγάλα σύμβολα, μετρήματα μέχρι το 3, απλές επιλογές, μοτίβα και πρώτο drag & drop.":"Μέτρημα μέχρι το 10, γράμματα της λέξης ΟΧΙ, μοτίβα, συγκρίσεις, ιστορικά αντικείμενα και ταξινόμηση."}</p><a className="oxi-primary" href={age==="little"?"/october-1940-young":"/october-1940-older"}><MousePointer2 size={18}/> Παίζω διαδραστικά <ArrowRight size={17}/></a><a href={v.canva} target="_blank" rel="noopener noreferrer" className="oxi-secondary"><Download size={18}/> Άνοιγμα PDF μέσω Canva</a><small>Στο Canva: «Κοινή χρήση» → «Λήψη» → «PDF για εκτύπωση».</small></div></article>;
+ const [pdfAvailable,setPdfAvailable]=useState(false);
+ useEffect(()=>{let active=true;fetch(v.pdf,{method:"HEAD"}).then(r=>{if(active&&r.ok&&(r.headers.get("content-type")??"").includes("application/pdf"))setPdfAvailable(true)}).catch(()=>{});return()=>{active=false}},[v.pdf]);
+ return <article className="oxi-card"><div className="oxi-card-art" aria-hidden="true"><span className="oxi-card-olive">🌿</span><span className="oxi-card-year">1940</span><span className="oxi-card-flag">🇬🇷</span><span className="oxi-card-village">🏔️ 🕊️</span></div><div className="oxi-card-content"><span className="oxi-age">{v.age}</span><h2>{v.title}</h2><p>{age==="little"?"Μεγάλα σύμβολα, μετρήματα μέχρι το 3, απλές επιλογές, μοτίβα και πρώτο drag & drop.":"Μέτρημα μέχρι το 10, γράμματα της λέξης ΟΧΙ, μοτίβα, συγκρίσεις, ιστορικά αντικείμενα και ταξινόμηση."}</p><a className="oxi-primary" href={age==="little"?"/october-1940-young":"/october-1940-older"}><MousePointer2 size={18}/> Παίζω διαδραστικά <ArrowRight size={17}/></a><a href={pdfAvailable?v.pdf:v.canva} download={pdfAvailable?v.filename:undefined} target={pdfAvailable?undefined:"_blank"} rel={pdfAvailable?undefined:"noopener noreferrer"} className="oxi-secondary"><Download size={18}/> {pdfAvailable?"Κατέβασε PDF Α4":"Άνοιξε το βιβλιαράκι Canva"}</a><small>{pdfAvailable?"Αυθεντικό, εκτυπώσιμο PDF σε μέγεθος Α4.":"Όταν δημοσιευθεί το PDF στον ιστότοπο, το κουμπί θα γίνει αυτόματα απευθείας λήψη. Προς το παρόν: Canva → Κοινή χρήση → Λήψη → PDF για εκτύπωση."}</small></div></article>;
 }
 export function Oxi1940Game({age}:{age:Age}){
  const tasks=age==="little"?LITTLE:BIG; const info=OXI_ASSETS[age];
