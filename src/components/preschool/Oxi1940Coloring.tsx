@@ -1,4 +1,4 @@
-import { useRef, useState, type PointerEvent } from "react";
+import { useRef, useState, type PointerEvent, type MouseEvent } from "react";
 import { Download, Paintbrush, Printer, RotateCcw, Undo2, Eraser, PaintBucket, ArrowLeft, ImageDown } from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 
@@ -81,7 +81,7 @@ export function Oxi1940Coloring(){
   const sheet=template(current);
   const clearCanvas=()=>{const c=canvasRef.current;c?.getContext("2d")?.clearRect(0,0,720,960);undoStack.current=[];setHistory(0);};
   const select=(id:SheetId)=>{setCurrent(id);setFills({});clearCanvas();setError("");};
-  const paintShape=(e:React.MouseEvent<HTMLDivElement>)=>{
+  const paintShape=(e:MouseEvent<HTMLDivElement>)=>{
     if(tool!=="fill")return;
     const node=(e.target as Element).closest("[data-region]");
     const id=node?.getAttribute("data-region");
