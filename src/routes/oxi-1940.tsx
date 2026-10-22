@@ -118,7 +118,7 @@ function OxiBookletPage() {
               <div>
                 <p className="text-xs font-black uppercase tracking-[.16em] text-[#3f784e]">Εορταστική θεματική · 28 Οκτωβρίου</p>
                 <h1 className="mt-3 text-4xl font-black leading-tight text-[#124987] sm:text-6xl">Το μεγάλο ΟΧΙ του 1940</h1>
-                <p className="mt-4 max-w-2xl text-base font-medium leading-7 text-[#38566d]">Διαβάζουμε την ιστορία, εκτυπώνουμε ένα Α4 και φτιάχνουμε ένα μίνι βιβλιαράκι 8 σελίδων. Επιλέγουμε την κατάλληλη ηλικία και βλέπουμε βήμα-βήμα το δίπλωμα.</p><a href="/october-1940" className="mt-5 inline-flex min-h-12 items-center rounded-full bg-[#124987] px-5 py-3 text-sm font-black text-white">🧩 Παίζω 24 δραστηριότητες ανά ηλικία →</a>
+                <p className="mt-4 max-w-2xl text-base font-medium leading-7 text-[#38566d]">Διαβάζουμε την ιστορία, εκτυπώνουμε ένα Α4 και φτιάχνουμε ένα μίνι βιβλιαράκι 8 σελίδων. Επιλέγουμε την κατάλληλη ηλικία και βλέπουμε βήμα-βήμα το δίπλωμα.</p><a href="/october-1940" className="mt-5 inline-flex min-h-12 items-center rounded-full bg-[#124987] px-5 py-3 text-sm font-black text-white">🧩 Παίζω 12 δραστηριότητες ανά ηλικία · 24 συνολικά →</a>
               </div>
               <div className="self-start rounded-3xl border border-white/80 bg-white/80 p-5 text-center shadow-sm">
                 <div className="text-4xl">🇬🇷 📖 🕊️</div>
