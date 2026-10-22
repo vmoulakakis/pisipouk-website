@@ -158,6 +158,14 @@ function PackContent({ pack }: { pack: Pack }) {
               <Link to="/learning-games" className="rounded-2xl border bg-violet-50 p-4 font-black text-[#0b3b82]">🧩 Περισσότερα μαθησιακά παιχνίδια</Link>
             </div>
 
+            {pack.title === "28η Οκτωβρίου" && (
+              <section className="no-print mt-7 rounded-3xl border-2 border-sky-200 bg-gradient-to-r from-sky-50 to-amber-50 p-5">
+                <p className="text-xs font-black uppercase tracking-[.14em] text-blue-700">ΝΕΑ ΕΠΕΤΕΙΑΚΗ ΕΝΟΤΗΤΑ · 1940</p>
+                <h2 className="mt-2 text-2xl font-black text-[#0b3b82]">28η Οκτωβρίου: Παίζω και μαθαίνω το ΟΧΙ</h2>
+                <p className="mt-2 text-sm leading-6 text-slate-700">Διάλεξε 2,5–3,5 ή 4–6 ετών. Παίξε 12 διαδραστικές δραστηριότητες ανά ηλικία και άνοιξε το αντίστοιχο εικονογραφημένο βιβλιαράκι Α4.</p>
+                <a href="/october-1940" className="mt-4 inline-flex min-h-12 items-center rounded-full bg-[#155c95] px-5 py-3 text-sm font-black text-white hover:bg-[#0b3b82]">🇬🇷 Άνοιξε την ενότητα του ΟΧΙ →</a>
+              </section>
+            )}
             <section className="mt-7 rounded-2xl border bg-violet-50/60 p-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
