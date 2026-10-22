@@ -45,7 +45,7 @@ const colors=["#1856a9","#62b5e8","#ffffff","#2f945f","#98ca58","#ffcf48","#ed82
 const safe = (s: string) => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
 const template = (id: SheetId) => sheets.find(s=>s.id===id)!;
 function svgMarkup(sheet:Sheet, fills:Record<string,string>) {
-  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 960" width="720" height="960" role="img" aria-label="'+safe(sheet.title)+'">'+
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 960" width="720" height="960" style="width:100%;height:100%;display:block" role="img" aria-label="'+safe(sheet.title)+'">'+
     '<rect width="720" height="960" fill="white"/><rect x="24" y="24" width="672" height="912" rx="28" fill="white" stroke="#205792" stroke-width="4"/>'+
     '<text x="360" y="96" text-anchor="middle" font-family="Arial,sans-serif" font-weight="bold" font-size="31" fill="#194a83">28η Οκτωβρίου 1940</text>'+
     '<text x="360" y="145" text-anchor="middle" font-family="Arial,sans-serif" font-weight="bold" font-size="27" fill="#305c83">'+safe(sheet.title)+'</text>'+
