@@ -269,7 +269,7 @@ export function PreschoolWorld() {
         </section>
         {panel === "village" && (
           <a href="/october-1940" className="mx-auto my-4 flex min-h-14 w-[calc(100%-32px)] max-w-4xl items-center justify-center gap-3 rounded-2xl border-2 border-sky-300 bg-sky-50 px-5 py-3 text-center text-sm font-black text-blue-900 shadow-sm hover:bg-sky-100">
-            <span aria-hidden="true">🇬🇷</span> 28η Οκτωβρίου 1940 — Διαδραστικές ασκήσεις και PDF για 2,5–3,5 & 4–6 ετών <span aria-hidden="true">→</span>
+            <span aria-hidden="true">🇬🇷</span> 28η Οκτωβρίου 1940 — ζωγραφική online, λήψη PDF Α4 και 24 παιχνίδια <span aria-hidden="true">→</span>
           </a>
         )}
         {panel === "village" && (
