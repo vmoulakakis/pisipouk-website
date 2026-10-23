@@ -153,6 +153,7 @@ function PackContent({ pack }: { pack: Pack }) {
               <p className="mt-2 text-sm text-muted-foreground">Ζωγραφική · puzzle · κατασκευή · printable</p>
             </div>
 
+            {pack.title === "28η Οκτωβρίου" && <div className="no-print mt-6 rounded-2xl border-2 border-blue-200 bg-sky-50 p-5"><h2 className="text-2xl font-black text-blue-950">🎨 28η Οκτωβρίου: Ζωγραφική & Εκτυπώσιμα</h2><p className="mt-2 text-sm">Κοριτσάκι και αγοράκι με σημαία, ίδιο ποίημα, χρωματισμός online και εκτύπωση σε Α4.</p><Link to="/october-28-activities" className="mt-3 inline-block rounded-xl bg-blue-700 px-5 py-3 font-black text-white">Άνοιξε τις δραστηριότητες →</Link></div>}
             <div className="no-print mt-7 grid gap-3 sm:grid-cols-2">
               <a href="/virtual-preschool#coloring-library" className="rounded-2xl border bg-pink-50 p-4 font-black text-[#0b3b82]">🎨 Άνοιξε τη ζωγραφική</a>
               <Link to="/learning-games" className="rounded-2xl border bg-violet-50 p-4 font-black text-[#0b3b82]">🧩 Περισσότερα μαθησιακά παιχνίδια</Link>

@@ -108,6 +108,7 @@ function NutritionPage() {
   return (
     <SiteLayout>
       <section className="hero-field py-16 sm:py-24">
+        <div className="mx-auto max-w-7xl px-4 pb-5 lg:px-8"><Link to="/nutrition-november" className="inline-flex rounded-2xl bg-amber-300 px-6 py-4 text-lg font-black text-slate-900 shadow-lg hover:bg-amber-200">🐻 ΝΕΟ: Μενού Νοεμβρίου 2026 (από 2/11) →</Link></div>
         <div className="mx-auto max-w-7xl px-4 lg:px-8">
           <p className="section-kicker">
             {gr ? "Η φροντίδα συνεχίζεται στο τραπέζι" : "Care continues at the table"}
