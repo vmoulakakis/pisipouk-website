@@ -1,0 +1,5 @@
+---
+description: Universal Creation routing for work in this repository
+alwaysApply: true
+---
+For new or modified deliverables, use AGENTS.md and the local `.agents/skills/universal-creation-orchestrator/SKILL.md`. Preserve project rules; load relevant skills only; verify actual output. The Claude/Codex skill is NOT permission to install or deploy anything.
