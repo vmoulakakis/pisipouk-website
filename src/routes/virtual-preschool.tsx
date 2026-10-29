@@ -1,15 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PreschoolWorld } from "@/components/preschool/world/World";
+import { PreschoolWonder } from "@/components/preschool/wonder/PreschoolWonder";
 export const Route = createFileRoute("/virtual-preschool")({
   head: () => ({
     meta: [
-      { title: "Πισιπούκ · Το χωριό της μάθησης" },
+      { title: "Πισιπούκ • Παίζω, Μαθαίνω, Δημιουργώ | Online Preschool 2–6" },
       {
         name: "description",
         content:
-          "Ένα εικονογραφημένο χωριό μάθησης για παιδιά 2–6 ετών: 16 κόσμοι, παιχνίδια, ζωγραφική, ελληνικές ιστορίες και PDF με την παρουσία ενηλίκου.",
+          "Το διαδραστικό χωριό μάθησης του Πισιπούκ για παιδιά 2–6 ετών: 6 παιχνίδια, πατρόν Α4, οπτικές κατασκευές, ζωγραφική, ελληνικά παραμύθια και 16 εκπαιδευτικοί κόσμοι.",
       },
     ],
   }),
-  component: PreschoolWorld,
+  component: PreschoolWonder,
 });
