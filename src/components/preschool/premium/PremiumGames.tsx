@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
+import { motion, useReducedMotion } from "motion/react";
 import { ArrowLeft, ArrowRight, BookOpen, Compass, Heart, Play, RotateCcw, Sparkles, Volume2, VolumeX } from "lucide-react";
 import { DOMAINS, GAME_MISSIONS_COUNT, cardArt, challengeSignature, makeChallenge, type Challenge, type Choice, type DomainId } from "./learningEngine";
 import { type AgeBand } from "./illustrationAtlas";
@@ -60,6 +61,7 @@ function RegularGame({challenge,onSuccess,onWrong}:{challenge:Challenge;onSucces
  <div className="premium-options">{challenge.choices.map(choice=><button key={choice.id} className="premium-option-card" onClick={()=>choice.id===challenge.correct?onSuccess():onWrong()} aria-label={choice.label}><OptionArt option={choice}/><b>{choice.label}</b></button>)}</div></>;
 }
 export function PremiumGames({age}:{age:AgeBand}){
+ const reduceMotion=useReducedMotion();
  const [domain,setDomain]=useState<DomainId|null>(null);const [mission,setMission]=useState<number|null>(null);
  const [challenge,setChallenge]=useState<Challenge|null>(null);const [solved,setSolved]=useState(false);const [wrong,setWrong]=useState(0);const [status,setStatus]=useState("");
  const [completed,setCompleted]=useState<string[]>([]);
@@ -77,7 +79,7 @@ export function PremiumGames({age}:{age:AgeBand}){
  <div className="premium-play">
   <div className="premium-play-top"><button onClick={()=>setMission(null)}><ArrowLeft/> Όλες οι αποστολές</button><span>ΑΠΟΣΤΟΛΗ {mission+1} / 10</span><button onClick={replay}><RotateCcw/> Νέος γύρος</button></div>
   <div className="premium-play-paper"><div className="premium-play-head"><span className="premium-game-ribbon"><Sparkles size={17}/> ΜΙΚΡΗ ΑΝΑΚΑΛΥΨΗ</span><h2>{challenge.intro}</h2><p>{challenge.prompt}</p><button className="premium-speak" onClick={()=>speak(challenge.prompt,setStatus)}><Volume2 size={21}/> Άκουσέ το</button></div>
-  {solved?<div className="premium-success"><div className="premium-success-art"><PlayArt id={activeDomain.art} large/></div><h3>Μπράβο για την προσπάθειά σου!</h3><p>Θέλεις μία νέα έκπληξη ή διαφορετική αποστολή;</p><div><button className="premium-export-primary" onClick={replay}><RotateCcw/> Νέος διαφορετικός γύρος</button><button onClick={()=>chooseMission(domain,(mission+1)%10)}>Επόμενη αποστολή <ArrowRight/></button></div></div>:
+  {solved?<motion.div className="premium-success" initial={reduceMotion?false:{scale:.92,opacity:0,y:16}} animate={{scale:1,opacity:1,y:0}} transition={{type:"spring",stiffness:230,damping:22}}><div className="premium-success-art"><PlayArt id={activeDomain.art} large/></div><h3>Μπράβο για την προσπάθειά σου!</h3><p>Θέλεις μία νέα έκπληξη ή διαφορετική αποστολή;</p><div><button className="premium-export-primary" onClick={replay}><RotateCcw/> Νέος διαφορετικός γύρος</button><button onClick={()=>chooseMission(domain,(mission+1)%10)}>Επόμενη αποστολή <ArrowRight/></button></div></motion.div>:
  <>{challenge.domain==="tracing"?<TraceChallenge challenge={challenge} onSuccess={win}/>:challenge.domain==="rhythm"?<RhythmChallenge challenge={challenge} onSuccess={win}/>:challenge.domain==="stories"?<StoryChallenge challenge={challenge} onSuccess={win}/>:<RegularGame challenge={challenge} onSuccess={win} onWrong={wrongAnswer}/>}<p className="premium-game-status" role="status" aria-live="polite">{status||"Παίζουμε με την ησυχία μας, χωρίς πίεση."}</p></>}
   </div><div className="premium-parent-tip"><Heart size={19}/> Μετά το παιχνίδι, δοκιμάστε να βρείτε αντίστοιχα σχήματα, χρώματα ή μοτίβα στο σπίτι σας.</div>
  </div>}
