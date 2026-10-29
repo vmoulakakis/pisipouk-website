@@ -78,7 +78,7 @@ test.describe("Full educational regression before production", () => {
     for(const g of gamePaths){
       await page.getByRole("button",{name:new RegExp(g.name)}).click();
       for(const answer of g.choices){
-        await page.getByRole("button",{name:answer,exact:true}).click();
+        await page.getByRole("button",{name:g.name==="Πώς νιώθει ο φίλος μου;"?new RegExp(answer+"$"):answer,exact:g.name!=="Πώς νιώθει ο φίλος μου;"}).click();
       }
       await expect(page.getByRole("heading",{name:/Τα κατάφερες/})).toBeVisible();
       await page.getByRole("button",{name:/Παίζω ξανά/}).click();
