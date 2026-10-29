@@ -152,8 +152,8 @@ export function PreschoolWonder(){
   <div className="ps-age-picker" aria-label="Επιλογή ηλικιακής ομάδας"><span>🌟 ΔΙΑΛΕΞΕ ΗΛΙΚΙΑ</span><div>{AGE_PATHS.map((item,i)=><button key={i} onClick={()=>setAge(i as PreschoolAge)} aria-pressed={age===i} style={{"--age-color":item.color} as React.CSSProperties}><b>{item.age}</b><small>ετών</small></button>)}</div><strong>{AGE_PATHS[age].title}</strong></div>
   <main id="ps-wonder-content" className="ps-main">{area!=="home"&&<div className="ps-page-breadcrumb"><button onClick={()=>changeArea("home")}><ArrowLeft size={20}/> Το χωριό μας</button><span>{MENU.find(x=>x.id===area)?.label}</span></div>}
   {area==="home"&&<JourneyHome age={age} go={changeArea}/>}
-  {area==="games"&&<GameRoom key={age} age={age}/>}
-  {area==="crafts"&&<CraftStudio age={age}/>}
+  {area==="games"&&<PremiumGames key={age} age={age}/>}
+  {area==="crafts"&&<PremiumAtelier age={age}/>}
   {area==="drawing"&&<section className="ps-section"><div className="ps-section-title"><span className="ps-eyebrow">ΤΟ ΠΟΛΥΧΡΩΜΟ ΑΤΕΛΙΕ</span><h2>Το χαρτί είναι δικό σου! 🎨</h2><p>Ζωγράφισε ελεύθερα. Κάθε ιδέα είναι μοναδική!</p></div><Drawing saveData={setDrawingData}/><p className="ps-adult-hint">Ένας ενήλικος μπορεί να αποθηκεύσει ή να εκτυπώσει το έργο. {drawingData?"Η δημιουργία σου είναι έτοιμη!":""}</p></section>}
   {area==="stories"&&<section className="ps-section"><div className="ps-section-title"><span className="ps-eyebrow">Ο ΚΟΣΜΟΣ ΤΩΝ ΠΑΡΑΜΥΘΙΩΝ</span><h2>Άκου και φαντάσου 📖</h2><p>Παραμύθια στα ελληνικά με εικόνες και ερωτήσεις για συζήτηση.</p></div><StoryBook age={age} onComplete={()=>{}}/></section>}
   </main>
