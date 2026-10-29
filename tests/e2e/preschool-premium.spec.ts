@@ -92,11 +92,12 @@ test.describe("Pisipouk Premium rebuilding scope and interaction",()=>{
 
 test.describe("Interactive engine advanced capabilities",()=>{
  test("freehand painting actually draws into canvas layer",async({page})=>{
+  await page.setViewportSize({width:1440,height:1400});
   await page.goto(BASE+"/virtual-preschool");
   await page.getByRole("button",{name:/Κατασκευές/}).first().click();
   await page.locator(".premium-tile").first().click();
   await page.getByRole("button",{name:/Πινέλο/}).click();
-  const canvas=page.locator(".premium-ink");const box=await canvas.boundingBox();expect(box).toBeTruthy();
+  const canvas=page.locator(".premium-ink");await canvas.scrollIntoViewIfNeeded();const box=await canvas.boundingBox();expect(box).toBeTruthy();
   await page.mouse.move(box!.x+box!.width*.4,box!.y+box!.height*.45);
   await page.mouse.down();await page.mouse.move(box!.x+box!.width*.6,box!.y+box!.height*.55,{steps:12});await page.mouse.up();
   const pixel=await canvas.evaluate((node)=>{const c=node as HTMLCanvasElement;const x=c.getContext("2d")!;const data=x.getImageData(0,0,c.width,c.height).data;let count=0;for(let i=3;i<data.length;i+=4)if(data[i]>0){count++;if(count>100)break;}return count;});
