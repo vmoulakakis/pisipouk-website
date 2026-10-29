@@ -67,6 +67,7 @@ test("fruit game has reachable solutions for youngest age",async({page})=>{
   const amount=Number(match![1]);const food=match![2];
   await expect(page.getByRole("button",{name:new RegExp(food)})).toBeVisible();
   for(let j=0;j<amount;j++)await page.getByRole("button",{name:new RegExp(food)}).click();
+  console.log("FEED-STAGE",stage,JSON.stringify({prompt,next:await page.locator(".p3-speech span").allTextContents(),feedback:await page.locator(".p3-stage-bottom p").allTextContents()}));
  }
  await expect(page.getByRole("heading",{name:/Το καταφέραμε μαζί/})).toBeVisible();
 });
