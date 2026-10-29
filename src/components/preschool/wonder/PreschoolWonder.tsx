@@ -7,6 +7,9 @@ import exteriorScene from "@/assets/pisipouk-exterior.webp";
 import classroomScene from "@/assets/pisipouk-classroom.webp";
 import arrivalScene from "@/assets/pisipouk-arrival.webp";
 import storyScene from "@/assets/pisipouk-story.webp";
+import { PremiumGames } from "../premium/PremiumGames";
+import { PremiumDiorama } from "../premium/PremiumDiorama";
+import { PremiumAtelier } from "../premium/PremiumAtelier";
 import { Drawing } from "../world/Drawing";
 import { StoryBook } from "../world/Stories";
 import { PreschoolWorld } from "../world/World";
@@ -125,13 +128,13 @@ const MENU: {id:Area;label:string;icon:typeof Home}[] = [
 ];
 function JourneyHome({age,go}:{age:PreschoolAge;go:(a:Area)=>void}){
  const cards=[
-  {id:"games" as Area,title:"Το δάσος των παιχνιδιών",description:"Χρώματα, σχήματα, μοτίβα και μικρές ανακαλύψεις.",eyebrow:"ΠΑΙΖΩ",icon:Puzzle,tone:"mint"},
-  {id:"crafts" as Area,title:"Το εργαστήρι του Πισιπούκ",description:"Μεγάλα πατρόν, εικόνες και βήματα με τα χέρια.",eyebrow:"ΚΑΤΑΣΚΕΥΑΖΩ",icon:Scissors,tone:"peach"},
+  {id:"games" as Area,title:"Το δάσος των παιχνιδιών",description:"100 νέες αποστολές σε 10 εικονογραφημένους κόσμους.",eyebrow:"ΠΑΙΖΩ",icon:Puzzle,tone:"mint"},
+  {id:"crafts" as Area,title:"Το εργαστήρι του Πισιπούκ",description:"80 πατρόν ανά ηλικία: ζωγραφίζω, εκτυπώνω, δημιουργώ.",eyebrow:"ΚΑΤΑΣΚΕΥΑΖΩ",icon:Scissors,tone:"peach"},
   {id:"drawing" as Area,title:"Το πολύχρωμο ατελιέ",description:"Ζωγραφίζω με το δάχτυλο και κρατάω την εικόνα μου.",eyebrow:"ΖΩΓΡΑΦΙΖΩ",icon:Palette,tone:"lavender"},
   {id:"stories" as Area,title:"Η φωλιά των ιστοριών",description:"Ακούω, παρατηρώ, φαντάζομαι και αφηγούμαι.",eyebrow:"ΑΚΟΥΩ",icon:BookOpen,tone:"sun"},
   {id:"village" as Area,title:"Το μεγάλο χωριό της μάθησης",description:"Εξερευνώ και τους 16 ήδη υπάρχοντες εκπαιδευτικούς κόσμους.",eyebrow:"ΕΞΕΡΕΥΝΩ",icon:Compass,tone:"sky"}
  ];
- return <><section className="ps-hero"><div className="ps-hero-scenery" role="img" aria-label="Εικονογραφημένο χωριό με παιχνίδια, σπίτια και δέντρα"/><div className="ps-hero-shade"/><div className="ps-hero-text"><span className="ps-hero-tag"><Sparkles size={17}/> ΚΑΛΩΣ ΗΡΘΕΣ ΣΤΟ ΧΩΡΙΟ ΜΑΣ!</span><h1>Κάθε μέρα, <em>μια μικρή</em> μαγική ανακάλυψη!</h1><p>{AGE_PATHS[age].promise} Εδώ παίζουμε, δοκιμάζουμε και δημιουργούμε μαζί με τον Πισιπούκ.</p><button className="ps-hero-action" onClick={()=>go("games")}><Play fill="currentColor"/> Ξεκινάμε το παιχνίδι <ArrowRight/></button></div><img className="ps-hero-bear" src="/preschool-world/bear.webp" alt="Ο Πισιπούκ, το χαμογελαστό αρκουδάκι"/></section>
+ return <><section className="ps-hero"><div className="ps-hero-scenery" role="img" aria-label="Εικονογραφημένο χωριό με παιχνίδια, σπίτια και δέντρα"/><div className="ps-hero-shade"/><div className="ps-hero-text"><span className="ps-hero-tag"><Sparkles size={17}/> ΚΑΛΩΣ ΗΡΘΕΣ ΣΤΟ ΧΩΡΙΟ ΜΑΣ!</span><h1>Κάθε μέρα, <em>μια μικρή</em> μαγική ανακάλυψη!</h1><p>{AGE_PATHS[age].promise} Εδώ παίζουμε, δοκιμάζουμε και δημιουργούμε μαζί με τον Πισιπούκ.</p><button className="ps-hero-action" onClick={()=>go("games")}><Play fill="currentColor"/> Ξεκινάμε το παιχνίδι <ArrowRight/></button></div><PremiumDiorama/></section>
  <section className="ps-welcome-panel"><div><span className="ps-eyebrow">ΜΙΑ ΔΙΑΔΡΟΜΗ ΣΤΑ ΜΕΤΡΑ ΣΟΥ</span><h2>Σήμερα είμαι {AGE_PATHS[age].age} ετών!</h2><p>{AGE_PATHS[age].guidance}</p></div><div className="ps-welcome-sticker"><span>✨</span><b>{AGE_PATHS[age].duration}</b><small>για ένα μικρό παιχνίδι</small></div></section>
  <div className="ps-rooms">{cards.map(({id,title,description,eyebrow,icon:Icon,tone})=><button key={id} className={`ps-room ps-${tone}`} onClick={()=>go(id)}><span className="ps-room-art"><img src={ROOM_SCENES[id]} alt="" loading="lazy"/><Icon size={46} strokeWidth={1.7}/></span><span className="ps-room-body"><small>{eyebrow}</small><strong>{title}</strong><span>{description}</span><b>Μπαίνω <ArrowRight size={16}/></b></span></button>)}</div>
  <aside className="ps-offline"><span>🌿</span><div><strong>Η μεγάλη ανακάλυψη γίνεται έξω από την οθόνη.</strong><p>Μετά από ένα παιχνίδι: ζωγράφισε, χόρεψε, φύτεψε, παίξε και συζήτησε με έναν ενήλικο.</p></div></aside>
@@ -150,8 +153,8 @@ export function PreschoolWonder(){
   <div className="ps-age-picker" aria-label="Επιλογή ηλικιακής ομάδας"><span>🌟 ΔΙΑΛΕΞΕ ΗΛΙΚΙΑ</span><div>{AGE_PATHS.map((item,i)=><button key={i} onClick={()=>setAge(i as PreschoolAge)} aria-pressed={age===i} style={{"--age-color":item.color} as React.CSSProperties}><b>{item.age}</b><small>ετών</small></button>)}</div><strong>{AGE_PATHS[age].title}</strong></div>
   <main id="ps-wonder-content" className="ps-main">{area!=="home"&&<div className="ps-page-breadcrumb"><button onClick={()=>changeArea("home")}><ArrowLeft size={20}/> Το χωριό μας</button><span>{MENU.find(x=>x.id===area)?.label}</span></div>}
   {area==="home"&&<JourneyHome age={age} go={changeArea}/>}
-  {area==="games"&&<GameRoom key={age} age={age}/>}
-  {area==="crafts"&&<CraftStudio age={age}/>}
+  {area==="games"&&<PremiumGames key={age} age={age}/>}
+  {area==="crafts"&&<PremiumAtelier age={age}/>}
   {area==="drawing"&&<section className="ps-section"><div className="ps-section-title"><span className="ps-eyebrow">ΤΟ ΠΟΛΥΧΡΩΜΟ ΑΤΕΛΙΕ</span><h2>Το χαρτί είναι δικό σου! 🎨</h2><p>Ζωγράφισε ελεύθερα. Κάθε ιδέα είναι μοναδική!</p></div><Drawing saveData={setDrawingData}/><p className="ps-adult-hint">Ένας ενήλικος μπορεί να αποθηκεύσει ή να εκτυπώσει το έργο. {drawingData?"Η δημιουργία σου είναι έτοιμη!":""}</p></section>}
   {area==="stories"&&<section className="ps-section"><div className="ps-section-title"><span className="ps-eyebrow">Ο ΚΟΣΜΟΣ ΤΩΝ ΠΑΡΑΜΥΘΙΩΝ</span><h2>Άκου και φαντάσου 📖</h2><p>Παραμύθια στα ελληνικά με εικόνες και ερωτήσεις για συζήτηση.</p></div><StoryBook age={age} onComplete={()=>{}}/></section>}
   </main>
