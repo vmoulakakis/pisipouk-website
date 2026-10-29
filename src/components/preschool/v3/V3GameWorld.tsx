@@ -33,7 +33,7 @@ function sound(f:number){if(typeof window==="undefined")return;const Audio=(wind
 function Activity({mode,age,round,onReplay}:{mode:Mode;age:Age;round:number;onReplay:()=>void}){
  const [step,setStep]=useState(0),[choice,setChoice]=useState<string[]>([]),[feedback,setFeedback]=useState(""),[selected,setSelected]=useState<string|null>(null);
  const colors=useMemo(()=>shuffled(COLORS.slice(0,Math.min(6,3+age)),round*89+11),[round,age]);
- const fruits=useMemo(()=>shuffled(FRUITS,round*59+37),[round]);
+ const fruits=useMemo(()=>shuffled(FRUITS.slice(0,age===0?3:6),round*59+37),[round]);
  const shapes=useMemo(()=>shuffled(SHAPES.slice(0,age<2?3:5),round*33+3),[round,age]);
  const notes=useMemo(()=>Array.from({length:age<=1?2:age===2?3:4},(_,i)=>BEATS[Math.floor(safeRandom(round*67+i*109+9)*BEATS.length)].name),[round,age]);
  const targetCount=2+((round*3+age)%Math.min(5,age+3));
@@ -45,7 +45,7 @@ function Activity({mode,age,round,onReplay}:{mode:Mode;age:Age;round:number;onRe
  useEffect(()=>{ref.current?.focus()},[]);
  const finishStep=(message:string)=>{setStep(v=>v+1);setFeedback(message);setChoice([]);setSelected(null);};
  const chooseColor=(name:string)=>{if(name===targetColor.name)finishStep(["Το λουλούδι χάρηκε!","Τι υπέροχος κήπος!","Εσύ διαλέγεις τα χρώματα!"][step%3]);else setFeedback("Δοκίμασε κι άλλη μπογιά, χωρίς βιασύνη.")};
- const addFood=(item:string)=>{if(item!==fruits[round%fruits.length].name){setFeedback("Ο φίλος σου περιμένει άλλο φρούτο!");return;}const next=[...choice,item];setChoice(next);if(next.length>=targetCount)finishStep("Το καλάθι γέμισε!");else setFeedback("Συνέχισε να γεμίζεις το καλάθι!")};
+ const addFood=(item:string)=>{if(item!==fruits[(round+step)%fruits.length].name){setFeedback("Ο φίλος σου περιμένει άλλο φρούτο!");return;}const next=[...choice,item];setChoice(next);if(next.length>=targetCount)finishStep("Το καλάθι γέμισε!");else setFeedback("Συνέχισε να γεμίζεις το καλάθι!")};
  const chooseShape=(name:string)=>{if(name===targetShape.name)finishStep("Το κομμάτι ταίριαξε!");else setFeedback("Άγγιξε το περίγραμμα, ψάξε ξανά!")};
  const playNote=(name:string)=>{const beat=BEATS.find(n=>n.name===name);if(beat)sound(beat.frequency);if(name===notes[step])finishStep("Τι ωραίος ήχος!");else setFeedback("Άκου τη σειρά και δοκίμασε ξανά.")};
  const stageStyle={background:["#FCEFCB","#D7F1E6","#E1EDFC","#F6DFED"][round%4]};
