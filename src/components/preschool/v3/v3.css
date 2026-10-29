@@ -28,4 +28,5 @@
 .p3-stage-story{background-image:linear-gradient(#e4eff9dc,#fff8e2e6),url("/preschool-world/village.webp")}
 .p3-stage{background-position:center;background-size:cover}
 @media(max-width:680px){.p3-food-items button{min-width:75px;min-height:104px}.p3-illustrated-fruit{width:68px;height:71px}}
-\n@keyframes p3-hotspot-wiggle{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}\n
+
+@keyframes p3-hotspot-wiggle{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
