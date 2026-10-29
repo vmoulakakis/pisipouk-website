@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import {
- ArrowLeft, ArrowRight, BookOpen, CheckCircle2, Compass, Download, Flower2,
- Heart, Home, Leaf, Palette, Play, Printer, RotateCcw, Scissors, Sparkles,
- Sprout, Volume2, WandSparkles, Shapes, Users, Puzzle, X
+ ArrowLeft, ArrowRight, BookOpen, CheckCircle2, Compass, Download, Heart, Home, Palette, Play, Printer, RotateCcw, Scissors, Sparkles,
+ Sprout, Volume2, Users, Puzzle, X
 } from "lucide-react";
+import exteriorScene from "@/assets/pisipouk-exterior.webp";
+import classroomScene from "@/assets/pisipouk-classroom.webp";
+import arrivalScene from "@/assets/pisipouk-arrival.webp";
+import storyScene from "@/assets/pisipouk-story.webp";
 import { Drawing } from "../world/Drawing";
 import { StoryBook } from "../world/Stories";
 import { PreschoolWorld } from "../world/World";
@@ -21,6 +24,14 @@ const GAME_LIBRARY: {id:GameKind;title:string;detail:string;icon:string;from:Pre
  {id:"pattern",title:"Το μονοπάτι των μοτίβων",detail:"Ποιο έρχεται μετά;",icon:"🧩",from:1,area:"Σκέψη"},
  {id:"count",title:"Ο κήπος με τα μήλα",detail:"Μετράω παίζοντας",icon:"🍎",from:2,area:"Μαθηματικά"}
 ];
+const SCENES:Record<GameKind,string>={
+ colors:exteriorScene,shapes:classroomScene,garden:arrivalScene,
+ feelings:storyScene,pattern:classroomScene,count:exteriorScene
+};
+const ROOM_SCENES:Record<Area,string>={
+ home:exteriorScene,games:arrivalScene,crafts:classroomScene,
+ drawing:classroomScene,stories:storyScene,village:exteriorScene
+};
 const PALETTE=[
  {name:"κόκκινο",color:"#e85362",emoji:"🍎"},
  {name:"μπλε",color:"#368bd7",emoji:"🫐"},
@@ -42,12 +53,12 @@ function GameRoom({age}:{age:PreschoolAge}){
  return <section className="ps-section" aria-label="Διαδραστικά παιχνίδια">
    <div className="ps-section-title"><span className="ps-eyebrow">ΠΑΙΖΩ ΚΑΙ ΑΝΑΚΑΛΥΠΤΩ</span><h2>Διάλεξε μια μικρή περιπέτεια</h2><p>Πραγματικό παιχνίδι με άγγιγμα ή πληκτρολόγιο, χωρίς χρονόμετρα ή βαθμολογίες.</p></div>
    {current ? <div className="ps-lab"><button className="ps-back" onClick={()=>setCurrent(null)}><ArrowLeft/> Όλα τα παιχνίδια</button><GameActivity key={current+"-"+age} kind={current} age={age}/></div> :
-   <div className="ps-game-grid">{games.map(g=><button key={g.id} className="ps-game-card" onClick={()=>setCurrent(g.id)}><span className="ps-game-illustration" aria-hidden="true">{g.icon}</span><small>{g.area}</small><strong>{g.title}</strong><span>{g.detail}</span><b>Παίζω <ArrowRight size={18}/></b></button>)}</div>}
+   <div className="ps-game-grid">{games.map(g=><button key={g.id} className="ps-game-card" onClick={()=>setCurrent(g.id)}><span className="ps-game-illustration" aria-hidden="true"><img src={SCENES[g.id]} alt="" loading="lazy"/><span className="ps-scene-sticker">{g.icon}</span></span><small>{g.area}</small><strong>{g.title}</strong><span>{g.detail}</span><b>Παίζω <ArrowRight size={18}/></b></button>)}</div>}
  </section>;
 }
 function GameActivity({kind,age}:{kind:GameKind;age:PreschoolAge}){
  const [step,setStep]=useState(0);
- const [selected,setSelected]=useState("");
+ const [,setSelected]=useState("");
  const [message,setMessage]=useState("");
  const choices=age===0?2:age===1?3:4;
  const solved=kind==="garden"?step===4:step>= (age===0?2:3);
@@ -122,7 +133,7 @@ function JourneyHome({age,go}:{age:PreschoolAge;go:(a:Area)=>void}){
  ];
  return <><section className="ps-hero"><div className="ps-hero-scenery" role="img" aria-label="Εικονογραφημένο χωριό με παιχνίδια, σπίτια και δέντρα"/><div className="ps-hero-shade"/><div className="ps-hero-text"><span className="ps-hero-tag"><Sparkles size={17}/> ΚΑΛΩΣ ΗΡΘΕΣ ΣΤΟ ΧΩΡΙΟ ΜΑΣ!</span><h1>Κάθε μέρα, <em>μια μικρή</em> μαγική ανακάλυψη!</h1><p>{AGE_PATHS[age].promise} Εδώ παίζουμε, δοκιμάζουμε και δημιουργούμε μαζί με τον Πισιπούκ.</p><button className="ps-hero-action" onClick={()=>go("games")}><Play fill="currentColor"/> Ξεκινάμε το παιχνίδι <ArrowRight/></button></div><img className="ps-hero-bear" src="/preschool-world/bear.webp" alt="Ο Πισιπούκ, το χαμογελαστό αρκουδάκι"/></section>
  <section className="ps-welcome-panel"><div><span className="ps-eyebrow">ΜΙΑ ΔΙΑΔΡΟΜΗ ΣΤΑ ΜΕΤΡΑ ΣΟΥ</span><h2>Σήμερα είμαι {AGE_PATHS[age].age} ετών!</h2><p>{AGE_PATHS[age].guidance}</p></div><div className="ps-welcome-sticker"><span>✨</span><b>{AGE_PATHS[age].duration}</b><small>για ένα μικρό παιχνίδι</small></div></section>
- <div className="ps-rooms">{cards.map(({id,title,description,eyebrow,icon:Icon,tone})=><button key={id} className={`ps-room ps-${tone}`} onClick={()=>go(id)}><span className="ps-room-art"><Icon size={46} strokeWidth={1.7}/></span><span className="ps-room-body"><small>{eyebrow}</small><strong>{title}</strong><span>{description}</span><b>Μπαίνω <ArrowRight size={16}/></b></span></button>)}</div>
+ <div className="ps-rooms">{cards.map(({id,title,description,eyebrow,icon:Icon,tone})=><button key={id} className={`ps-room ps-${tone}`} onClick={()=>go(id)}><span className="ps-room-art"><img src={ROOM_SCENES[id]} alt="" loading="lazy"/><Icon size={46} strokeWidth={1.7}/></span><span className="ps-room-body"><small>{eyebrow}</small><strong>{title}</strong><span>{description}</span><b>Μπαίνω <ArrowRight size={16}/></b></span></button>)}</div>
  <aside className="ps-offline"><span>🌿</span><div><strong>Η μεγάλη ανακάλυψη γίνεται έξω από την οθόνη.</strong><p>Μετά από ένα παιχνίδι: ζωγράφισε, χόρεψε, φύτεψε, παίξε και συζήτησε με έναν ενήλικο.</p></div></aside>
  </>;
 }
