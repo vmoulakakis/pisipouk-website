@@ -15,7 +15,7 @@ test.describe("Pisipouk Premium rebuilding scope and interaction",()=>{
   await page.getByRole("button",{name:/Κατασκευές/}).first().click();
   await expect(page.locator(".premium-tile")).toHaveCount(20);
   await page.getByRole("button",{name:/Ζωγράφισε: Ο αρκούδος Πισιπούκ/}).click();
-  const zone=page.locator(".premium-vector [data-zone='head']");
+  const zone=page.locator(".premium-vector [data-zone='nose']");
   await expect(zone).toBeVisible();
   const before=await zone.getAttribute("fill");
   await page.getByRole("button",{name:"Επίλεξε χρώμα #75c8af"}).click();
@@ -33,7 +33,7 @@ test.describe("Pisipouk Premium rebuilding scope and interaction",()=>{
   await page.getByRole("button",{name:/Κατασκευές/}).first().click();
   await page.getByRole("button",{name:/Ζωγράφισε: Η πεταλούδα/}).click();
   await page.getByRole("button",{name:/Επίλεξε χρώμα #f4aa91/}).click();
-  await page.locator(".premium-vector [data-zone='leftWing']").click();
+  await page.locator(".premium-vector [data-zone='dotL']").click();
   const pdfPromise=page.waitForEvent("download",{timeout:30000});
   await page.getByRole("button",{name:/PDF για εκτύπωση/}).click();
   expect((await pdfPromise).suggestedFilename()).toMatch(/A4\.pdf$/);
