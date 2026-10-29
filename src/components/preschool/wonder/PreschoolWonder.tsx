@@ -65,12 +65,12 @@ function GameActivity({kind,age}:{kind:GameKind;age:PreschoolAge}){
  const [message,setMessage]=useState("");
  const choices=age===0?2:age===1?3:4;
  const solved=kind==="garden"?step===4:step>= (age===0?2:3);
- const targetColor=PALETTE[deck[step+round*3]%choices];
- const targetShape=SHAPES[deck[step+round*2]%(age===0?2:SHAPES.length)];
- const countGoal=2+(deck[step+round*4]%(age+3));
- const feelings=FEELINGS[deck[step+round*3]%FEELINGS.length];
- const pattern=step%2===0?["🔴","🔵","🔴","🔵"]:["⭐","🌿","🌿","⭐","🌿","🌿"];
- const expected=deck[step+round]%2===0?"🔴":"⭐";
+ const targetColor=PALETTE[deck[(step+round*3)%deck.length]%choices];
+ const targetShape=SHAPES[deck[(step+round*2)%deck.length]%(age===0?2:SHAPES.length)];
+ const countGoal=2+(deck[(step+round*4)%deck.length]%(age+3));
+ const feelings=FEELINGS[deck[(step+round*3)%deck.length]%FEELINGS.length];
+ const pattern=deck[(step+round)%deck.length]%2===0?["🔴","🔵","🔴","🔵"]:["⭐","🌿","🌿","⭐","🌿","🌿"];
+ const expected=deck[(step+round)%deck.length]%2===0?"🔴":"⭐";
  const reset=()=>{setRound(v=>v+1);setDeck(Array.from({length:32},(_,i)=>i).sort(()=>Math.random()-.5));setStep(0);setSelected("");setMessage("");};
  const succeed=()=>{setMessage("Το ανακάλυψες! ✨");setSelected("");setStep(v=>v+1);};
  const tryChoice=(right:boolean)=>{if(right)succeed();else setMessage("Ας δοκιμάσουμε ξανά. Κοίτα προσεκτικά!");};
