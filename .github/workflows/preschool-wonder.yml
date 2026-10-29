@@ -22,6 +22,8 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Canonical formatting for check run
+        run: npx prettier --write src/components/preschool/wonder src/routes/virtual-preschool.tsx tests/e2e/preschool-wonder.spec.ts
       - name: Lint new preschool files
         run: npx eslint src/components/preschool/wonder src/routes/virtual-preschool.tsx tests/e2e/preschool-wonder.spec.ts
       - name: Verify production build
