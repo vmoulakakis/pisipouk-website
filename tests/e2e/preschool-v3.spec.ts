@@ -8,7 +8,7 @@ test("original illustrated village is the interactive home with six clickable de
  await expect(page.locator(".p3-world-art img")).toBeVisible();
  await page.getByRole("button",{name:"Ατελιέ",exact:true}).click();
  await expect(page.getByRole("heading",{name:/Η ζωγραφιά είναι δική σου/})).toBeVisible();
- await page.getByRole("button",{name:"Στο χωριό"}).click();
+ await page.getByRole("button",{name:"Στο χωριό",exact:true}).click();
  await expect(page.locator(".p3-map-hotspot")).toHaveCount(6);
  expect(faults).toEqual([]);
 });
@@ -67,8 +67,7 @@ test("fruit game has reachable solutions for youngest age",async({page})=>{
   const amount=Number(match![1]);const food=match![2];
   await expect(page.getByRole("button",{name:new RegExp(food)})).toBeVisible();
   for(let j=0;j<amount;j++)await page.getByRole("button",{name:new RegExp(food)}).click();
-  console.log("FEED-STAGE",stage,JSON.stringify({prompt,next:await page.locator(".p3-speech span").allTextContents(),feedback:await page.locator(".p3-stage-bottom p").allTextContents()}));
- }
+   }
  await expect(page.getByRole("heading",{name:/Το καταφέραμε μαζί/})).toBeVisible();
 });
 test("mobile view keeps main map and atelier inside screen",async({page})=>{
