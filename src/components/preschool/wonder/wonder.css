@@ -1,0 +1,177 @@
+/* Pisipouk Wonder — isolated to /virtual-preschool only. Touch-first, reduced-motion safe. */
+.ps-wonder{--ps-ink:#29314c;--ps-deep:#243d54;--ps-purple:#623ca0;--ps-yellow:#ffd66b;--ps-mint:#c5eed5;--ps-edge:#ffffff;min-height:100vh;background:#fffaf1;color:var(--ps-ink);font-family:"Nunito","Trebuchet MS",system-ui,sans-serif;line-height:1.5;isolation:isolate}
+.ps-wonder *{box-sizing:border-box}
+.ps-wonder button,.ps-wonder input{font:inherit}
+.ps-wonder button{cursor:pointer}
+.ps-wonder button:focus-visible,.ps-wonder a:focus-visible{outline:4px solid #3d83c8;outline-offset:4px}
+.ps-wonder button:disabled{opacity:.48;cursor:not-allowed}
+.ps-wonder button svg{flex:none}
+.ps-skip{position:absolute;z-index:100;top:-80px;left:20px;padding:12px;background:white}
+.ps-skip:focus{top:8px}
+.ps-topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:100px;background:#fffdf9;border-bottom:3px solid #f8eccc;padding:10px clamp(16px,3vw,52px);position:relative;z-index:5}
+.ps-brand{border:0;background:transparent;display:flex;align-items:center;gap:10px;min-height:64px;padding:0;color:#e36b42;white-space:nowrap;text-align:left}
+.ps-brand img{width:65px;height:65px;object-fit:contain;filter:drop-shadow(0 6px 5px #ae713c32)}
+.ps-brand b{display:block;font-size:clamp(22px,2.2vw,29px);font-weight:1000;letter-spacing:-1px}
+.ps-brand small{display:block;letter-spacing:2px;color:#59647a;font-weight:850;font-size:9px}
+.ps-topbar nav{display:flex;align-items:center;gap:3px;flex-wrap:wrap;justify-content:center}
+.ps-topbar nav button,.ps-grownup{border:0;background:transparent;color:#34425d;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-width:69px;min-height:62px;border-radius:20px;padding:8px 11px;font-weight:850;font-size:11px;white-space:nowrap;transition:background .2s,transform .2s}
+.ps-topbar nav button:hover,.ps-topbar nav button[aria-current=page]{background:#e4f3ef;color:#126d65;transform:translateY(-2px)}
+.ps-grownup{background:#ede6ff;flex-direction:row;border-radius:999px;padding:13px 19px;font-size:12px}
+.ps-age-picker{padding:12px 24px;display:flex;align-items:center;justify-content:center;gap:20px;background:#f9eac7;min-height:85px;border-bottom:2px dashed #e9c386}
+.ps-age-picker>span{font-size:11px;font-weight:950;letter-spacing:1.3px;color:#9a6934}
+.ps-age-picker>div{display:flex;gap:9px}
+.ps-age-picker button{display:flex;align-items:center;justify-content:center;gap:4px;min-width:82px;min-height:53px;border:2px solid #fff;background:#fff8ed;border-radius:18px;color:#34425d;box-shadow:0 4px 0 #9b7e4630;transition:transform .2s,box-shadow .2s,background .2s}
+.ps-age-picker button b{font-weight:1000;font-size:19px}
+.ps-age-picker button small{font-size:11px}
+.ps-age-picker button[aria-pressed=true]{background:var(--age-color);border-color:#34425d;box-shadow:0 5px 0 #34425d44;transform:translateY(-3px)}
+.ps-age-picker>strong{font-size:13px;min-width:180px;color:#5b5672}
+.ps-main{width:min(1490px,100%);margin:auto;padding:22px clamp(16px,3.5vw,56px) 60px}
+.ps-hero{position:relative;min-height:480px;border:7px solid white;border-radius:36px;overflow:hidden;background:#8dcbaf;box-shadow:0 14px 35px #64867530;display:flex;align-items:center}
+.ps-hero-scenery{position:absolute;inset:0;background:url("/preschool-world/village.webp") center 48%/cover no-repeat;transform:scale(1.025);animation:ps-land-in 1.4s both}
+.ps-hero-shade{position:absolute;inset:0;background:linear-gradient(95deg,#fcf9e7f5 0%,#fff6dcdd 33%,#fffcf269 58%,transparent 86%)}
+.ps-hero-text{position:relative;z-index:2;margin:30px 0 30px clamp(20px,5vw,80px);width:min(620px,64%);background:#fffbeeaa;border:2px solid #fff9;border-radius:29px;padding:clamp(20px,3vw,34px);backdrop-filter:blur(7px)}
+.ps-hero-tag{display:inline-flex;align-items:center;gap:8px;color:#ad604b;font-size:12px;font-weight:950;letter-spacing:.6px}
+.ps-hero h1{margin:14px 0;font-size:clamp(32px,4.1vw,60px);line-height:1.07;font-weight:1000;letter-spacing:-1.5px;color:#34465d}
+.ps-hero h1 em{font-style:normal;color:#df785b}
+.ps-hero p{font-size:clamp(15px,1.4vw,20px);font-weight:750;max-width:510px;color:#45556a;margin:0 0 22px}
+.ps-hero-action,.ps-primary{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:58px;border:0;border-radius:18px;padding:12px 23px;background:#e97957;color:white;font-weight:950;box-shadow:0 6px 0 #bb5836;transition:transform .2s,box-shadow .2s}
+.ps-hero-action:hover,.ps-primary:hover{transform:translateY(-2px);box-shadow:0 8px 0 #bb5836}
+.ps-hero-bear{position:absolute;z-index:1;right:4%;bottom:-16px;width:min(30%,320px);height:min(80%,410px);object-fit:contain;filter:drop-shadow(0 15px 20px #4b453533);animation:ps-bear-wave 4s ease-in-out infinite}
+.ps-eyebrow{font-size:11px;color:#b25e5e;font-weight:1000;letter-spacing:2px}
+.ps-welcome-panel{display:flex;align-items:center;justify-content:space-between;gap:24px;margin:25px 0 27px;padding:20px clamp(20px,3vw,40px);border-radius:28px;background:#fff;border:2px solid #ffead0;box-shadow:0 5px 0 #f9e4cb}
+.ps-welcome-panel h2{font-size:clamp(22px,2.4vw,32px);line-height:1.2;margin:5px 0 5px;letter-spacing:-.6px}
+.ps-welcome-panel p{margin:0;color:#6b7182}
+.ps-welcome-sticker{display:flex;align-items:center;gap:8px;background:#fff5d4;border-radius:20px;padding:12px 20px;flex-shrink:0}
+.ps-welcome-sticker span{font-size:36px}
+.ps-welcome-sticker b{font-size:23px}
+.ps-welcome-sticker small{font-size:11px}
+.ps-rooms{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+.ps-room{border:3px solid white;border-radius:27px;box-shadow:0 5px 0 #7c718f21,0 12px 28px #584e3d12;overflow:hidden;min-height:300px;padding:0;text-align:left;color:var(--ps-ink);background:#eef4e7;display:flex;flex-direction:column;transition:transform .22s,box-shadow .22s}
+.ps-room:hover{transform:translateY(-5px);box-shadow:0 10px 0 #7c718f15,0 20px 35px #584e3d25}
+.ps-room-art{height:140px;display:flex;justify-content:center;align-items:center;position:relative;overflow:hidden;background:#b8e3c6}
+.ps-room-art svg{position:relative;z-index:2;width:78px;height:78px;padding:16px;border-radius:27px;box-shadow:0 6px 18px #0002;background:#fffdf8;color:#477b74}
+.ps-room-art:before,.ps-room-art:after{content:"";position:absolute;width:170px;height:170px;opacity:.55;border-radius:50%;background:#fff;left:-20px;bottom:-100px}
+.ps-room-art:after{left:auto;right:-38px;bottom:-120px;width:230px;height:230px}
+.ps-peach .ps-room-art{background:#f9bfab}.ps-peach .ps-room-art svg{color:#ca6543}
+.ps-lavender .ps-room-art{background:#d6c5f1}.ps-lavender .ps-room-art svg{color:#7755a4}
+.ps-sun .ps-room-art{background:#ffdf93}.ps-sun .ps-room-art svg{color:#e09a2a}
+.ps-sky .ps-room-art{background:#b3dff0}.ps-sky .ps-room-art svg{color:#427ca4}
+.ps-room-body{display:flex;flex-direction:column;flex:1;padding:17px 24px 23px;background:#fffdf8}
+.ps-room-body small{color:#9b7270;font-size:10px;letter-spacing:1.2px;font-weight:950}
+.ps-room-body strong{font-size:clamp(18px,1.8vw,25px);line-height:1.16;letter-spacing:-.4px;margin-top:5px;font-weight:1000}
+.ps-room-body>span{font-size:13px;color:#647078;margin:7px 0 15px}
+.ps-room-body b{margin-top:auto;display:flex;align-items:center;gap:7px;color:#397961;font-size:14px}
+.ps-offline{display:flex;align-items:center;gap:20px;background:#e7f5e7;padding:20px 30px;border-radius:25px;margin-top:26px;color:#365d48}
+.ps-offline>span{font-size:40px}
+.ps-offline strong{font-size:18px}
+.ps-offline p{margin:5px 0 0}
+.ps-page-breadcrumb{display:flex;justify-content:space-between;align-items:center;margin:0 0 20px}
+.ps-page-breadcrumb button,.ps-back,.ps-return-village>button{border:2px solid #e6e7e1;border-radius:17px;background:white;min-height:48px;display:inline-flex;align-items:center;gap:9px;padding:9px 15px;font-weight:900;color:#405e59}
+.ps-page-breadcrumb>span{font-size:12px;letter-spacing:1px;font-weight:900;color:#9d8680}
+.ps-section{min-height:480px}
+.ps-section-title{text-align:center;padding:13px 10px 26px}
+.ps-section-title h2{font-size:clamp(28px,3.7vw,46px);letter-spacing:-1px;margin:6px 0}
+.ps-section-title p{margin:0;color:#6b7181;font-size:16px}
+.ps-game-grid,.ps-craft-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.ps-game-card,.ps-craft-card{padding:18px;text-align:left;border:3px solid #fff;background:#fff;border-radius:27px;box-shadow:0 5px 0 #e9ddcf,0 10px 21px #4f574020;display:flex;flex-direction:column;min-height:280px;color:#35425b;transition:transform .2s}
+.ps-game-card:hover,.ps-craft-card:hover{transform:translateY(-4px)}
+.ps-game-illustration{display:grid;place-items:center;width:100%;height:135px;border-radius:20px;background:#dcefe3;font-size:76px;margin-bottom:12px}
+.ps-game-card:nth-child(3n+2) .ps-game-illustration{background:#fff0d1}
+.ps-game-card:nth-child(3n) .ps-game-illustration{background:#e8e0f9}
+.ps-game-card small{font-size:11px;color:#a47e68;font-weight:900}
+.ps-game-card strong,.ps-craft-card strong{font-size:21px;line-height:1.2;margin:7px 0;font-weight:1000}
+.ps-game-card>span:not(.ps-game-illustration),.ps-craft-card>span{font-size:13px;color:#69717c}
+.ps-game-card>b,.ps-craft-card>b{display:inline-flex;gap:7px;align-items:center;margin-top:auto;color:#367d63;padding-top:12px}
+.ps-lab{width:min(940px,100%);margin:auto}
+.ps-game-stage{margin-top:18px;background:#fff;border:4px solid #fff8e4;border-radius:35px;padding:clamp(18px,3.4vw,40px);box-shadow:0 16px 34px #726d6820;text-align:center}
+.ps-game-meta{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.ps-game-meta span{font-size:11px;font-weight:950;color:#9f7e73;letter-spacing:1.3px}
+.ps-game-meta button{display:inline-flex;gap:6px;align-items:center;border:0;border-radius:20px;background:#f4eee7;padding:12px;font-size:12px;font-weight:900}
+.ps-game-stage h3{font-size:clamp(24px,3vw,37px);line-height:1.15;margin:12px 0 24px}
+.ps-game-request{display:flex;justify-content:center;align-items:center;gap:25px;background:#fff5ce;border-radius:24px;padding:14px 22px;margin-bottom:30px;flex-wrap:wrap}
+.ps-game-request p{margin:0;font-size:clamp(18px,2.4vw,26px);font-weight:950}
+.ps-speak{display:flex;align-items:center;flex-wrap:wrap;justify-content:center;gap:8px}
+.ps-speak button{border:2px solid #e4daec;background:#fff;color:#5a5990;border-radius:999px;padding:10px 14px;min-height:44px;display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:900}
+.ps-speak small{font-size:12px;max-width:210px}
+.ps-choices{display:flex;gap:clamp(8px,2vw,24px);align-items:stretch;justify-content:center;flex-wrap:wrap}
+.ps-color-choice,.ps-shape-choice,.ps-choice-square,.ps-emotion-choice{width:clamp(100px,20vw,160px);min-height:142px;border:4px solid #fff;border-radius:25px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;box-shadow:0 7px 0 #7e799d33;font-weight:950;transition:transform .2s,box-shadow .2s}
+.ps-color-choice:hover,.ps-shape-choice:hover,.ps-choice-square:hover,.ps-emotion-choice:hover{transform:translateY(-5px);box-shadow:0 11px 0 #7e799d26}
+.ps-color-choice span{font-size:54px}
+.ps-color-choice b{color:white;text-shadow:0 2px 4px #0005;font-size:14px}
+.ps-shape-choice{background:#e5f1fa}.ps-shape-choice span{font-size:64px;color:#408cbe}
+.ps-choice-square{font-size:52px;background:#f1eafa;color:#634598}
+.ps-emotion-choice{background:#fff0d9}.ps-emotion-choice span{font-size:64px}
+.ps-pattern-line,.ps-apples{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px;margin:10px auto 30px;max-width:700px}
+.ps-pattern-line span,.ps-apples span{font-size:clamp(27px,4.5vw,56px);padding:5px}
+.ps-pattern-line .ps-questionmark{background:#e4d7f7;border-radius:50%;width:67px;color:#583f89}
+.ps-friend-face{font-size:90px;margin:-8px 0 25px}
+.ps-gentle-feedback{margin:22px 0 12px;color:#49755f;font-weight:850;min-height:24px}
+.ps-progress-dots{display:flex;justify-content:center;gap:8px}
+.ps-progress-dots span{height:10px;width:32px;border-radius:8px;background:#dcdfe9}
+.ps-progress-dots span.finished{background:#65b98e}
+.ps-win{padding:35px 20px;background:#e7f5e6;border-radius:25px}
+.ps-win>span{display:block;font-size:65px}
+.ps-win h4{font-size:28px;margin:10px 0}
+.ps-win p{margin:0 0 22px}
+.ps-garden-game{display:grid;grid-template-columns:1fr 1fr;gap:20px;text-align:left}
+.ps-garden-visual{min-height:300px;display:flex;align-items:center;justify-content:center;flex-direction:column;border-radius:30px;background:linear-gradient(#b5e8ff 62%,#e8e5b0 62%)}
+.ps-sun{font-size:48px;align-self:flex-end;margin-right:20px}.ps-garden-top{font-size:80px;margin-top:-30px}
+.ps-pot{font-size:92px;margin-top:-25px}
+.ps-garden-actions{display:grid;gap:12px;align-content:center}
+.ps-garden-actions button{border:2px solid #d2e4d5;background:#edf8ef;padding:12px 16px;border-radius:17px;display:flex;align-items:center;gap:12px;min-height:57px;text-align:left;font-weight:850}
+.ps-garden-actions button[aria-current=step]{background:#fff4d8;border-color:#dfaf5e;box-shadow:0 4px 0 #e5cca9}
+.ps-craft-card{min-height:390px;padding:13px}
+.ps-craft-thumb{height:242px;border-radius:17px;background:#fdf7e8;overflow:hidden;display:grid;place-items:center;margin-bottom:12px}
+.ps-craft-thumb img{width:100%;height:100%;object-fit:contain}
+.ps-craft-card>span,.ps-craft-card>strong,.ps-craft-card>b{margin-left:12px;margin-right:12px}
+.ps-craft-detail>.ps-back{margin-bottom:16px}
+.ps-craft-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:25px;align-items:start}
+.ps-pattern-preview,.ps-steps-card{border:3px solid white;border-radius:28px;background:#fff;box-shadow:0 6px 26px #7d6f5c19;padding:20px}
+.ps-pattern-preview{text-align:center}
+.ps-pattern-paper{margin:auto;background:#fff;box-shadow:0 4px 20px #0002;width:min(100%,380px);aspect-ratio:210/297;overflow:hidden}
+.ps-pattern-paper img{height:100%;width:100%;object-fit:contain}
+.ps-pattern-tools{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:18px}
+.ps-pattern-tools button{display:inline-flex;align-items:center;gap:8px;border:2px solid #d3ebd9;background:#edf8ec;padding:12px;border-radius:15px;min-height:49px;font-weight:850;color:#347153}
+.ps-pattern-preview p{font-size:12px;color:#805b55;margin:10px 0}
+.ps-steps-card>small{font-weight:950;color:#ac756a;letter-spacing:1px}
+.ps-steps-card h3{font-size:clamp(25px,3vw,36px);line-height:1.1;margin:10px 0 16px}
+.ps-materials{background:#f9f5e8;padding:13px;border-radius:15px}
+.ps-step-indicator{display:flex;justify-content:center;gap:14px;margin:20px 0}
+.ps-step-indicator button{height:49px;width:49px;border:3px solid #fff;border-radius:50%;background:#eeeaf7;color:#513d72;font-weight:950;font-size:19px}
+.ps-step-indicator button.active{background:#6fa987;color:white;box-shadow:0 4px 0 #42674e}
+.ps-step-focus{text-align:center;background:#edf7ef;border:2px dashed #b4d7b9;border-radius:25px;padding:20px}
+.ps-step-art{font-size:84px;line-height:1.5}
+.ps-step-focus>span{font-size:11px;font-weight:950;letter-spacing:1.3px;color:#6a9472}
+.ps-step-focus h4{font-size:28px;margin:4px 0}
+.ps-step-focus p{margin:0 0 12px}
+.ps-step-controls{display:flex;justify-content:space-between;gap:12px;margin:20px 0}
+.ps-step-controls button{display:inline-flex;align-items:center;gap:8px;border-radius:15px;padding:11px 19px;min-height:52px;font-weight:950}
+.ps-step-controls button:not(.ps-primary){background:white;border:2px solid #e5e1db}
+.ps-educator-note{background:#fff5d8;padding:18px;border-radius:18px;font-size:14px;line-height:1.65}
+.ps-educator-note p{margin:10px 0 0}
+.ps-adult-hint{color:#567259;text-align:center}
+.ps-footer{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap;background:#e4eee2;padding:22px 4%;color:#496550;font-size:13px;font-weight:800}
+.ps-footer a{color:#39735d}
+.ps-return-village{background:#fff6e0;padding:14px 4%;position:sticky;top:0;z-index:40}
+.ps-modal-scrim{position:fixed;inset:0;z-index:9999;background:#172f4c9c;display:grid;place-items:center;padding:16px}
+.ps-grownup-dialog{width:min(580px,100%);max-height:min(88vh,800px);overflow-y:auto;background:#fffdf9;color:#35425b;border-radius:27px;padding:clamp(22px,4vw,38px);position:relative;box-shadow:0 20px 65px #101b3a80}
+.ps-grownup-dialog h2{font-size:clamp(22px,3vw,33px);line-height:1.14}
+.ps-grownup-dialog p{font-size:15px;line-height:1.6}
+.ps-adult-facts{background:#eef6e7;border-radius:16px;padding:12px 16px}
+.ps-close{position:absolute;top:14px;right:15px;border:0;background:#f1eced;border-radius:50%;height:48px;width:48px}
+@keyframes ps-land-in{from{opacity:.4;transform:scale(1.08)}to{opacity:1;transform:scale(1.025)}}
+@keyframes ps-bear-wave{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
+@media (max-width:1120px){.ps-topbar{flex-wrap:wrap;justify-content:center}.ps-topbar nav{order:3;width:100%}.ps-rooms{grid-template-columns:repeat(2,minmax(0,1fr))}.ps-main{padding-top:20px}}
+@media (max-width:760px){.ps-topbar{min-height:70px;padding:8px 10px}.ps-brand img{width:48px;height:48px}.ps-brand b{font-size:20px}.ps-brand small{font-size:8px}.ps-grownup{min-height:45px}.ps-topbar nav{gap:2px;overflow-x:auto;justify-content:flex-start;flex-wrap:nowrap;padding:5px 0}.ps-topbar nav button{min-width:70px;min-height:54px;padding:5px;font-size:10px}.ps-age-picker{gap:8px;padding:10px 10px;flex-wrap:wrap}.ps-age-picker>span{width:100%;text-align:center}.ps-age-picker>strong{width:100%;min-width:0;text-align:center}.ps-age-picker button{min-width:65px;min-height:50px}.ps-hero{min-height:520px;align-items:flex-start;border-width:4px;border-radius:27px}.ps-hero-scenery{background-image:url("/preschool-world/village-mobile.webp")}.ps-hero-shade{background:linear-gradient(#fff9e8ed 0%,#fff7d0bf 49%,transparent 86%)}.ps-hero-text{width:calc(100% - 30px);margin:15px;padding:17px}.ps-hero h1{font-size:clamp(29px,8vw,43px)}.ps-hero p{font-size:14px;max-width:85%}.ps-hero-bear{right:5%;bottom:0;width:42%;max-width:200px;height:205px}.ps-welcome-panel{align-items:flex-start;flex-direction:column}.ps-welcome-sticker{width:100%;justify-content:center}.ps-rooms,.ps-game-grid,.ps-craft-grid{grid-template-columns:1fr 1fr;gap:12px}.ps-room{min-height:265px}.ps-room-art{height:115px}.ps-room-body{padding:13px}.ps-room-body strong{font-size:17px}.ps-room-body>span{font-size:12px}.ps-offline{padding:16px}.ps-craft-layout,.ps-garden-game{grid-template-columns:1fr}.ps-game-card{min-height:255px}.ps-game-illustration{height:115px}.ps-game-card strong{font-size:18px}.ps-craft-card{min-height:340px}.ps-craft-thumb{height:200px}}
+@media (max-width:470px){.ps-rooms{grid-template-columns:1fr}.ps-room{min-height:0;flex-direction:row}.ps-room-art{width:110px;height:auto;min-height:150px;flex-shrink:0}.ps-room-art svg{height:64px;width:64px;padding:13px}.ps-room-body strong{font-size:18px}.ps-game-grid,.ps-craft-grid{grid-template-columns:1fr}.ps-game-card{min-height:0;display:grid;grid-template-columns:105px 1fr;column-gap:14px;align-items:center}.ps-game-illustration{grid-row:1 / 5;grid-column:1;height:140px;margin:0;font-size:53px}.ps-game-card small,.ps-game-card strong,.ps-game-card>span:not(.ps-game-illustration),.ps-game-card>b{grid-column:2}.ps-craft-card{min-height:0}.ps-craft-thumb{height:220px}.ps-color-choice,.ps-shape-choice,.ps-choice-square,.ps-emotion-choice{width:calc(50% - 8px);min-height:112px}.ps-color-choice span,.ps-shape-choice span,.ps-emotion-choice span{font-size:44px}.ps-choice-square{font-size:38px}.ps-step-focus{padding:12px}.ps-step-art{font-size:64px}.ps-step-controls{flex-wrap:wrap}.ps-step-controls button{flex:1}.ps-game-request{gap:8px}.ps-footer{flex-direction:column;text-align:center}}
+@media (prefers-reduced-motion:reduce){.ps-wonder *,.ps-wonder *::before,.ps-wonder *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* Reuse original branded high-resolution photos rather than emoji-only modules. */
+.ps-room-art img,.ps-game-illustration>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
+.ps-room-art img{opacity:.78}
+.ps-room-art:before,.ps-room-art:after{z-index:1;opacity:.3}
+.ps-room-art svg{backdrop-filter:blur(3px);border:2px solid #fff9}
+.ps-game-illustration{position:relative;overflow:hidden;isolation:isolate}
+.ps-game-illustration:after{content:"";position:absolute;inset:0;background:linear-gradient(120deg,#fff4ce66,#ffffff05)}
+.ps-scene-sticker{position:relative;z-index:2;display:grid;place-items:center;width:94px;height:94px;background:#fffaf2e8;border:3px solid white;border-radius:30px;font-size:56px;box-shadow:0 6px 16px #2e38562e;transform:rotate(-7deg)}
+@media(max-width:470px){.ps-scene-sticker{width:69px;height:69px;font-size:40px;border-radius:20px}}
