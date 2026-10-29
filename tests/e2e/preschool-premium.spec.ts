@@ -88,3 +88,42 @@ test.describe("Pisipouk Premium rebuilding scope and interaction",()=>{
   }
  });
 });
+
+
+test.describe("Interactive engine advanced capabilities",()=>{
+ test("freehand painting actually draws into canvas layer",async({page})=>{
+  await page.goto(BASE+"/virtual-preschool");
+  await page.getByRole("button",{name:/Κατασκευές/}).first().click();
+  await page.locator(".premium-tile").first().click();
+  await page.getByRole("button",{name:/Πινέλο/}).click();
+  const canvas=page.locator(".premium-ink");const box=await canvas.boundingBox();expect(box).toBeTruthy();
+  await page.mouse.move(box!.x+box!.width*.4,box!.y+box!.height*.45);
+  await page.mouse.down();await page.mouse.move(box!.x+box!.width*.6,box!.y+box!.height*.55,{steps:12});await page.mouse.up();
+  const pixel=await canvas.evaluate((node)=>{const c=node as HTMLCanvasElement;const x=c.getContext("2d")!;const data=x.getImageData(0,0,c.width,c.height).data;let count=0;for(let i=3;i<data.length;i+=4)if(data[i]>0){count++;if(count>100)break;}return count;});
+  expect(pixel).toBeGreaterThan(100);
+ });
+ test("finger tracing guides child along an actual changing vector path",async({page})=>{
+  await page.goto(BASE+"/virtual-preschool");await page.getByRole("button",{name:/Παιχνίδια/}).first().click();
+  await page.getByRole("button",{name:/μαγικά μονοπάτια/i}).first().click();
+  await page.locator(".premium-mission-card").first().click();
+  const svg=page.locator(".premium-trace-stage");
+  const points=await svg.locator("path").nth(0).evaluate((el)=>{const p=el as SVGPathElement;const len=p.getTotalLength();return Array.from({length:76},(_,i)=>{const point=p.getPointAtLength(i*len/75);return {x:point.x,y:point.y};});});
+  const bounds=await svg.boundingBox();expect(bounds).toBeTruthy();
+  for(let i=0;i<points.length;i++){
+   const p=points[i],x=bounds!.x+p.x*bounds!.width/400,y=bounds!.y+p.y*bounds!.height/400;
+   if(i===0){await page.mouse.move(x,y);await page.mouse.down();}else await page.mouse.move(x,y,{steps:2});
+  }
+  await page.mouse.up();
+  await expect(page.getByRole("heading",{name:/Μπράβο για την προσπάθειά σου/})).toBeVisible();
+ });
+ test("repeating a rhythm is meaningful interaction rather than a static answer",async({page})=>{
+  await page.goto(BASE+"/virtual-preschool");await page.getByRole("button",{name:/Παιχνίδια/}).first().click();
+  await page.getByRole("button",{name:/μουσικό δάσος/i}).first().click();
+  await page.locator(".premium-mission-card").first().click();
+  const colors=await page.locator(".premium-note-track span").evaluateAll(els=>els.map(e=>(e as HTMLElement).style.backgroundColor));
+  const choices:Record<string,string>={"rgb(249, 156, 138)":"Νότα 1","rgb(152, 195, 241)":"Νότα 2","rgb(247, 215, 123)":"Νότα 3"};
+  expect(colors.length).toBeGreaterThan(1);
+  for(const color of colors)await page.getByRole("button",{name:choices[color]}).click();
+  await expect(page.getByRole("heading",{name:/Μπράβο για την προσπάθειά σου/})).toBeVisible();
+ });
+});
