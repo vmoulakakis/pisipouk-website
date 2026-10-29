@@ -44,3 +44,15 @@ jobs:
         env:
           PRESCHOOL_BASE_URL: http://127.0.0.1:4173
         run: npx playwright test tests/e2e/preschool-premium.spec.ts --workers=1
+      - name: Capture mobile/desktop screenshots
+        env:
+          PRESCHOOL_BASE_URL: http://127.0.0.1:4173
+        run: npx playwright test tests/e2e/preschool-premium-visual.spec.ts --workers=1
+      - name: Upload actual screenshot evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pisipouk-premium-visual
+          path: test-results/pisipouk-premium-visual/
+          if-no-files-found: warn
+          retention-days: 14
