@@ -7,6 +7,8 @@ import exteriorScene from "@/assets/pisipouk-exterior.webp";
 import classroomScene from "@/assets/pisipouk-classroom.webp";
 import arrivalScene from "@/assets/pisipouk-arrival.webp";
 import storyScene from "@/assets/pisipouk-story.webp";
+import { PremiumGames } from "../premium/PremiumGames";
+import { PremiumAtelier } from "../premium/PremiumAtelier";
 import { Drawing } from "../world/Drawing";
 import { StoryBook } from "../world/Stories";
 import { PreschoolWorld } from "../world/World";
@@ -125,8 +127,8 @@ const MENU: {id:Area;label:string;icon:typeof Home}[] = [
 ];
 function JourneyHome({age,go}:{age:PreschoolAge;go:(a:Area)=>void}){
  const cards=[
-  {id:"games" as Area,title:"Το δάσος των παιχνιδιών",description:"Χρώματα, σχήματα, μοτίβα και μικρές ανακαλύψεις.",eyebrow:"ΠΑΙΖΩ",icon:Puzzle,tone:"mint"},
-  {id:"crafts" as Area,title:"Το εργαστήρι του Πισιπούκ",description:"Μεγάλα πατρόν, εικόνες και βήματα με τα χέρια.",eyebrow:"ΚΑΤΑΣΚΕΥΑΖΩ",icon:Scissors,tone:"peach"},
+  {id:"games" as Area,title:"Το δάσος των παιχνιδιών",description:"100 νέες αποστολές σε 10 εικονογραφημένους κόσμους.",eyebrow:"ΠΑΙΖΩ",icon:Puzzle,tone:"mint"},
+  {id:"crafts" as Area,title:"Το εργαστήρι του Πισιπούκ",description:"80 πατρόν ανά ηλικία: ζωγραφίζω, εκτυπώνω, δημιουργώ.",eyebrow:"ΚΑΤΑΣΚΕΥΑΖΩ",icon:Scissors,tone:"peach"},
   {id:"drawing" as Area,title:"Το πολύχρωμο ατελιέ",description:"Ζωγραφίζω με το δάχτυλο και κρατάω την εικόνα μου.",eyebrow:"ΖΩΓΡΑΦΙΖΩ",icon:Palette,tone:"lavender"},
   {id:"stories" as Area,title:"Η φωλιά των ιστοριών",description:"Ακούω, παρατηρώ, φαντάζομαι και αφηγούμαι.",eyebrow:"ΑΚΟΥΩ",icon:BookOpen,tone:"sun"},
   {id:"village" as Area,title:"Το μεγάλο χωριό της μάθησης",description:"Εξερευνώ και τους 16 ήδη υπάρχοντες εκπαιδευτικούς κόσμους.",eyebrow:"ΕΞΕΡΕΥΝΩ",icon:Compass,tone:"sky"}
