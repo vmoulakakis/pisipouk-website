@@ -7,6 +7,7 @@ import exteriorScene from "@/assets/pisipouk-exterior.webp";
 import classroomScene from "@/assets/pisipouk-classroom.webp";
 import arrivalScene from "@/assets/pisipouk-arrival.webp";
 import storyScene from "@/assets/pisipouk-story.webp";
+import { PremiumAtelier } from "./PremiumAtelier";
 import { Drawing } from "../world/Drawing";
 import { StoryBook } from "../world/Stories";
 import { PreschoolWorld } from "../world/World";
@@ -58,17 +59,19 @@ function GameRoom({age}:{age:PreschoolAge}){
 }
 function GameActivity({kind,age}:{kind:GameKind;age:PreschoolAge}){
  const [step,setStep]=useState(0);
+ const [round,setRound]=useState(0);
+ const [deck,setDeck]=useState(()=>Array.from({length:32},(_,i)=>i).sort(()=>Math.random()-.5));
  const [,setSelected]=useState("");
  const [message,setMessage]=useState("");
  const choices=age===0?2:age===1?3:4;
  const solved=kind==="garden"?step===4:step>= (age===0?2:3);
- const targetColor=PALETTE[step%choices];
- const targetShape=SHAPES[step%SHAPES.length];
- const countGoal=Math.min(2+step+age,7);
- const feelings=FEELINGS[step%FEELINGS.length];
- const pattern=step%2===0?["🔴","🔵","🔴","🔵"]:["⭐","🌿","🌿","⭐","🌿","🌿"];
- const expected=step%2===0?"🔴":"⭐";
- const reset=()=>{setStep(0);setSelected("");setMessage("");};
+ const targetColor=PALETTE[deck[(step+round*3)%deck.length]%choices];
+ const targetShape=SHAPES[deck[(step+round*2)%deck.length]%(age===0?2:SHAPES.length)];
+ const countGoal=2+(deck[(step+round*4)%deck.length]%(age+3));
+ const feelings=FEELINGS[deck[(step+round*3)%deck.length]%FEELINGS.length];
+ const pattern=deck[(step+round)%deck.length]%2===0?["🔴","🔵","🔴","🔵"]:["⭐","🌿","🌿","⭐","🌿","🌿"];
+ const expected=deck[(step+round)%deck.length]%2===0?"🔴":"⭐";
+ const reset=()=>{setRound(v=>v+1);setDeck(Array.from({length:32},(_,i)=>i).sort(()=>Math.random()-.5));setStep(0);setSelected("");setMessage("");};
  const succeed=()=>{setMessage("Το ανακάλυψες! ✨");setSelected("");setStep(v=>v+1);};
  const tryChoice=(right:boolean)=>{if(right)succeed();else setMessage("Ας δοκιμάσουμε ξανά. Κοίτα προσεκτικά!");};
  const titles:Record<GameKind,string>={colors:"Τα χρώματα της φύσης",shapes:"Τα σχήματα στον κήπο",pattern:"Το μυστικό μοτίβο",count:"Μετράω τα μήλα",feelings:"Μαθαίνω τα συναισθήματα",garden:"Ο Σπορούλης μεγαλώνει"};
@@ -151,7 +154,7 @@ export function PreschoolWonder(){
   <main id="ps-wonder-content" className="ps-main">{area!=="home"&&<div className="ps-page-breadcrumb"><button onClick={()=>changeArea("home")}><ArrowLeft size={20}/> Το χωριό μας</button><span>{MENU.find(x=>x.id===area)?.label}</span></div>}
   {area==="home"&&<JourneyHome age={age} go={changeArea}/>}
   {area==="games"&&<GameRoom key={age} age={age}/>}
-  {area==="crafts"&&<CraftStudio age={age}/>}
+  {area==="crafts"&&<PremiumAtelier age={age}/>}
   {area==="drawing"&&<section className="ps-section"><div className="ps-section-title"><span className="ps-eyebrow">ΤΟ ΠΟΛΥΧΡΩΜΟ ΑΤΕΛΙΕ</span><h2>Το χαρτί είναι δικό σου! 🎨</h2><p>Ζωγράφισε ελεύθερα. Κάθε ιδέα είναι μοναδική!</p></div><Drawing saveData={setDrawingData}/><p className="ps-adult-hint">Ένας ενήλικος μπορεί να αποθηκεύσει ή να εκτυπώσει το έργο. {drawingData?"Η δημιουργία σου είναι έτοιμη!":""}</p></section>}
   {area==="stories"&&<section className="ps-section"><div className="ps-section-title"><span className="ps-eyebrow">Ο ΚΟΣΜΟΣ ΤΩΝ ΠΑΡΑΜΥΘΙΩΝ</span><h2>Άκου και φαντάσου 📖</h2><p>Παραμύθια στα ελληνικά με εικόνες και ερωτήσεις για συζήτηση.</p></div><StoryBook age={age} onComplete={()=>{}}/></section>}
   </main>
