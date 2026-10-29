@@ -66,7 +66,7 @@ function GameActivity({kind,age}:{kind:GameKind;age:PreschoolAge}){
  const choices=age===0?2:age===1?3:4;
  const solved=kind==="garden"?step===4:step>= (age===0?2:3);
  const targetColor=PALETTE[deck[step+round*3]%choices];
- const targetShape=SHAPES[deck[step+round*2]%SHAPES.length];
+ const targetShape=SHAPES[deck[step+round*2]%(age===0?2:SHAPES.length)];
  const countGoal=2+(deck[step+round*4]%(age+3));
  const feelings=FEELINGS[deck[step+round*3]%FEELINGS.length];
  const pattern=step%2===0?["🔴","🔵","🔴","🔵"]:["⭐","🌿","🌿","⭐","🌿","🌿"];
