@@ -100,6 +100,7 @@ test.describe("Interactive engine advanced capabilities",()=>{
   await page.mouse.move(box!.x+box!.width*.4,box!.y+box!.height*.45);
   await page.mouse.down();await page.mouse.move(box!.x+box!.width*.6,box!.y+box!.height*.55,{steps:12});await page.mouse.up();
   const pixel=await canvas.evaluate((node)=>{const c=node as HTMLCanvasElement;const x=c.getContext("2d")!;const data=x.getImageData(0,0,c.width,c.height).data;let count=0;for(let i=3;i<data.length;i+=4)if(data[i]>0){count++;if(count>100)break;}return count;});
+  if(pixel<=100){const diagnostic=await canvas.evaluate(node=>{const c=node as HTMLCanvasElement;const b=c.getBoundingClientRect();const hit=document.elementFromPoint(b.x+b.width/2,b.y+b.height/2);return {pointerEvents:getComputedStyle(c).pointerEvents,display:getComputedStyle(c).display,classes:c.className,bounds:{x:b.x,y:b.y,w:b.width,h:b.height},hit:hit?.tagName,hitClass:(hit as HTMLElement)?.className};});console.log("BRUSH_DIAG",JSON.stringify(diagnostic));}
   expect(pixel).toBeGreaterThan(100);
  });
  test("finger tracing guides child along an actual changing vector path",async({page})=>{
