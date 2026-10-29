@@ -16,7 +16,7 @@ test("paint bucket colors SVG regions; artwork and real PDF are downloadable",as
  await page.goto(BASE+"/virtual-preschool");
  await page.getByRole("button",{name:"Ατελιέ",exact:true}).click();
  await expect(page.locator(".p3-template-grid button")).toHaveCount(20);
- const ear=page.locator(".p3-svg-paint svg circle").first();
+ const ear=page.locator(".p3-svg-paint svg circle").nth(2);
  await ear.click();
  await expect(ear).toHaveAttribute("style",/fill/);
  await page.getByRole("button",{name:/Πινέλο/}).click();
