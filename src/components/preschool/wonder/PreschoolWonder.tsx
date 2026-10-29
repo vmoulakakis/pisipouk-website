@@ -8,6 +8,7 @@ import classroomScene from "@/assets/pisipouk-classroom.webp";
 import arrivalScene from "@/assets/pisipouk-arrival.webp";
 import storyScene from "@/assets/pisipouk-story.webp";
 import { PremiumGames } from "../premium/PremiumGames";
+import { PremiumDiorama } from "../premium/PremiumDiorama";
 import { PremiumAtelier } from "../premium/PremiumAtelier";
 import { Drawing } from "../world/Drawing";
 import { StoryBook } from "../world/Stories";
@@ -133,7 +134,7 @@ function JourneyHome({age,go}:{age:PreschoolAge;go:(a:Area)=>void}){
   {id:"stories" as Area,title:"Η φωλιά των ιστοριών",description:"Ακούω, παρατηρώ, φαντάζομαι και αφηγούμαι.",eyebrow:"ΑΚΟΥΩ",icon:BookOpen,tone:"sun"},
   {id:"village" as Area,title:"Το μεγάλο χωριό της μάθησης",description:"Εξερευνώ και τους 16 ήδη υπάρχοντες εκπαιδευτικούς κόσμους.",eyebrow:"ΕΞΕΡΕΥΝΩ",icon:Compass,tone:"sky"}
  ];
- return <><section className="ps-hero"><div className="ps-hero-scenery" role="img" aria-label="Εικονογραφημένο χωριό με παιχνίδια, σπίτια και δέντρα"/><div className="ps-hero-shade"/><div className="ps-hero-text"><span className="ps-hero-tag"><Sparkles size={17}/> ΚΑΛΩΣ ΗΡΘΕΣ ΣΤΟ ΧΩΡΙΟ ΜΑΣ!</span><h1>Κάθε μέρα, <em>μια μικρή</em> μαγική ανακάλυψη!</h1><p>{AGE_PATHS[age].promise} Εδώ παίζουμε, δοκιμάζουμε και δημιουργούμε μαζί με τον Πισιπούκ.</p><button className="ps-hero-action" onClick={()=>go("games")}><Play fill="currentColor"/> Ξεκινάμε το παιχνίδι <ArrowRight/></button></div><img className="ps-hero-bear" src="/preschool-world/bear.webp" alt="Ο Πισιπούκ, το χαμογελαστό αρκουδάκι"/></section>
+ return <><section className="ps-hero"><div className="ps-hero-scenery" role="img" aria-label="Εικονογραφημένο χωριό με παιχνίδια, σπίτια και δέντρα"/><div className="ps-hero-shade"/><div className="ps-hero-text"><span className="ps-hero-tag"><Sparkles size={17}/> ΚΑΛΩΣ ΗΡΘΕΣ ΣΤΟ ΧΩΡΙΟ ΜΑΣ!</span><h1>Κάθε μέρα, <em>μια μικρή</em> μαγική ανακάλυψη!</h1><p>{AGE_PATHS[age].promise} Εδώ παίζουμε, δοκιμάζουμε και δημιουργούμε μαζί με τον Πισιπούκ.</p><button className="ps-hero-action" onClick={()=>go("games")}><Play fill="currentColor"/> Ξεκινάμε το παιχνίδι <ArrowRight/></button></div><PremiumDiorama/></section>
  <section className="ps-welcome-panel"><div><span className="ps-eyebrow">ΜΙΑ ΔΙΑΔΡΟΜΗ ΣΤΑ ΜΕΤΡΑ ΣΟΥ</span><h2>Σήμερα είμαι {AGE_PATHS[age].age} ετών!</h2><p>{AGE_PATHS[age].guidance}</p></div><div className="ps-welcome-sticker"><span>✨</span><b>{AGE_PATHS[age].duration}</b><small>για ένα μικρό παιχνίδι</small></div></section>
  <div className="ps-rooms">{cards.map(({id,title,description,eyebrow,icon:Icon,tone})=><button key={id} className={`ps-room ps-${tone}`} onClick={()=>go(id)}><span className="ps-room-art"><img src={ROOM_SCENES[id]} alt="" loading="lazy"/><Icon size={46} strokeWidth={1.7}/></span><span className="ps-room-body"><small>{eyebrow}</small><strong>{title}</strong><span>{description}</span><b>Μπαίνω <ArrowRight size={16}/></b></span></button>)}</div>
  <aside className="ps-offline"><span>🌿</span><div><strong>Η μεγάλη ανακάλυψη γίνεται έξω από την οθόνη.</strong><p>Μετά από ένα παιχνίδι: ζωγράφισε, χόρεψε, φύτεψε, παίξε και συζήτησε με έναν ενήλικο.</p></div></aside>
