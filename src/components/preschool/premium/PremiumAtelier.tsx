@@ -33,7 +33,7 @@ function TemplateSheet({id,age,fills,onPaint,canvasRef,tool,color,onPointerDown,
  const svg=printableSvg(id,age,fills);
  return <div className="premium-paper" aria-label="Διαδραστικό πατρόν ζωγραφικής">
   <div className="premium-vector" onClick={e=>{if(tool!=="fill")return;const node=e.target as SVGElement;const zone=node.closest("[data-zone]")?.getAttribute("data-zone");if(zone)onPaint(zone);}} dangerouslySetInnerHTML={{__html:svg}}/>
-  <canvas className={"premium-ink "+(tool!=="fill"?"premium-ink-active":"")} width={840} height={1188} ref={canvasRef} aria-label="Καμβάς ελεύθερης ζωγραφικής" onPointerDown={e=>onPointerDown(e,tool,color)} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerCancel={onPointerUp}/>
+  <canvas className={"premium-ink "+(tool!=="fill"?"premium-ink-active":"")} style={{pointerEvents:tool==="fill"?"none":"auto",zIndex:tool==="fill"?0:5,touchAction:"none"}} width={840} height={1188} ref={canvasRef} aria-label="Καμβάς ελεύθερης ζωγραφικής" onPointerDown={e=>onPointerDown(e,tool,color)} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerCancel={onPointerUp}/>
  </div>;
 }
 const instructions=[
