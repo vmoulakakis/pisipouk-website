@@ -15,7 +15,7 @@ A theatrical hand-drawn preschool discovery studio: the child **chooses → play
 - Browser test suite for mission coverage, paint, undo, exports, anti-repeat and route isolation.
 
 ## Asset and dependency decisions
-Current production stack does not declare Motion or Three.js. The phase-A changes do NOT claim Motion/Three.js integration. Do not add third-party runtime scripts or bypass the npm lockfile. Subsequent visual upgrade requires pinned and inspected package-lock changes, explicit performance targets, GPU fallback and independent browser QA. Source-app brand imagery continues to provide the village background, with original SVG characters in new activities.
+The feature branch now pins `motion@14.6.0`, `three@0.186.1`, and `@types/three@0.186.0` in package.json and package-lock.json (updated through a one-off restricted GitHub Action which was then removed). The illustrated hero dynamically imports Three.js only on desktop with available WebGL and no reduced-motion preference; otherwise the original branded bear image remains. Motion for React animates the success state, honoring reduced motion. This constitutes a first-pass clay-style mascot, **not** proof of final cinematic art quality. Screenshots, visual/teacher review, lower-end mobile benchmarks and any further custom illustration commissioning remain release gates.
 
 ## Phase B visual and pedagogical review gate
 1. Replace temporary generic game/art scenes with more bespoke layered illustrated worlds and professionally reviewed master sprites. Inspect screenshot evidence at 320/390/768/1440.
