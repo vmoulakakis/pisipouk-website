@@ -40,6 +40,7 @@ function playSound(index:number){
  g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.35);o.connect(g);g.connect(ctx.destination);o.start();o.stop(ctx.currentTime+.36);o.onended=()=>{void ctx.close()};}catch{}
 }
 function Detail({activity,variant,onClose}:{activity:PackActivity;variant:number;onClose:()=>void}){
+ const [startedAt]=useState(()=>Date.now());
  const [step,setStep]=useState(0),[paint,setPaint]=useState<Record<number,string>>({}),[color,setColor]=useState(PALETTE[variant%PALETTE.length]);
  const [finished,setFinished]=useState(false),[choice,setChoice]=useState(""),[soundCount,setSoundCount]=useState(0);
  const isCraft=activity.kind==="craft",isColor=activity.kind==="coloring",isStory=activity.kind==="story";
