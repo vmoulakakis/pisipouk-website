@@ -21,7 +21,7 @@ function selectVariant(activity:PackActivity){
  return Number(variant);
 }
 export function startNovemberActivity(activity:PackActivity){return selectVariant(activity)}
-export function finishNovemberActivity(id:string){record(id,s=>{s.completions++})}
+export function finishNovemberActivity(id:string,elapsedMs=0){record(id,s=>{s.completions++;s.totalMs+=Math.max(0,elapsedMs)})}
 function rngFor(seed:number){let x=(seed+1)*2654435761>>>0;return()=>{x=(Math.imul(x,1664525)+1013904223)>>>0;return x/4294967296}}
 const PALETTE=["#70c5f2","#f6cb62","#e98ba4","#86c79c","#9a8bd9","#f2a772"];
 function mat(B:any,scene:any,name:string,color:string){
