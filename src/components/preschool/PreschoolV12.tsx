@@ -195,7 +195,7 @@ function ParentStats({stats,onClose}:{stats:Stats;onClose:()=>void}){
 }
 
 export function PreschoolV12(){
-  const[age,setAge]=useState<Age>("2–3");const[game,setGame]=useState<GameDef|null>(null);const[legacy,setLegacy]=useState(false);const[parent,setParent]=useState(false);const[stats,setStats]=useState<Stats>(()=>getStats());
+  const[age,setAge]=useState<Age>(()=>{if(typeof window==="undefined")return "2–3";const a=new URLSearchParams(window.location.search).get("age");return a==="4-5"?"4–5":a==="5-6"?"5–6":"2–3"});const[game,setGame]=useState<GameDef|null>(null);const[legacy,setLegacy]=useState(false);const[parent,setParent]=useState(false);const[stats,setStats]=useState<Stats>(()=>getStats());
   const games=useMemo(()=>GAMES.filter(g=>g.age===age),[age]);
   const start=(g:GameDef)=>{const next={...stats,[g.id]:{plays:(stats[g.id]?.plays||0)+1,completions:stats[g.id]?.completions||0,mistakes:stats[g.id]?.mistakes||0,totalMs:stats[g.id]?.totalMs||0,lastPlayed:Date.now()}};setStats(next);saveStats(next);setGame(g)};
   const complete=(ms:number)=>{if(!game)return;const old=stats[game.id]||{plays:1,completions:0,mistakes:0,totalMs:0,lastPlayed:Date.now()};const next={...stats,[game.id]:{...old,completions:old.completions+1,totalMs:old.totalMs+ms,lastPlayed:Date.now()}};setStats(next);saveStats(next)};
