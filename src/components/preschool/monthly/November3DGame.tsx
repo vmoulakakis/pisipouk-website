@@ -52,6 +52,8 @@ function buildScene(B:any,canvas:HTMLCanvasElement,activity:PackActivity,variant
  bear.scaling.scaleInPlace(.7);bear.position=new B.Vector3(-3.5,.22,-.6);
  bear.getChildMeshes().forEach((m:any)=>shadow.addShadowCaster(m));
  const r=rngFor(variant+activity.id.length*77);
+ const history=read()[activity.id];const confidence=(history?.completions||0)-(history?.mistakes||0);
+ const adaptive=(base:number)=>Math.max(2,base+(confidence>3?1:confidence< -2?-1:0));
  let n=0;let finished=false;let audio:any;
  const timers:ReturnType<typeof setTimeout>[]=[];
  const done=(total:number,feedback:string)=>{if(finished)return;n++;progress(n,total);message(feedback);if(n>=total){finished=true;message("Τα κατάφερες! Μπορείς να παίξεις ξανά με άλλη περιπέτεια.");timers.push(setTimeout(complete,450))}};
@@ -62,12 +64,12 @@ function buildScene(B:any,canvas:HTMLCanvasElement,activity:PackActivity,variant
   m.position=new B.Vector3(x,.65,z);m.material=mat(B,scene,name+"-material",color);shadow.addShadowCaster(m);return m;
  };
  const pick=(m:any,fn:()=>void)=>{m.actionManager=new B.ActionManager(scene);m.actionManager.registerAction(new B.ExecuteCodeAction(B.ActionManager.OnPickTrigger,fn));};
- const scatter=(count:number,fn:(i:number,x:number,z:number)=>void)=>{for(let i=0;i<count;i++)fn(i,-2.1+(i%4)*1.45,-1.7+Math.floor(i/4)*2.2)};
- const prompt=activity.promptEL;message(prompt);
+ const scatter=(count:number,fn:(i:number,x:number,z:number)=>void)=>{const angle=(variant%7)*.12;for(let i=0;i<count;i++){const x=-2.1+(i%4)*1.45,z=-1.7+Math.floor(i/4)*2.2;fn(i,x*Math.cos(angle)-z*Math.sin(angle),x*Math.sin(angle)+z*Math.cos(angle))}};
+ const prompt=activity.promptEL;message(prompt+" "+["Δοκίμασε μια καινούρια αρχή.","Κοίταξε τον κόσμο από άλλη πλευρά.","Άφησε το δάχτυλό σου να εξερευνήσει."][variant%3]);
  switch(activity.id){
  case "nov26-23-rain":{
-  scatter(6,(i,x,z)=>{const drop=mesh("rain-drop","sphere",x,z,PALETTE[i%3],1.1);drop.scaling.y=1.3;
-   pick(drop,()=>{if(finished)return;tone(260+i*64);drop.rotation.z+=.3;done(6,"Άκου! Πλιτ, πλιτ!");});});break;
+  scatter(6,(i,x,z)=>{const drop=mesh("rain-drop","sphere",x,z,PALETTE[(i+variant)%6],1.1);drop.scaling.y=1.3;
+   pick(drop,()=>{if(finished)return;tone(260+i*64+variant*5);drop.rotation.z+=.3;done(adaptive(6),"Άκου! Πλιτ, πλιτ!");});});break;
  }
  case "nov26-23-leaves":{
   const target=Math.floor(r()*3),colors=PALETTE.slice(0,3);
@@ -83,7 +85,7 @@ function buildScene(B:any,canvas:HTMLCanvasElement,activity:PackActivity,variant
  }
  case "nov26-45-bridge":{
   scatter(4,(i,x,z)=>{const plank=mesh("bridge-piece","box",x,z,PALETTE[(i+1)%6],1.1);
-   pick(plank,()=>{if(finished||!plank.isEnabled())return;plank.position=new B.Vector3(-1.1+n*1.1,.45,1.3);plank.scaling=new B.Vector3(1.1,.25,.7);done(3,"Η γέφυρα μεγαλώνει!");});});break;
+   pick(plank,()=>{if(finished||!plank.isEnabled())return;plank.position=new B.Vector3(-1.1+n*1.1,.45,1.3);plank.scaling=new B.Vector3(1.1,.25,.7);done(adaptive(3),"Η γέφυρα μεγαλώνει!");});});break;
  }
  case "nov26-45-habitats":{
   const land=mesh("forest-home","cylinder",-2,2.6,"#8fcf87",1.65),water=mesh("water-home","cylinder",2,2.6,"#71bfea",1.65);
@@ -94,9 +96,9 @@ function buildScene(B:any,canvas:HTMLCanvasElement,activity:PackActivity,variant
     if(home===animals[i]){animal.setEnabled(false);home=null;done(4,"Το ζωάκι βρήκε το σπίτι του!");}else{message("Μπορούμε να ξαναδοκιμάσουμε μαζί.");mistake();}});});break;
  }
  case "nov26-45-kites":{
-  const kite=mesh("kite","box",0,0,PALETTE[2],1.2);kite.position.y=2;kite.rotation.y=.6;
+  const kite=mesh("kite","box",(variant%3)-1,0,PALETTE[(variant+2)%6],1.2);kite.position.y=2;kite.rotation.y=.6;
   scatter(4,(i,x,z)=>{const wind=mesh("wind","cylinder",x,z,PALETTE[i],1.2);
-   pick(wind,()=>{if(finished)return;kite.position.x=Math.max(-2,Math.min(2,kite.position.x+(i%2?1:-1)));kite.position.y+=.15;tone(300+i*80);done(3,"Ο χαρταετός πετά!");});});break;
+   pick(wind,()=>{if(finished)return;kite.position.x=Math.max(-2,Math.min(2,kite.position.x+(i%2?1:-1)));kite.position.y+=.15;tone(300+i*80);done(adaptive(3),"Ο χαρταετός πετά!");});});break;
  }
  case "nov26-56-water":{
   const target=Math.floor(r()*3);message("Ποιο κανάλι θα ποτίσει τον κήπο; Διάλεξε ένα από τα τρία.");
