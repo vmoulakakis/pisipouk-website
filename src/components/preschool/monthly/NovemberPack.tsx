@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { NOVEMBER_ACTIVITIES, NOVEMBER_CRAFT_STEPS, NOVEMBER_PACK, NOVEMBER_STORIES, type PackActivity, type PackAge, type PackKind } from "./november2026";
 import { November3DGame, getNovemberStats, startNovemberActivity, finishNovemberActivity } from "./November3DGame";
 import bearLogo from "@/assets/pisipouk-logo.webp";
@@ -46,7 +46,7 @@ function Detail({activity,variant,onClose}:{activity:PackActivity;variant:number
  const shapes=isCraft?CRAFT_PATTERNS[activity.id]:SCENES[activity.id];
  const story=NOVEMBER_STORIES[activity.id]||[],craft=NOVEMBER_CRAFT_STEPS[activity.id];
  const end=()=>{if(!finished){finishNovemberActivity(activity.id);setFinished(true}};
- const print=()=>downloadSvg(svgMarkup(shapes||[],isCraft?[]:Object.keys(paint).map((_,i)=>paint[i]),activity.titleEL,true),activity.id+"-A4.svg");
+ const print=()=>downloadSvg(svgMarkup(shapes||[],[],activity.titleEL,true),activity.id+"-A4.svg");
  return <div className="nov-dialog-back" role="dialog" aria-modal="true" aria-label={activity.titleEL}><section className="nov-dialog">
   <header><img src={bearLogo} alt="Πισιπούκ το αρκουδάκι"/><div><small>{activity.age} ετών • {activity.domain}</small><h3>{activity.titleEL}</h3></div><button onClick={onClose}>✕ Κλείσιμο</button></header>
   <p>{activity.promptEL}</p>
@@ -55,7 +55,7 @@ function Detail({activity,variant,onClose}:{activity:PackActivity;variant:number
     {shapes.map((d,i)=><path key={i} d={d} stroke="#263c54" strokeWidth="2.3" fill={isCraft?"white":paint[i]||"white"} onClick={()=>{if(!isCraft)setPaint(p=>({...p,[i]:color}))}} style={{cursor:isCraft?"default":"pointer"}}/>)}
    </svg>
    {!isCraft&&<div className="nov-palette" aria-label="Διάλεξε χρώμα">{PALETTE.map(c=><button key={c} aria-label={"Χρώμα "+c} aria-pressed={color===c} style={{background:c}} onClick={()=>setColor(c)}/>)}</div>}
-   <div className="nov-row"><button onClick={print}>Εκτυπώσιμο πατρόν Α4</button>{!isCraft&&<button onClick={()=>downloadSvg(svgMarkup(shapes,Object.keys(paint).map((_,i)=>paint[i]),activity.titleEL),activity.id+"-colored.svg")}>Αποθήκευση ζωγραφιάς</button>}</div>
+   <div className="nov-row"><button onClick={print}>Εκτυπώσιμο πατρόν Α4</button>{!isCraft&&<button onClick={()=>downloadSvg(svgMarkup(shapes,Array.from({length:shapes.length},(_,i)=>paint[i]||"white"),activity.titleEL),activity.id+"-colored.svg")}>Αποθήκευση ζωγραφιάς</button>}</div>
    {isCraft&&<div><b>Υλικά: {craft.materials}</b><ol>{craft.steps.map(s=><li key={s}>{s}</li>)}</ol><small>Κοπή, μικρά υλικά και εργαλεία μόνο με επίβλεψη ενηλίκου.</small></div>}
   </div>}
   {isStory&&<div className="nov-story"><p>{story[step]}</p><div className="nov-row"><button onClick={()=>setStep(s=>Math.max(0,s-1))} disabled={step===0}>Πίσω</button><span>{step+1}/{story.length}</span><button onClick={()=>setStep(s=>Math.min(story.length-1,s+1))} disabled={step===story.length-1}>Συνέχεια</button></div><div className="nov-row"><button onClick={()=>setChoice("Τι θα έκανες εσύ;")}>Φαντάζομαι άλλο τέλος</button><button onClick={()=>setChoice("Πώς ένιωθαν οι φίλοι;")}>Μιλάμε για τα συναισθήματα</button></div>{choice&&<p>{choice} Μίλησε με έναν μεγάλο και ζωγράφισε την απάντηση.</p>}</div>}
@@ -69,9 +69,11 @@ export function NovemberPack({age}:{age:PackAge}){
  const [group,setGroup]=useState("game"),[selected,setSelected]=useState<PackActivity|null>(null),[variant,setVariant]=useState(0),[showParent,setShowParent]=useState(false);
  const activities=useMemo(()=>NOVEMBER_ACTIVITIES.filter(a=>a.age===age&&GROUPS.find(g=>g.id===group)?.kinds.includes(a.kind)),[age,group]);
  const open=(a:PackActivity)=>{setSelected(a);if(a.kind!=="game3d")setVariant(startNovemberActivity(a));};
+ const handled=useRef(false);
+ useEffect(()=>{if(handled.current)return;const id=new URLSearchParams(window.location.search).get("activity");const found=NOVEMBER_ACTIVITIES.find(a=>a.id===id&&a.age===age);if(found){handled.current=true;open(found)}},[age]);
  const stats=getNovemberStats();
  const played=NOVEMBER_ACTIVITIES.filter(a=>a.age===age&&stats[a.id]?.plays).length;
- return <section className="nov-pack" aria-label="Νοέμβριος 2026: Το Νησί της Βροχής">
+ return <section id="november-2026" className="nov-pack" aria-label="Νοέμβριος 2026: Το Νησί της Βροχής">
   <style>{CSS}</style>
   <div className="nov-hero"><img src={bearLogo} alt="Πισιπούκ, το αρκουδάκι"/><div><small>ΜΗΝΙΑΙΑ ΠΕΡΙΠΕΤΕΙΑ • ΝΟΕΜΒΡΙΟΣ 2026</small><h2>{NOVEMBER_PACK.titleEL}</h2><p>Νέες περιπέτειες για {age} ετών. Αγγίζω, δημιουργώ, εξερευνώ και συνεχίζω το παιχνίδι έξω από την οθόνη.</p></div></div>
   <div className="nov-tabs" role="tablist" aria-label="Διάλεξε δραστηριότητες">{GROUPS.map(g=><button key={g.id} role="tab" aria-selected={group===g.id} onClick={()=>setGroup(g.id)}>{g.title}</button>)}</div>
