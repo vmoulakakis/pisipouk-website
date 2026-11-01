@@ -46,7 +46,7 @@ function Detail({activity,variant,onClose}:{activity:PackActivity;variant:number
  const isCraft=activity.kind==="craft",isColor=activity.kind==="coloring",isStory=activity.kind==="story";
  const shapes=isCraft?CRAFT_PATTERNS[activity.id]:SCENES[activity.id];
  const story=NOVEMBER_STORIES[activity.id]||[],craft=NOVEMBER_CRAFT_STEPS[activity.id];
- const end=()=>{if(!finished){finishNovemberActivity(activity.id);setFinished(true}};
+ const end=()=>{if(!finished){finishNovemberActivity(activity.id,Date.now()-startedAt);setFinished(true);}};
  const print=()=>downloadSvg(svgMarkup(shapes||[],[],activity.titleEL,true),activity.id+"-A4.svg");
  return <div className="nov-dialog-back" role="dialog" aria-modal="true" aria-label={activity.titleEL}><section className="nov-dialog">
   <header><img src={bearLogo} alt="Πισιπούκ το αρκουδάκι"/><div><small>{activity.age} ετών • {activity.domain}</small><h3>{activity.titleEL}</h3></div><button onClick={onClose}>✕ Κλείσιμο</button></header>
