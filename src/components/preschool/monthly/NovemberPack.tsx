@@ -70,7 +70,7 @@ function Detail({activity,variant,onClose}:{activity:PackActivity;variant:number
 export function NovemberPack({age}:{age:PackAge}){
  const [group,setGroup]=useState("game"),[selected,setSelected]=useState<PackActivity|null>(null),[variant,setVariant]=useState(0),[showParent,setShowParent]=useState(false);
  const activities=useMemo(()=>NOVEMBER_ACTIVITIES.filter(a=>a.age===age&&GROUPS.find(g=>g.id===group)?.kinds.includes(a.kind)),[age,group]);
- const open=(a:PackActivity)=>{setSelected(a);if(a.kind!=="game3d")setVariant(startNovemberActivity(a));};
+ const open=(a:PackActivity)=>{setSelected(a);setVariant(startNovemberActivity(a));};
  const handled=useRef(false);
  useEffect(()=>{if(handled.current)return;const id=new URLSearchParams(window.location.search).get("activity");const found=NOVEMBER_ACTIVITIES.find(a=>a.id===id&&a.age===age);if(found){handled.current=true;open(found)}},[age]);
  const stats=getNovemberStats();
@@ -84,7 +84,7 @@ export function NovemberPack({age}:{age:PackAge}){
   </button>)}</div>
   <div className="nov-footer"><p><b>Δική μας δημιουργία.</b> Όλες οι σκηνές και οι ιστορίες είναι πρωτότυπες. Τα στατιστικά μένουν στη συσκευή, χωρίς ονόματα παιδιών, βαθμούς ή ανταγωνισμό.</p><button onClick={()=>setShowParent(v=>!v)}>Γωνιά γονέα • {played} δραστηριότητες δοκιμάστηκαν</button></div>
   {showParent&&<div className="nov-parent-summary"><h3>Τοπική εικόνα παιχνιδιού</h3>{NOVEMBER_ACTIVITIES.filter(a=>a.age===age&&stats[a.id]).map(a=><p key={a.id}>{a.titleEL}: {stats[a.id].plays} επισκέψεις, {stats[a.id].completions} ολοκληρώσεις, {stats[a.id].retries} επαναπροσπάθειες</p>)}<p>Δεν αποστέλλεται τίποτα σε διακομιστή. Αυτά δεν αποτελούν αξιολόγηση ανάπτυξης.</p></div>}
-  {selected&&(selected.kind==="game3d"?<November3DGame key={selected.id} activity={selected} onClose={()=>setSelected(null)}/>:<Detail key={selected.id+":"+variant} activity={selected} variant={variant} onClose={()=>setSelected(null)}/>)}
+  {selected&&(selected.kind==="game3d"?<November3DGame key={selected.id} activity={selected} initialVariant={variant} onClose={()=>setSelected(null)}/>:<Detail key={selected.id+":"+variant} activity={selected} variant={variant} onClose={()=>setSelected(null)}/>)}
  </section>;
 }
 const CSS=`
