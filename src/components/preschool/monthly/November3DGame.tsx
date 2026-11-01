@@ -72,15 +72,15 @@ function buildScene(B:any,canvas:HTMLCanvasElement,activity:PackActivity,variant
    pick(drop,()=>{if(finished)return;tone(260+i*64+variant*5);drop.rotation.z+=.3;done(adaptive(6),"Άκου! Πλιτ, πλιτ!");});});break;
  }
  case "nov26-23-leaves":{
-  const target=Math.floor(r()*3),colors=PALETTE.slice(0,3);
+  const target=Math.floor(r()*3),colors=PALETTE.slice(0,3),correctCount=confidence>3?4:confidence< -2?2:3;
   message("Βρες τα τρία φύλλα στο χρώμα του μεγάλου καλαθιού.");
   mesh("basket","cylinder",0,2.8,colors[target],1.7);
-  const order=Array.from({length:7},(_,i)=>i<3?target:(target+1+i%2)%3).sort(()=>r()-.5);
+  const order=Array.from({length:7},(_,i)=>i<correctCount?target:(target+1+i%2)%3).sort(()=>r()-.5);
   scatter(7,(i,x,z)=>{const leaf=mesh("leaf","sphere",x,z,colors[order[i]],1.05);leaf.scaling.y=.48;
-   pick(leaf,()=>{if(!leaf.isEnabled()||finished)return;if(order[i]===target){leaf.setEnabled(false);done(3,"Ναι! Βρήκες ένα φύλλο.");}else{message("Δοκίμασε άλλο χρώμα. Όλα τα φύλλα είναι όμορφα.");mistake();}});});break;
+   pick(leaf,()=>{if(!leaf.isEnabled()||finished)return;if(order[i]===target){leaf.setEnabled(false);done(correctCount,"Ναι! Βρήκες ένα φύλλο.");}else{message("Δοκίμασε άλλο χρώμα. Όλα τα φύλλα είναι όμορφα.");mistake();}});});break;
  }
  case "nov26-23-cloud":{
-  const target=Math.floor(r()*3);scatter(3,(i,x,z)=>{const house=mesh("hide-house","box",x,z,PALETTE[(i+2)%6],1.55);
+  const houses=confidence>3?4:confidence< -2?2:3;const target=Math.floor(r()*houses);scatter(houses,(i,x,z)=>{const house=mesh("hide-house","box",x,z,PALETTE[(i+2)%6],1.55);
    pick(house,()=>{if(finished)return;if(i===target){const cloud=mesh("found-cloud","sphere",x,z,PALETTE[0],1.2);cloud.position.y=2;done(1,"Να το συννεφάκι!");}else{message("Δεν είναι εδώ. Ας δούμε δίπλα.");mistake();}});});break;
  }
  case "nov26-45-bridge":{
@@ -90,10 +90,10 @@ function buildScene(B:any,canvas:HTMLCanvasElement,activity:PackActivity,variant
  case "nov26-45-habitats":{
   const land=mesh("forest-home","cylinder",-2,2.6,"#8fcf87",1.65),water=mesh("water-home","cylinder",2,2.6,"#71bfea",1.65);
   let home:"land"|"water"|null=null;pick(land,()=>{home="land";message("Διάλεξες δάσος. Τώρα ένα ζωάκι.");});pick(water,()=>{home="water";message("Διάλεξες νερό. Τώρα ένα ζωάκι.");});
-  const animals=["land","water","land","water"].sort(()=>r()-.5);
-  scatter(4,(i,x,z)=>{const animal=mesh("animal","sphere",x,z,PALETTE[(i+3)%6],1.15);
+  const animals=["land","water","land","water"].sort(()=>r()-.5).slice(0,confidence< -2?3:4);
+  scatter(animals.length,(i,x,z)=>{const animal=mesh("animal","sphere",x,z,PALETTE[(i+3)%6],1.15);
    pick(animal,()=>{if(!animal.isEnabled()||finished)return;if(!home){message("Πρώτα διάλεξε σπιτάκι.");return}
-    if(home===animals[i]){animal.setEnabled(false);home=null;done(4,"Το ζωάκι βρήκε το σπίτι του!");}else{message("Μπορούμε να ξαναδοκιμάσουμε μαζί.");mistake();}});});break;
+    if(home===animals[i]){animal.setEnabled(false);home=null;done(animals.length,"Το ζωάκι βρήκε το σπίτι του!");}else{message("Μπορούμε να ξαναδοκιμάσουμε μαζί.");mistake();}});});break;
  }
  case "nov26-45-kites":{
   const kite=mesh("kite","box",(variant%3)-1,0,PALETTE[(variant+2)%6],1.2);kite.position.y=2;kite.rotation.y=.6;
@@ -101,15 +101,26 @@ function buildScene(B:any,canvas:HTMLCanvasElement,activity:PackActivity,variant
    pick(wind,()=>{if(finished)return;kite.position.x=Math.max(-2,Math.min(2,kite.position.x+(i%2?1:-1)));kite.position.y+=.15;tone(300+i*80);done(adaptive(3),"Ο χαρταετός πετά!");});});break;
  }
  case "nov26-56-water":{
-  const target=Math.floor(r()*3);message("Ποιο κανάλι θα ποτίσει τον κήπο; Διάλεξε ένα από τα τρία.");
-  scatter(3,(i,x,z)=>{const canal=mesh("canal","box",x,z,PALETTE[i],1.4);canal.scaling.z=1.8;
-   pick(canal,()=>{if(finished)return;if(i===target){canal.position.y=.3;done(1,"Το νερό έφτασε στον κήπο! Πώς το κατάλαβες;");}else{mistake();message("Το νερό πήγε αλλού. Ας προβλέψουμε ξανά.");}});});break;
+  const channelCount=confidence< -2?2:3,target=Math.floor(r()*channelCount);
+  message("Παρατήρησε τα κανάλια: ποιο φτάνει μέχρι τον πράσινο κήπο;");
+  const xs=channelCount===2?[-1.4,1.4]:[-2.1,0,2.1];
+  const garden=mesh("garden","cylinder",xs[target],2.65,"#4fbb72",1.5);garden.position.y=.55;
+  for(let i=0;i<channelCount;i++){
+   const canal=mesh("canal","box",xs[i],.05,PALETTE[i],1.25);
+   canal.scaling=new B.Vector3(.52,.18,i===target?4.2:2.1);
+   pick(canal,()=>{if(finished)return;if(i===target){
+    const water=mesh("water-flow","sphere",xs[i],-2.1,"#54bce9",.65);
+    const animation=new B.Animation("water-journey","position.z",30,B.Animation.ANIMATIONTYPE_FLOAT,B.Animation.ANIMATIONLOOPMODE_CONSTANT);
+    animation.setKeys([{frame:0,value:-2.1},{frame:40,value:2.65}]);water.animations=[animation];scene.beginAnimation(water,0,40,false);
+    done(1,"Το νερό ακολούθησε το κανάλι ως τον κήπο! Τι παρατήρησες;");
+   }else{mistake();message("Αυτό το κανάλι σταματά νωρίς. Δες ποιο συνεχίζει ως τον κήπο.");}});
+  }break;
  }
  case "nov26-56-route":{
-  const order=[0,1,2].sort(()=>r()-.5);const names=["μπλε","κίτρινο","ροζ"];
+  const order=[0,1,2].sort(()=>r()-.5).slice(0,confidence< -2?2:3);const names=["μπλε","κίτρινο","ροζ"];
   message("Πήγαινε με τη σειρά: "+order.map(i=>names[i]).join(" → ")+".");
   scatter(3,(i,x,z)=>{const beacon=mesh("beacon","cylinder",x,z,PALETTE[i],1.35);
-   pick(beacon,()=>{if(finished)return;if(i===order[n]){beacon.position.y+=.5;done(3,"Σωστή στάση! Συνέχισε τη διαδρομή.");}else{mistake();message("Δοκίμασε ξανά: "+order.map(j=>names[j]).join(" → "));}});});break;
+   pick(beacon,()=>{if(finished)return;if(i===order[n]){beacon.position.y+=.5;done(order.length,"Σωστή στάση! Συνέχισε τη διαδρομή.");}else{mistake();message("Δοκίμασε ξανά: "+order.map(j=>names[j]).join(" → "));}});});break;
  }
  }
  let t=0;scene.registerBeforeRender(()=>{t+=engine.getDeltaTime()/1000;bear.position.y=.22+Math.sin(t*2)*.045});
