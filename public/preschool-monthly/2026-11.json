@@ -1,0 +1,82 @@
+{
+  "id": "2026-11",
+  "titleEL": "Νοέμβριος: Το Νησί της Βροχής",
+  "titleEN": "November: The Rain Island",
+  "published": "2026-11-01",
+  "route": "/virtual-preschool?world=v12",
+  "status": "staged-until-qa",
+  "ages": [
+    "2–3",
+    "4–5",
+    "5–6"
+  ],
+  "activityCount": 34,
+  "counts": {
+    "game3d": 8,
+    "craft": 4,
+    "coloring": 6,
+    "story": 2,
+    "mission": 6,
+    "music": 2,
+    "stem": 2,
+    "social": 2,
+    "quest": 2
+  },
+  "byAge": {
+    "2–3": {
+      "game3d": 3,
+      "craft": 1,
+      "coloring": 2,
+      "story": 1,
+      "mission": 2,
+      "music": 1,
+      "social": 1
+    },
+    "4–5": {
+      "game3d": 3,
+      "craft": 2,
+      "coloring": 2,
+      "mission": 2,
+      "music": 1,
+      "stem": 1,
+      "quest": 1
+    },
+    "5–6": {
+      "game3d": 2,
+      "craft": 1,
+      "coloring": 2,
+      "story": 1,
+      "mission": 2,
+      "stem": 1,
+      "social": 1,
+      "quest": 1
+    }
+  },
+  "localStatsKey": "pisipouk-nov26-local-stats",
+  "runtime": "Babylon.js open-source, browser Web Audio and SVG",
+  "assetRegistry": [
+    {
+      "id": "nov26-procedural-meshes",
+      "kind": "procedural",
+      "license": "original project-owned",
+      "source": "src/components/preschool/monthly/November3DGame.tsx"
+    },
+    {
+      "id": "nov26-svg-crafts-coloring",
+      "kind": "procedural-svg",
+      "license": "original project-owned",
+      "source": "src/components/preschool/monthly/NovemberPack.tsx"
+    },
+    {
+      "id": "pisipouk-bear",
+      "kind": "owned-artwork",
+      "license": "existing repository-owned branding",
+      "source": "src/assets/pisipouk-logo.webp"
+    }
+  ],
+  "externalAssets": [],
+  "personalData": "none",
+  "parentCoPlay": true,
+  "retainedCatalogBefore": 20,
+  "seoGuide": "/activities/november-2026/index.html"
+}
