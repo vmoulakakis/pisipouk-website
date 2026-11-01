@@ -43,6 +43,7 @@ function Detail({activity,variant,onClose}:{activity:PackActivity;variant:number
  const [startedAt]=useState(()=>Date.now());
  const [step,setStep]=useState(0),[paint,setPaint]=useState<Record<number,string>>({}),[color,setColor]=useState(PALETTE[variant%PALETTE.length]);
  const [finished,setFinished]=useState(false),[choice,setChoice]=useState(""),[soundCount,setSoundCount]=useState(0);
+ const variantHints=["Διάλεξε μια καινούρια αρχή.","Παρατήρησε κάτι μικρό.","Δοκίμασε άλλο χρώμα.","Πες τι βλέπεις.","Άκουσε μια ιδέα από έναν μεγάλο.","Φτιάξε κάτι διαφορετικό.","Δείξε το αγαπημένο σου σημείο.","Δοκίμασε με δικό σου τρόπο."];
  const isCraft=activity.kind==="craft",isColor=activity.kind==="coloring",isStory=activity.kind==="story";
  const shapes=isCraft?CRAFT_PATTERNS[activity.id]:SCENES[activity.id];
  const story=NOVEMBER_STORIES[activity.id]||[],craft=NOVEMBER_CRAFT_STEPS[activity.id];
@@ -50,7 +51,7 @@ function Detail({activity,variant,onClose}:{activity:PackActivity;variant:number
  const print=()=>downloadSvg(svgMarkup(shapes||[],[],activity.titleEL,true),activity.id+"-A4.svg");
  return <div className="nov-dialog-back" role="dialog" aria-modal="true" aria-label={activity.titleEL}><section className="nov-dialog">
   <header><img src={bearLogo} alt="Πισιπούκ το αρκουδάκι"/><div><small>{activity.age} ετών • {activity.domain}</small><h3>{activity.titleEL}</h3></div><button onClick={onClose}>✕ Κλείσιμο</button></header>
-  <p>{activity.promptEL}</p>
+  <p>{activity.promptEL} {variantHints[variant%variantHints.length]}</p>
   {shapes&&<div className="nov-artboard">
    <svg viewBox="0 0 210 297" role="img" aria-label={activity.titleEL}><rect width="210" height="297" fill="white"/>
     {shapes.map((d,i)=><path key={i} d={d} stroke="#263c54" strokeWidth="2.3" fill={isCraft?"white":paint[i]||"white"} onClick={()=>{if(!isCraft)setPaint(p=>({...p,[i]:color}))}} style={{cursor:isCraft?"default":"pointer"}}/>)}
