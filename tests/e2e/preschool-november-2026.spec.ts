@@ -39,6 +39,7 @@ test("keeps current preschool intact and exposes opt-in V12 November world",asyn
  expect(errors).toEqual([]);
 });
 test("100 fast age and navigation regressions",async({page})=>{
+ test.skip(test.info().project.name!=="desktop-chromium","100 stress cycles run on desktop; all devices retain full 3D checks");
  test.setTimeout(100_000);const errors:string[]=[];page.on("pageerror",e=>errors.push(e.message));
  await page.goto(url("2-3"));
  await expect(page.getByText("Το Νησί της Βροχής")).toBeVisible({timeout:30_000});
