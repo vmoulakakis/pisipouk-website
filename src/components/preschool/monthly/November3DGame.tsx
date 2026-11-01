@@ -127,9 +127,9 @@ function buildScene(B:any,canvas:HTMLCanvasElement,activity:PackActivity,variant
  engine.runRenderLoop(()=>scene.render());const resize=()=>engine.resize();window.addEventListener("resize",resize);
  return()=>{timers.forEach(clearTimeout);window.removeEventListener("resize",resize);try{audio?.close()}catch{};scene.dispose();engine.dispose()};
 }
-export function November3DGame({activity,onClose}:{activity:PackActivity;onClose:()=>void}){
+export function November3DGame({activity,onClose,initialVariant}:{activity:PackActivity;onClose:()=>void;initialVariant:number}){
  const canvas=useRef<HTMLCanvasElement>(null),started=useRef(Date.now());
- const [variant,setVariant]=useState(()=>selectVariant(activity));
+ const [variant,setVariant]=useState(initialVariant);
  const [message,setMessage]=useState(activity.promptEL),[progress,setProgress]=useState({n:0,total:1}),[complete,setComplete]=useState(false),[error,setError]=useState("");
  useEffect(()=>{
   let cleanup:(()=>void)|undefined,active=true;started.current=Date.now();
