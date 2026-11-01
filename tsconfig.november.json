@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "src/components/preschool/monthly/**/*.ts",
+    "src/components/preschool/monthly/**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
