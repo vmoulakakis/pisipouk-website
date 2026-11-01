@@ -18,7 +18,7 @@ test.describe("Pisipouk V12 3D PlayWorld", () => {
   test("renders bear-led age separated game hub", async ({ page }) => {
     const errors: string[] = [];
     page.on("pageerror", e => errors.push(e.message));
-    const response = await page.goto(`${BASE_URL}/virtual-preschool`, { waitUntil: "networkidle" });
+    const response = await page.goto(`${BASE_URL}/virtual-preschool?world=v12`, { waitUntil: "networkidle" });
     expect(response?.ok()).toBeTruthy();
     await expect(page.getByText("Ο ΚΟΣΜΟΣ ΤΟΥ ΠΙΣΙΠΟΥΚ").first()).toBeVisible();
     await expect(page.getByText("Το αρκουδάκι είναι ο οδηγός!")).toBeVisible();
@@ -35,7 +35,7 @@ test.describe("Pisipouk V12 3D PlayWorld", () => {
       await page.setViewportSize(vp);
       const errors: string[] = [];
       page.on("pageerror", e => errors.push(e.message));
-      await page.goto(`${BASE_URL}/virtual-preschool`, { waitUntil: "domcontentloaded" });
+      await page.goto(`${BASE_URL}/virtual-preschool?world=v12`, { waitUntil: "domcontentloaded" });
       await page.getByRole("heading", { name: "Το χρωματιστό λιμανάκι" }).click();
       const canvas = page.locator("canvas[aria-label^='3D παιχνίδι']");
       await expect(canvas).toBeVisible({ timeout: 20_000 });
@@ -49,7 +49,7 @@ test.describe("Pisipouk V12 3D PlayWorld", () => {
   }
 
   test("keeps education, entertainment and parent co-play separate by age", async ({ page }) => {
-    await page.goto(`${BASE_URL}/virtual-preschool`, { waitUntil: "networkidle" });
+    await page.goto(`${BASE_URL}/virtual-preschool?world=v12`, { waitUntil: "networkidle" });
     await expect(page.getByText("Μουσικά κουδουνάκια")).toBeVisible();
     await expect(page.getByText("Το πικνίκ του Πισιπούκ")).toBeVisible();
     await page.getByRole("button", { name: /4–5 ετών/ }).click();
@@ -61,7 +61,7 @@ test.describe("Pisipouk V12 3D PlayWorld", () => {
   });
 
   test("parent dashboard is privacy-safe and local-first", async ({ page }) => {
-    await page.goto(`${BASE_URL}/virtual-preschool`, { waitUntil: "networkidle" });
+    await page.goto(`${BASE_URL}/virtual-preschool?world=v12`, { waitUntil: "networkidle" });
     await page.getByRole("button", { name: /Γονείς/ }).click();
     await expect(page.getByRole("heading", { name: "Γωνιά Γονέα" })).toBeVisible();
     await expect(page.getByText(/ΧΩΡΙΣ ΟΝΟΜΑ ΠΑΙΔΙΟΥ/)).toBeVisible();
@@ -69,7 +69,7 @@ test.describe("Pisipouk V12 3D PlayWorld", () => {
   });
 
   test("legacy preschool library remains available", async ({ page }) => {
-    await page.goto(`${BASE_URL}/virtual-preschool`, { waitUntil: "networkidle" });
+    await page.goto(`${BASE_URL}/virtual-preschool?world=v12`, { waitUntil: "networkidle" });
     await page.getByRole("button", { name: /Όλο το Preschool/ }).click();
     await expect(page.getByRole("button", { name: /3D PlayWorld/ })).toBeVisible();
     await expect(page.getByText(/Ο ΚΟΣΜΟΣ ΤΟΥ ΠΙΣΙΠΟΥΚ/).first()).toBeVisible();
@@ -79,7 +79,7 @@ test.describe("Pisipouk V12 3D PlayWorld", () => {
     test.setTimeout(90_000);
     const errors: string[] = [];
     page.on("pageerror", e => errors.push(e.message));
-    await page.goto(`${BASE_URL}/virtual-preschool`, { waitUntil: "domcontentloaded" });
+    await page.goto(`${BASE_URL}/virtual-preschool?world=v12`, { waitUntil: "domcontentloaded" });
     for (let i = 0; i < 100; i++) {
       const a = ages[i % ages.length];
       await page.getByRole("button", { name: new RegExp(a.label) }).click();

@@ -1,4 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { PreschoolV12Runtime } from "@/components/preschool/PreschoolV12Runtime";
 import { PreschoolWonder } from "@/components/preschool/wonder/PreschoolWonder";
 export const Route = createFileRoute("/virtual-preschool")({
   head: () => ({
@@ -11,5 +13,16 @@ export const Route = createFileRoute("/virtual-preschool")({
       },
     ],
   }),
-  component: PreschoolWonder,
+  component: PreschoolEntry,
 });
+
+/** V12 staged under the same preschool route until the complete release matrix is green. */
+function PreschoolEntry(){
+  const [v12,setV12]=useState(false);
+  useEffect(()=>{
+    const sync=()=>setV12(new URLSearchParams(window.location.search).get("world")==="v12");
+    sync();window.addEventListener("popstate",sync);
+    return()=>window.removeEventListener("popstate",sync);
+  },[]);
+  return v12?<PreschoolV12Runtime/>:<PreschoolWonder/>;
+}
