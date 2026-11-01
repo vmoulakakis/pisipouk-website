@@ -20,6 +20,8 @@ function selectVariant(activity:PackActivity){
  record(activity.id,x=>{x.plays++;x.variants[variant]=(x.variants[variant]||0)+1;x.lastVariant=variant});
  return Number(variant);
 }
+export function startNovemberActivity(activity:PackActivity){return selectVariant(activity)}
+export function finishNovemberActivity(id:string){record(id,s=>{s.completions++})}
 function rngFor(seed:number){let x=(seed+1)*2654435761>>>0;return()=>{x=(Math.imul(x,1664525)+1013904223)>>>0;return x/4294967296}}
 const PALETTE=["#70c5f2","#f6cb62","#e98ba4","#86c79c","#9a8bd9","#f2a772"];
 function mat(B:any,scene:any,name:string,color:string){
@@ -68,12 +70,12 @@ function buildScene(B:any,canvas:HTMLCanvasElement,activity:PackActivity,variant
    pick(drop,()=>{if(finished)return;tone(260+i*64);drop.rotation.z+=.3;done(6,"Άκου! Πλιτ, πλιτ!");});});break;
  }
  case "nov26-23-leaves":{
-  const target=Math.floor(r()*3),colors=PALETTE.slice(0,3);let found=0;
+  const target=Math.floor(r()*3),colors=PALETTE.slice(0,3);
   message("Βρες τα τρία φύλλα στο χρώμα του μεγάλου καλαθιού.");
   mesh("basket","cylinder",0,2.8,colors[target],1.7);
   const order=Array.from({length:7},(_,i)=>i<3?target:(target+1+i%2)%3).sort(()=>r()-.5);
   scatter(7,(i,x,z)=>{const leaf=mesh("leaf","sphere",x,z,colors[order[i]],1.05);leaf.scaling.y=.48;
-   pick(leaf,()=>{if(!leaf.isEnabled()||finished)return;if(order[i]===target){leaf.setEnabled(false);found++;done(3,"Ναι! Βρήκες ένα φύλλο.");}else{message("Δοκίμασε άλλο χρώμα. Όλα τα φύλλα είναι όμορφα.");mistake();}});});break;
+   pick(leaf,()=>{if(!leaf.isEnabled()||finished)return;if(order[i]===target){leaf.setEnabled(false);done(3,"Ναι! Βρήκες ένα φύλλο.");}else{message("Δοκίμασε άλλο χρώμα. Όλα τα φύλλα είναι όμορφα.");mistake();}});});break;
  }
  case "nov26-23-cloud":{
   const target=Math.floor(r()*3);scatter(3,(i,x,z)=>{const house=mesh("hide-house","box",x,z,PALETTE[(i+2)%6],1.55);
