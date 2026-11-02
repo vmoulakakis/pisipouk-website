@@ -1,17 +1,29 @@
 {
   "version": 1,
-  "week": "2026-W44",
-  "updatedAt": "2026-10-26T11:12:42.514Z",
+  "week": "2026-W45",
+  "updatedAt": "2026-11-02T13:37:12.051Z",
   "source": "deterministic-exploration",
   "items": [
     "game-pattern",
-    "game-colors-shapes",
+    "game-count",
     "print-dot-pattern",
     "print-story-cards",
     "craft-puppet",
     "craft-butterfly"
   ],
   "rotationHistory": [
+    {
+      "week": "2026-W45",
+      "at": "2026-11-02T13:37:12.051Z",
+      "source": "deterministic-exploration",
+      "replacements": [
+        {
+          "from": "game-colors-shapes",
+          "to": "game-count",
+          "reason": "exploration-slot"
+        }
+      ]
+    },
     {
       "week": "2026-W44",
       "at": "2026-10-26T11:12:42.514Z",
