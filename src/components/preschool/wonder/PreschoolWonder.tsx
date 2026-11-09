@@ -14,7 +14,7 @@ import { speak } from "../world/Game";
 import { AGE_PATHS, CRAFTS, type CraftId, type PreschoolAge, craftSvg, saveCraftTemplate } from "./curriculum";
 import "./wonder.css";
 
-type Area = "home" | "games" | "crafts" | "drawing" | "stories" | "village";
+type Area = "home" | "games" | "crafts" | "drawing" | "stories" | "village" | "nov17";
 type GameKind = "colors" | "shapes" | "pattern" | "count" | "feelings" | "garden";
 const GAME_LIBRARY: {id:GameKind;title:string;detail:string;icon:string;from:PreschoolAge;area:string}[] = [
  {id:"colors",title:"Το ουράνιο τόξο",detail:"Διάλεξε το σωστό χρώμα",icon:"🌈",from:0,area:"Χρώματα"},
@@ -115,13 +115,44 @@ function CraftStudio({age}:{age:PreschoolAge}){
    <div className="ps-craft-grid">{available.map(c=><button key={c.id} className="ps-craft-card" onClick={()=>{setCraftId(c.id);setStep(0);}}><div className="ps-craft-thumb"><img loading="lazy" src={`data:image/svg+xml;charset=utf-8,${encodeURIComponent(craftSvg(c.id))}`} alt=""/></div><span>{c.subtitle}</span><strong>{c.title}</strong><b>Δες τα βήματα <ArrowRight size={18}/></b></button>)}</div>}
  </section>;
 }
+
+const POLYTECHNIC_2026_EPISODES = [
+ { title:"1967: Οι στρατιωτικοί κυβερνούν", icon:"🕊️", year:"1967", story:"Το 1967 στην Ελλάδα μια ομάδα στρατιωτικών πήρε την εξουσία. Οι άνθρωποι δεν μπορούσαν να εκφράζονται ελεύθερα και δεν γίνονταν ελεύθερες εκλογές.", plain:"Η ελευθερία σημαίνει ότι μπορούμε να λέμε τη γνώμη μας και να συμμετέχουμε στις αποφάσεις.", question:"Πώς νιώθουμε όταν δεν μας αφήνουν να μιλήσουμε;" },
+ { title:"Τι ήθελαν οι άνθρωποι;", icon:"📚", year:"1967–1973", story:"Πολλοί άνθρωποι, και ιδιαίτερα οι νέοι, ζητούσαν ελευθερία, καλύτερη παιδεία και δημοκρατία. Ήθελαν να ακούγεται η φωνή όλων.", plain:"Κάθε παιδί έχει δικαίωμα να μαθαίνει, κι όλοι αξίζουμε σεβασμό.", question:"Γιατί είναι σημαντικό να ακούμε τη γνώμη των άλλων;" },
+ { title:"Η αρχή της εξέγερσης", icon:"📣", year:"14 Νοεμβρίου 1973", story:"Στις 14 Νοεμβρίου 1973 φοιτητές συγκεντρώθηκαν στο Πολυτεχνείο. Ενώθηκαν και φώναξαν «Ψωμί – Παιδεία – Ελευθερία!»", plain:"Όταν συνεργαζόμαστε για κάτι δίκαιο, η φωνή μας γίνεται πιο δυνατή.", question:"Τι μπορούμε να καταφέρουμε όλοι μαζί;" },
+ { title:"Η φωνή στο ραδιόφωνο", icon:"📻", year:"Νοέμβριος 1973", story:"Μέσα στο Πολυτεχνείο οι φοιτητές έφτιαξαν έναν ραδιοφωνικό σταθμό. Μετέδιδαν μηνύματα και καλούσαν τους ανθρώπους να τους στηρίξουν.", plain:"Το ραδιόφωνο μπορεί να μεταφέρει μία φωνή σε πάρα πολλούς ανθρώπους.", question:"Πώς μπορούμε να μεταφέρουμε ένα καλό μήνυμα;" },
+ { title:"Οι άνθρωποι βοηθούν", icon:"🤝", year:"Νοέμβριος 1973", story:"Πολλοί φοιτητές και πολίτες έδειξαν αλληλεγγύη. Πρόσφεραν βοήθεια και στάθηκαν ο ένας δίπλα στον άλλον.", plain:"Αλληλεγγύη σημαίνει ότι δεν αφήνουμε κάποιον μόνο του όταν μας χρειάζεται.", question:"Πώς μπορείς να βοηθήσεις έναν φίλο σου;" },
+ { title:"Η δύσκολη νύχτα του Νοέμβρη", icon:"🌙", year:"17 Νοεμβρίου 1973", story:"Τα ξημερώματα της 17ης Νοεμβρίου ο στρατός εισέβαλε στο Πολυτεχνείο με τανκ. Υπήρξε βία, άνθρωποι τραυματίστηκαν και υπήρξαν νεκροί στα γεγονότα της εξέγερσης.", plain:"Ήταν μια πολύ δύσκολη στιγμή. Θυμόμαστε τους ανθρώπους με σεβασμό και μιλάμε για την ειρήνη.", question:"Τι μας βοηθά όταν φοβόμαστε ή στενοχωριόμαστε;" },
+ { title:"1974: Επιστρέφει η δημοκρατία", icon:"☀️", year:"1974", story:"Τον Ιούλιο του 1974, μήνες μετά την εξέγερση, τελείωσε η δικτατορία και αποκαταστάθηκε η δημοκρατία στην Ελλάδα.", plain:"Στη δημοκρατία οι πολίτες μπορούν να επιλέγουν τους εκπροσώπους τους με εκλογές.", question:"Πώς αποφασίζουμε δίκαια όταν έχουμε διαφορετικές ιδέες;" },
+ { title:"Γιατί θυμόμαστε;", icon:"🌺", year:"17 Νοεμβρίου", story:"Κάθε χρόνο θυμόμαστε τους ανθρώπους που αγωνίστηκαν για ελευθερία, παιδεία και δημοκρατία. Τα κόκκινα γαρύφαλλα είναι σύμβολο μνήμης.", plain:"Η ελευθερία, η ειρήνη, ο σεβασμός και η δημοκρατία αξίζουν τη φροντίδα μας.", question:"Πώς δείχνουμε σεβασμό στους άλλους;" }
+] as const;
+function PolytechnicNovember2026(){
+ return <section className="ps-section" id="polytechneio-2026" aria-label="17 Νοεμβρίου 2026 • Το Πολυτεχνείο">
+  <div className="ps-section-title"><span className="ps-eyebrow">ΕΠΕΤΕΙΑΚΟ ΑΦΙΕΡΩΜΑ • 17 ΝΟΕΜΒΡΙΟΥ 2026</span><h2>Μια ιστορία για την ελευθερία 🌺</h2><p>Το Πολυτεχνείο μέσα από οκτώ μικρά επεισόδια, για παιδιά 3–6 ετών. Διαβάζουμε και συζητάμε μαζί με έναν ενήλικο.</p></div>
+  <div style={{display:"flex",flexWrap:"wrap",alignItems:"center",gap:12,marginBottom:24}}>
+    <img src="/preschool-world/bear.webp" alt="Ο Πισιπούκ" style={{width:76,height:76,objectFit:"contain"}} />
+    <div><strong style={{display:"block",color:"#174a75"}}>Ο Πισιπούκ μαθαίνει να ακούει, να βοηθά και να θυμάται.</strong><span>8 επεισόδια • ιστορία • συναισθήματα • ερωτήσεις συζήτησης</span></div>
+  </div>
+  <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,300px),1fr))",gap:16}}>
+   {POLYTECHNIC_2026_EPISODES.map((ep,i)=><article key={ep.title} style={{padding:22,borderRadius:24,background:"linear-gradient(160deg,#fff8ec,#eef8ff)",border:"1px solid #e8dfd4",boxShadow:"0 8px 24px #2342a00d"}}>
+    <div style={{fontSize:36}} aria-hidden="true">{ep.icon}</div><span style={{color:"#b74754",fontSize:12,fontWeight:800}}>ΕΠΕΙΣΟΔΙΟ {i+1} • {ep.year}</span>
+    <h3 style={{fontSize:22,color:"#143c68",margin:"8px 0 14px"}}>{ep.title}</h3><p style={{lineHeight:1.75}}>{ep.story}</p>
+    <p style={{background:"#fff",borderRadius:14,padding:12,lineHeight:1.6}}><b>Με απλά λόγια:</b> {ep.plain}</p>
+    <p style={{color:"#6c4268",lineHeight:1.6}}><b>💬 Συζητάμε μαζί:</b> {ep.question}</p>
+   </article>)}
+  </div>
+  <p style={{marginTop:22,fontSize:14,color:"#516071"}}>🖨️ Το εικονογραφημένο βιβλιαράκι Α4 διατίθεται ξεχωριστά. Η παρούσα ενότητα περιλαμβάνει την ψηφιακή αφήγηση των οκτώ επεισοδίων.</p>
+ </section>;
+}
+
 const MENU: {id:Area;label:string;icon:typeof Home}[] = [
  {id:"home",label:"Αρχική",icon:Home},
  {id:"games",label:"Παιχνίδια",icon:Puzzle},
  {id:"crafts",label:"Κατασκευές",icon:Scissors},
  {id:"drawing",label:"Ζωγραφική",icon:Palette},
  {id:"stories",label:"Ιστορίες",icon:BookOpen},
- {id:"village",label:"16 κόσμοι",icon:Compass}
+ {id:"village",label:"16 κόσμοι",icon:Compass},
+ {id:"nov17",label:"17 Νοεμβρίου",icon:BookOpen}
 ];
 function JourneyHome({age,go}:{age:PreschoolAge;go:(a:Area)=>void}){
  const cards=[
@@ -129,6 +160,7 @@ function JourneyHome({age,go}:{age:PreschoolAge;go:(a:Area)=>void}){
   {id:"crafts" as Area,title:"Το εργαστήρι του Πισιπούκ",description:"Μεγάλα πατρόν, εικόνες και βήματα με τα χέρια.",eyebrow:"ΚΑΤΑΣΚΕΥΑΖΩ",icon:Scissors,tone:"peach"},
   {id:"drawing" as Area,title:"Το πολύχρωμο ατελιέ",description:"Ζωγραφίζω με το δάχτυλο και κρατάω την εικόνα μου.",eyebrow:"ΖΩΓΡΑΦΙΖΩ",icon:Palette,tone:"lavender"},
   {id:"stories" as Area,title:"Η φωλιά των ιστοριών",description:"Ακούω, παρατηρώ, φαντάζομαι και αφηγούμαι.",eyebrow:"ΑΚΟΥΩ",icon:BookOpen,tone:"sun"},
+  {id:"nov17" as Area,title:"17 Νοεμβρίου 2026 • Το Πολυτεχνείο",description:"Οκτώ ιστορίες για την ελευθερία, τη δημοκρατία και τον σεβασμό.",eyebrow:"ΝΕΟ • ΓΙΑ ΠΑΙΔΙΑ 3–6",icon:BookOpen,tone:"peach"},
   {id:"village" as Area,title:"Το μεγάλο χωριό της μάθησης",description:"Εξερευνώ και τους 16 ήδη υπάρχοντες εκπαιδευτικούς κόσμους.",eyebrow:"ΕΞΕΡΕΥΝΩ",icon:Compass,tone:"sky"}
  ];
  return <><section className="ps-hero"><div className="ps-hero-scenery" role="img" aria-label="Εικονογραφημένο χωριό με παιχνίδια, σπίτια και δέντρα"/><div className="ps-hero-shade"/><div className="ps-hero-text"><span className="ps-hero-tag"><Sparkles size={17}/> ΚΑΛΩΣ ΗΡΘΕΣ ΣΤΟ ΧΩΡΙΟ ΜΑΣ!</span><h1>Κάθε μέρα, <em>μια μικρή</em> μαγική ανακάλυψη!</h1><p>{AGE_PATHS[age].promise} Εδώ παίζουμε, δοκιμάζουμε και δημιουργούμε μαζί με τον Πισιπούκ.</p><button className="ps-hero-action" onClick={()=>go("games")}><Play fill="currentColor"/> Ξεκινάμε το παιχνίδι <ArrowRight/></button></div><img className="ps-hero-bear" src="/preschool-world/bear.webp" alt="Ο Πισιπούκ, το χαμογελαστό αρκουδάκι"/></section>
@@ -150,6 +182,7 @@ export function PreschoolWonder(){
   <div className="ps-age-picker" aria-label="Επιλογή ηλικιακής ομάδας"><span>🌟 ΔΙΑΛΕΞΕ ΗΛΙΚΙΑ</span><div>{AGE_PATHS.map((item,i)=><button key={i} onClick={()=>setAge(i as PreschoolAge)} aria-pressed={age===i} style={{"--age-color":item.color} as React.CSSProperties}><b>{item.age}</b><small>ετών</small></button>)}</div><strong>{AGE_PATHS[age].title}</strong></div>
   <main id="ps-wonder-content" className="ps-main">{area!=="home"&&<div className="ps-page-breadcrumb"><button onClick={()=>changeArea("home")}><ArrowLeft size={20}/> Το χωριό μας</button><span>{MENU.find(x=>x.id===area)?.label}</span></div>}
   {area==="home"&&<JourneyHome age={age} go={changeArea}/>}
+  {area==="nov17"&&<PolytechnicNovember2026/>}
   {area==="games"&&<GameRoom key={age} age={age}/>}
   {area==="crafts"&&<CraftStudio age={age}/>}
   {area==="drawing"&&<section className="ps-section"><div className="ps-section-title"><span className="ps-eyebrow">ΤΟ ΠΟΛΥΧΡΩΜΟ ΑΤΕΛΙΕ</span><h2>Το χαρτί είναι δικό σου! 🎨</h2><p>Ζωγράφισε ελεύθερα. Κάθε ιδέα είναι μοναδική!</p></div><Drawing saveData={setDrawingData}/><p className="ps-adult-hint">Ένας ενήλικος μπορεί να αποθηκεύσει ή να εκτυπώσει το έργο. {drawingData?"Η δημιουργία σου είναι έτοιμη!":""}</p></section>}
