@@ -141,6 +141,7 @@ function PolytechnicNovember2026(){
     <p style={{color:"#6c4268",lineHeight:1.6}}><b>💬 Συζητάμε μαζί:</b> {ep.question}</p>
    </article>)}
   </div>
+  <div style={{marginTop:26,padding:22,borderRadius:24,background:"linear-gradient(120deg,#fff1df,#e6f7ff)",display:"flex",flexWrap:"wrap",alignItems:"center",justifyContent:"space-between",gap:16}}><div><strong style={{display:"block",fontSize:21,color:"#143c68"}}>🎨 8 νέες διαδραστικές δραστηριότητες</strong><p style={{margin:"8px 0 0",lineHeight:1.6}}>Αντιστοίχιση, ερωτήσεις, ψηφιακή ζωγραφική, δικά μου μηνύματα και εκτυπώσιμες κάρτες Α4.</p></div><a href="/virtual-preschool/november-17-activities" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"14px 22px",borderRadius:999,color:"#fff",background:"#8b4be9",fontWeight:900,textDecoration:"none"}}>Παίζω και δημιουργώ →</a></div>
   <p style={{marginTop:22,fontSize:14,color:"#516071"}}>🖨️ Το εικονογραφημένο βιβλιαράκι Α4 διατίθεται ξεχωριστά. Η παρούσα ενότητα περιλαμβάνει την ψηφιακή αφήγηση των οκτώ επεισοδίων.</p>
  </section>;
 }
