@@ -12,6 +12,7 @@ import { StoryBook } from "../world/Stories";
 import { PreschoolWorld } from "../world/World";
 import { speak } from "../world/Game";
 import { AGE_PATHS, CRAFTS, type CraftId, type PreschoolAge, craftSvg, saveCraftTemplate } from "./curriculum";
+import { DailyEpisode } from "./DailyEpisode";
 import "./wonder.css";
 
 type Area = "home" | "games" | "crafts" | "drawing" | "stories" | "village" | "nov17";
@@ -182,7 +183,7 @@ export function PreschoolWonder(){
   <header className="ps-topbar"><button className="ps-brand" onClick={()=>changeArea("home")}><img src="/preschool-world/bear.webp" alt=""/><span><b>ΠΙΣΙΠΟΥΚ</b><small>ΤΟ ΧΩΡΙΟ ΤΗΣ ΜΑΘΗΣΗΣ</small></span></button><nav aria-label="Πλοήγηση δραστηριοτήτων">{MENU.map(({id,label,icon:Icon})=><button key={id} onClick={()=>changeArea(id)} aria-current={area===id?"page":undefined}><Icon size={20}/><span>{label}</span></button>)}</nav><button className="ps-grownup" onClick={()=>setCaregiver(true)}><Users size={19}/> Για μεγάλους</button></header>
   <div className="ps-age-picker" aria-label="Επιλογή ηλικιακής ομάδας"><span>🌟 ΔΙΑΛΕΞΕ ΗΛΙΚΙΑ</span><div>{AGE_PATHS.map((item,i)=><button key={i} onClick={()=>setAge(i as PreschoolAge)} aria-pressed={age===i} style={{"--age-color":item.color} as React.CSSProperties}><b>{item.age}</b><small>ετών</small></button>)}</div><strong>{AGE_PATHS[age].title}</strong></div>
   <main id="ps-wonder-content" className="ps-main">{area!=="home"&&<div className="ps-page-breadcrumb"><button onClick={()=>changeArea("home")}><ArrowLeft size={20}/> Το χωριό μας</button><span>{MENU.find(x=>x.id===area)?.label}</span></div>}
-  {area==="home"&&<JourneyHome age={age} go={changeArea}/>}
+  {area==="home"&&<><DailyEpisode age={age}/><JourneyHome age={age} go={changeArea}/></>}
   {area==="nov17"&&<PolytechnicNovember2026/>}
   {area==="games"&&<GameRoom key={age} age={age}/>}
   {area==="crafts"&&<CraftStudio age={age}/>}
