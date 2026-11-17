@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type PointerEvent } from "react";
 import { Undo2, Eraser, Download, Printer, Trash2 } from "lucide-react";
+import { GameDirections, guideText, useGuideAudio } from "../GameDirections";
 import { download, makePdf } from "./export";
 const COLORS = [
   "#dc6b53",
@@ -20,6 +21,7 @@ export function Drawing({
   grayscale?: boolean;
   paper?: "A4" | "A5";
 }) {
+  const { play } = useGuideAudio();
   const canvas = useRef<HTMLCanvasElement>(null),
     drawing = useRef(false),
     history = useRef<ImageData[]>([]),
@@ -161,6 +163,7 @@ export function Drawing({
         <h2>Ο κόσμος σου, με τα χρώματά σου.</h2>
         <p>Κάθε γραμμή είναι μια καινούργια ιδέα.</p>
       </div>
+      <GameDirections text={guideText.marker} listen={() => play("marker")} />
       <div className="pw-drawing-tools">
         {COLORS.map((c) => (
           <button
@@ -175,7 +178,7 @@ export function Drawing({
           />
         ))}
         <label>
-          Πινέλο
+          Πάχος μαρκαδόρου
           <select
             value={size}
             onChange={(e) => setSize(Number(e.target.value))}
@@ -281,3 +284,4 @@ export function Drawing({
     </section>
   );
 }
+
