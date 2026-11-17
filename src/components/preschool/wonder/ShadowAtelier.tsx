@@ -1,26 +1,28 @@
 import { useRef, useState, type PointerEvent } from "react";
-import { ArrowLeft, ArrowRight, Brush, Droplet, Eraser, RotateCcw } from "lucide-react";
+import { ArrowLeft, ArrowRight, Eraser, PenLine, RotateCcw } from "lucide-react";
+import { GameDirections, guideText } from "../GameDirections";
 import { download, makePdf } from "../world/export";
-import { blankColors, owlDetails, owlRegions } from "./shadow-lesson";
+import { owlDetails, owlRegions } from "./shadow-lesson";
 
 const swatches = [
   ["Κίτρινο", "#ffc84d"], ["Μωβ", "#a486ef"], ["Γαλάζιο", "#5fd8ec"],
   ["Ροζ", "#f591ae"], ["Πράσινο", "#88d79a"], ["Κόκκινο", "#f77c61"],
 ] as const;
 const width = 480, height = 576;
-type Tool = "fill" | "brush" | "erase";
-type Snapshot = { colors: string[]; paint: ImageData };
+type Tool = "marker" | "erase";
 
-export function ShadowAtelier({ onFinish, onBack }: {
+export function ShadowAtelier({ onFinish, onBack, playGuide }: {
   onFinish: (art: string) => void;
   onBack: () => void;
+  playGuide: () => void;
 }) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const lastPoint = useRef<{ x: number; y: number } | null>(null);
-  const history = useRef<Snapshot[]>([]);
-  const [colors, setColors] = useState([...blankColors]);
+  const history = useRef<ImageData[]>([]);
+  const drawing = useRef(false);
   const [color, setColor] = useState<string>(swatches[0][1]);
-  const [tool, setTool] = useState<Tool>("fill");
+  const [tool, setTool] = useState<Tool>("marker");
+  const [demo, setDemo] = useState(1);
   const [canUndo, setCanUndo] = useState(false);
   const [printing, setPrinting] = useState(false);
   const [notice, setNotice] = useState("");
@@ -28,7 +30,7 @@ export function ShadowAtelier({ onFinish, onBack }: {
   function remember() {
     const context = canvas.current?.getContext("2d");
     if (!context) return;
-    history.current.push({ colors: [...colors], paint: context.getImageData(0, 0, width, height) });
+    history.current.push(context.getImageData(0, 0, width, height));
     if (history.current.length > 12) history.current.shift();
     setCanUndo(true);
   }
@@ -36,12 +38,18 @@ export function ShadowAtelier({ onFinish, onBack }: {
   function stroke(event: PointerEvent<HTMLCanvasElement>) {
     const previous = lastPoint.current;
     const context = canvas.current?.getContext("2d");
-    if (!previous || !context) return;
+    if (!event.isPrimary || !previous || !context) return;
     const bounds = event.currentTarget.getBoundingClientRect();
     const next = {
       x: (event.clientX - bounds.left) * width / bounds.width,
       y: (event.clientY - bounds.top) * height / bounds.height,
     };
+    if (!drawing.current) {
+      if (Math.hypot(next.x - previous.x, next.y - previous.y) < 2) return;
+      remember();
+      drawing.current = true;
+      setDemo(0);
+    }
     context.save();
     context.scale(3, 3);
     context.clip(new Path2D(owlRegions[0].path));
@@ -49,10 +57,10 @@ export function ShadowAtelier({ onFinish, onBack }: {
     context.strokeStyle = color;
     context.lineCap = "round";
     context.lineJoin = "round";
-    context.lineWidth = tool === "erase" ? 15 : 8;
+    context.lineWidth = tool === "erase" ? 16 : 9;
     context.beginPath();
     context.moveTo(previous.x / 3, previous.y / 3);
-    context.lineTo(next.x / 3 + 0.01, next.y / 3);
+    context.lineTo(next.x / 3, next.y / 3);
     context.stroke();
     context.restore();
     lastPoint.current = next;
@@ -61,26 +69,24 @@ export function ShadowAtelier({ onFinish, onBack }: {
   function start(event: PointerEvent<HTMLCanvasElement>) {
     if (event.button !== 0 || !event.isPrimary) return;
     const bounds = event.currentTarget.getBoundingClientRect();
-    remember();
+    drawing.current = false;
     lastPoint.current = {
       x: (event.clientX - bounds.left) * width / bounds.width,
       y: (event.clientY - bounds.top) * height / bounds.height,
     };
     event.currentTarget.setPointerCapture(event.pointerId);
-    stroke(event);
+  }
+
+  function stop() {
+    lastPoint.current = null;
+    drawing.current = false;
   }
 
   function undo() {
     const snapshot = history.current.pop();
     if (!snapshot) return;
-    setColors(snapshot.colors);
-    canvas.current?.getContext("2d")?.putImageData(snapshot.paint, 0, 0);
+    canvas.current?.getContext("2d")?.putImageData(snapshot, 0, 0);
     setCanUndo(history.current.length > 0);
-  }
-
-  function paintRegion(index: number) {
-    remember();
-    setColors((previous) => previous.map((fill, position) => index === position ? color : fill));
   }
 
   function compose() {
@@ -90,10 +96,8 @@ export function ShadowAtelier({ onFinish, onBack }: {
     const context = result.getContext("2d");
     if (!context || !canvas.current) return null;
     context.scale(3, 3);
-    owlRegions.forEach((region, index) => {
-      context.fillStyle = colors[index];
-      context.fill(new Path2D(region.path));
-    });
+    context.fillStyle = "#fff9eb";
+    context.fill(new Path2D(owlRegions[0].path));
     context.save();
     context.clip(new Path2D(owlRegions[0].path));
     context.drawImage(canvas.current, 0, 0, 160, 192);
@@ -141,21 +145,16 @@ export function ShadowAtelier({ onFinish, onBack }: {
       <div className="ps-shadow-atelier-tools">
         <button type="button" className="ps-shadow-subtle" onClick={onBack}><ArrowLeft aria-hidden="true" /> Στη σκηνή</button>
         <h3>Δώσε χρώμα στη Λήδα</h3>
-        <p>Διάλεξε ένα χρώμα και πάτησε ένα μέρος της. Με το πινέλο ζωγραφίζεις ελεύθερα.</p>
-        <div className="ps-shadow-swatches" aria-label="Χρώματα">
+        <GameDirections text={guideText.marker} listen={playGuide} show={() => { setDemo((value) => value + 1); playGuide(); }} />
+        <div className="ps-shadow-swatches" aria-label="Μαρκαδόροι">
           {swatches.map(([label, hex]) => (
-            <button key={hex} type="button" aria-label={label} aria-pressed={color === hex} onClick={() => setColor(hex)} style={{ background: hex }} />
+            <button key={hex} type="button" aria-label={label} aria-pressed={color === hex && tool === "marker"} onClick={() => { setColor(hex); setTool("marker"); }} style={{ background: hex }}><PenLine aria-hidden="true" /></button>
           ))}
         </div>
         <div className="ps-shadow-toolrow" aria-label="Εργαλεία ζωγραφικής">
-          <button type="button" aria-pressed={tool === "fill"} onClick={() => setTool("fill")}><Droplet aria-hidden="true" /> Γέμισμα</button>
-          <button type="button" aria-pressed={tool === "brush"} onClick={() => setTool("brush")}><Brush aria-hidden="true" /> Πινέλο</button>
           <button type="button" aria-pressed={tool === "erase"} onClick={() => setTool("erase")}><Eraser aria-hidden="true" /> Γόμα</button>
           <button type="button" disabled={!canUndo} onClick={undo}><RotateCcw aria-hidden="true" /> Αναίρεση</button>
         </div>
-        {tool === "fill" && <div className="ps-shadow-textregions" aria-label="Μέρη της ζωγραφιάς">
-          {owlRegions.map((region, index) => <button type="button" key={region.name} onClick={() => paintRegion(index)}>{region.name}</button>)}
-        </div>}
         {notice && <p role="status">{notice}</p>}
         <div className="ps-shadow-toolrow">
           <button type="button" onClick={() => {
@@ -166,17 +165,17 @@ export function ShadowAtelier({ onFinish, onBack }: {
         </div>
       </div>
       <div className="ps-shadow-paper">
-        <svg viewBox="0 0 160 192" aria-hidden="true" className="ps-shadow-template">
-          {owlRegions.map((region, index) => <path key={region.name} d={region.path} fill={colors[index]} onClick={() => paintRegion(index)} />)}
-        </svg>
-        <canvas ref={canvas} width={width} height={height} aria-label="Καμβάς ζωγραφικής της Λήδας"
-          className={tool === "fill" ? "ps-shadow-canvas-passive" : undefined}
-          onPointerDown={start} onPointerMove={stroke} onPointerUp={() => { lastPoint.current = null; }}
-          onLostPointerCapture={() => { lastPoint.current = null; }} onPointerCancel={() => { lastPoint.current = null; }} />
+        <canvas ref={canvas} width={width} height={height} aria-label="Καμβάς ζωγραφικής με μαρκαδόρο"
+          onPointerDown={start} onPointerMove={stroke} onPointerUp={stop}
+          onLostPointerCapture={stop} onPointerCancel={stop} />
         <svg viewBox="0 0 160 192" aria-hidden="true" className="ps-shadow-outlines">
           {owlRegions.map((region) => <path key={region.name} d={region.path} fill="none" stroke="#4a315d" strokeWidth="2" />)}
           <path d={owlDetails} fill="#4a315d" />
         </svg>
+        {demo > 0 && <svg key={demo} viewBox="0 0 160 192" aria-hidden="true" className="ps-marker-demo">
+          <path d="M65 143Q78 124 96 140" />
+          <text x="61" y="132">✍</text>
+        </svg>}
       </div>
     </section>
   );

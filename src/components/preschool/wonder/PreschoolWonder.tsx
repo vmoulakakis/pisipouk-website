@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
- ArrowLeft, ArrowRight, BookOpen, CheckCircle2, Compass, Download, Heart, Home, Palette, Play, Printer, RotateCcw, Scissors, Sparkles,
- Sprout, Volume2, Users, Puzzle, X
+ ArrowLeft, ArrowRight, BookOpen, Compass, Download, Heart, Home, Palette, Play, Printer, RotateCcw, Scissors, Sparkles,
+ Volume2, Users, Puzzle, X
 } from "lucide-react";
 import exteriorScene from "@/assets/pisipouk-exterior.webp";
 import classroomScene from "@/assets/pisipouk-classroom.webp";
@@ -13,6 +13,7 @@ import { PreschoolWorld } from "../world/World";
 import { speak } from "../world/Game";
 import { AGE_PATHS, CRAFTS, type CraftId, type PreschoolAge, craftSvg, saveCraftTemplate } from "./curriculum";
 import { ShadowTheatre } from "./ShadowTheatre";
+import { GameDirections, guideText, useGuideAudio, type GuideCue } from "../GameDirections";
 import "./wonder.css";
 
 type Area = "home" | "games" | "crafts" | "drawing" | "stories" | "village" | "nov17";
@@ -48,46 +49,107 @@ function TextToSpeech({text}:{text:string}){
  const [state,setState]=useState("");
  return <div className="ps-speak"><button type="button" onClick={()=>speak(text,setState)} aria-label="Άκουσε τις οδηγίες στα ελληνικά"><Volume2 size={20}/> Άκουσέ το</button>{state&&<small role="status">{state}</small>}</div>;
 }
-function GameRoom({age}:{age:PreschoolAge}){
- const [current,setCurrent]=useState<GameKind|null>(null);
- const games=GAME_LIBRARY.filter(x=>x.from<=age);
- return <section className="ps-section" aria-label="Διαδραστικά παιχνίδια">
-   <div className="ps-section-title"><span className="ps-eyebrow">ΠΑΙΖΩ ΚΑΙ ΑΝΑΚΑΛΥΠΤΩ</span><h2>Διάλεξε μια μικρή περιπέτεια</h2><p>Πραγματικό παιχνίδι με άγγιγμα ή πληκτρολόγιο, χωρίς χρονόμετρα ή βαθμολογίες.</p></div>
-   {current ? <div className="ps-lab"><button className="ps-back" onClick={()=>setCurrent(null)}><ArrowLeft/> Όλα τα παιχνίδια</button><GameActivity key={current+"-"+age} kind={current} age={age}/></div> :
-   <div className="ps-game-grid">{games.map(g=><button key={g.id} className="ps-game-card" onClick={()=>setCurrent(g.id)}><span className="ps-game-illustration" aria-hidden="true"><img src={SCENES[g.id]} alt="" loading="lazy"/><span className="ps-scene-sticker">{g.icon}</span></span><small>{g.area}</small><strong>{g.title}</strong><span>{g.detail}</span><b>Παίζω <ArrowRight size={18}/></b></button>)}</div>}
- </section>;
+const colorCues = ["red", "blue", "yellow", "green"] as const;
+const shapeCues = ["circle", "square", "triangle"] as const;
+const gameTitles: Record<GameKind, string> = {
+  colors: "Τα χρώματα της φύσης",
+  shapes: "Τα σχήματα στον κήπο",
+  pattern: "Το μυστικό μοτίβο",
+  count: "Μετράω τα μήλα",
+  feelings: "Μαθαίνω τα συναισθήματα",
+  garden: "Ο Σπορούλης μεγαλώνει",
+};
+const gardenMoves = [
+  { icon: "🌰", label: "Βάλε τον σπόρο" },
+  { icon: "💧", label: "Πότισε τον σπόρο" },
+  { icon: "☀️", label: "Δώσε φως" },
+  { icon: "🌱", label: "Δες το βλαστάρι" },
+];
+const gameExamples: Record<GameKind, { label: string; pieces: string[]; action: string }> = {
+  colors: { label: "Παράδειγμα: βλέπω πράσινο και πατάω το πράσινο", pieces: ["🍀", "→"], action: "🟢" },
+  shapes: { label: "Παράδειγμα: βλέπω τρίγωνο και πατάω το τρίγωνο", pieces: ["▲", "→"], action: "▲" },
+  pattern: { label: "Παράδειγμα: καρδιά, ήλιος, καρδιά, μετά ήλιος", pieces: ["💛", "☀️", "💛", "→"], action: "☀️" },
+  count: { label: "Παράδειγμα: ένα, δύο μήλα. Πατάω το δύο", pieces: ["🍎", "🍎", "→"], action: "2" },
+  feelings: { label: "Παράδειγμα: βλέπω ένα χαμόγελο, διαλέγω χαρούμενο πρόσωπο", pieces: ["😊", "→"], action: "😄" },
+  garden: { label: "Παράδειγμα: πατάω το υλικό που μου ζητάει η γλάστρα", pieces: ["🪴", "→"], action: "💧" },
+};
+
+function gameCue(kind: GameKind, step: number, choices: number): GuideCue {
+  if (kind === "colors") return colorCues[step % choices];
+  if (kind === "shapes") return shapeCues[step % Math.min(3, choices)];
+  if (kind === "feelings") return (["feelings-0", "feelings-1", "feelings-2"] as const)[step % 3];
+  if (kind === "garden") return (["garden-0", "garden-1", "garden-2", "garden-3"] as const)[step];
+  return kind;
 }
-function GameActivity({kind,age}:{kind:GameKind;age:PreschoolAge}){
- const [step,setStep]=useState(0);
- const [,setSelected]=useState("");
- const [message,setMessage]=useState("");
- const choices=age===0?2:age===1?3:4;
- const solved=kind==="garden"?step===4:step>= (age===0?2:3);
- const targetColor=PALETTE[step%choices];
- const targetShape=SHAPES[step%SHAPES.length];
- const countGoal=Math.min(2+step+age,7);
- const feelings=FEELINGS[step%FEELINGS.length];
- const pattern=step%2===0?["🔴","🔵","🔴","🔵"]:["⭐","🌿","🌿","⭐","🌿","🌿"];
- const expected=step%2===0?"🔴":"⭐";
- const reset=()=>{setStep(0);setSelected("");setMessage("");};
- const succeed=()=>{setMessage("Το ανακάλυψες! ✨");setSelected("");setStep(v=>v+1);};
- const tryChoice=(right:boolean)=>{if(right)succeed();else setMessage("Ας δοκιμάσουμε ξανά. Κοίτα προσεκτικά!");};
- const titles:Record<GameKind,string>={colors:"Τα χρώματα της φύσης",shapes:"Τα σχήματα στον κήπο",pattern:"Το μυστικό μοτίβο",count:"Μετράω τα μήλα",feelings:"Μαθαίνω τα συναισθήματα",garden:"Ο Σπορούλης μεγαλώνει"};
- const prompt= kind==="colors"?`Βρες το ${targetColor.name}!`:kind==="shapes"?`Βρες το ${targetShape.name}!`:kind==="pattern"?"Τι έρχεται μετά στο μοτίβο;":kind==="count"?`Πόσα μήλα βλέπεις;`:kind==="feelings"?feelings.question:"Τι χρειάζεται ο Σπορούλης τώρα;";
- return <div className="ps-game-stage"><div className="ps-game-meta"><span>ΠΑΙΧΝΙΔΙ ΕΞΕΡΕΥΝΗΣΗΣ</span><button onClick={reset}><RotateCcw size={17}/> Από την αρχή</button></div>
-   <h3>{titles[kind]}</h3>
-   {solved ? <div className="ps-win" role="status"><span aria-hidden="true">🌟 🐻 🌟</span><h4>Τα κατάφερες με τον δικό σου τρόπο!</h4><p>Ποιο μέρος θέλεις να δοκιμάσεις ξανά ή να φτιάξεις με αληθινά υλικά;</p><button className="ps-primary" onClick={reset}><RotateCcw/> Παίζω ξανά</button></div> : <>
-   <div className="ps-game-request"><p>{prompt}</p><TextToSpeech text={prompt}/></div>
-   {kind==="colors"&&<div className="ps-choices">{PALETTE.slice(0,choices).map(c=><button key={c.name} className="ps-color-choice" aria-label={c.name} onClick={()=>tryChoice(c.name===targetColor.name)} style={{background:c.color}}><span>{c.emoji}</span><b>{c.name}</b></button>)}</div>}
-   {kind==="shapes"&&<div className="ps-choices">{SHAPES.slice(0,age===0?2:3).map(c=><button key={c.name} className="ps-shape-choice" onClick={()=>tryChoice(c.name===targetShape.name)}><span aria-hidden="true">{c.icon}</span><b>{c.name}</b></button>)}</div>}
-   {kind==="pattern"&&<><div className="ps-pattern-line" aria-label="Μοτίβο">{pattern.map((v,i)=><span key={i}>{v}</span>)}<span className="ps-questionmark">?</span></div><div className="ps-choices">{(age<3?["🔴","🔵","⭐"]:["⭐","🔴","🌿"]).map(v=><button key={v} className="ps-choice-square" onClick={()=>tryChoice(v===expected)}>{v}</button>)}</div></>}
-   {kind==="count"&&<><div className="ps-apples" aria-label={`${countGoal} μήλα`}>{Array.from({length:countGoal},(_,i)=><span key={i}>🍎</span>)}</div><div className="ps-choices">{[countGoal-1,countGoal,countGoal+1].map(n=><button key={n} className="ps-choice-square" onClick={()=>tryChoice(n===countGoal)}>{n}</button>)}</div></>}
-   {kind==="feelings"&&<><div className="ps-friend-face" aria-hidden="true">🐻</div><div className="ps-choices">{FEELINGS.map((f,i)=><button key={f.name} className="ps-emotion-choice" onClick={()=>tryChoice(i===feelings.correct)}><span>{f.face}</span><b>{f.name}</b></button>)}</div></>}
-   {kind==="garden"&&<div className="ps-garden-game"><div className="ps-garden-visual" aria-label={["Άδειο γλαστράκι","Ο σπόρος μέσα στο χώμα","Υγρό χώμα","Ο ήλιος ζεσταίνει το σπόρο"][step]}><span className="ps-sun">☀️</span><span className="ps-garden-top">{["🪴","🌰","💧","🌱"][step]}</span><div className="ps-pot">🪴</div></div><div className="ps-garden-actions">{["Βάζω τον σπόρο 🌰","Ποτίζω λίγο 💧","Βρίσκω το φως ☀️","Παρατηρώ το βλαστάρι 🌱"].map((label,i)=><button key={label} disabled={i!==step} aria-current={i===step?"step":undefined} onClick={()=>{setStep(v=>v+1);setMessage("Η φροντίδα βοηθά το φυτό να μεγαλώσει!");}}>{i<step?<CheckCircle2/>:<Sprout/>}{label}</button>)}</div></div>}
-   <p className="ps-gentle-feedback" role="status" aria-live="polite">{message||"Μπορείς να δοκιμάσεις όσες φορές θέλεις."}</p>
-   <div className="ps-progress-dots" aria-label="Πρόοδος δραστηριότητας">{Array.from({length:kind==="garden"?4:age===0?2:3},(_,i)=><span key={i} className={i<step?"finished":""}/>)}</div>
-   </>}
- </div>;
+
+function GameRoom({age}:{age:PreschoolAge}){
+  const [current,setCurrent]=useState<GameKind|null>(null);
+  const {play,stop}=useGuideAudio();
+  const games=GAME_LIBRARY.filter(x=>x.from<=age);
+  return <section className="ps-section" aria-label="Διαδραστικά παιχνίδια">
+    <div className="ps-section-title"><h2>Διάλεξε παιχνίδι</h2></div>
+    {current ? <div className="ps-lab">
+      <button className="ps-back" onClick={()=>{stop();setCurrent(null);}}><ArrowLeft/> Όλα τα παιχνίδια</button>
+      <GameActivity key={current+"-"+age} kind={current} age={age} play={play}/>
+    </div> :
+    <div className="ps-game-grid">{games.map(g=><button key={g.id} className="ps-game-card" onClick={()=>{
+      setCurrent(g.id);
+      play(gameCue(g.id, 0, age===0?2:age===1?3:4));
+    }}><span className="ps-game-illustration" aria-hidden="true"><img src={SCENES[g.id]} alt="" loading="lazy"/><span className="ps-scene-sticker">{g.icon}</span></span><small>{g.area}</small><strong>{g.title}</strong><span>{g.detail}</span><b>Παίζω <ArrowRight size={18}/></b></button>)}</div>}
+  </section>;
+}
+
+function GameActivity({kind,age,play}:{kind:GameKind;age:PreschoolAge;play:(cue:GuideCue)=>void}){
+  const [step,setStep]=useState(0);
+  const [message,setMessage]=useState("");
+  const [demo,setDemo]=useState(1);
+  const title=useRef<HTMLHeadingElement>(null);
+  useEffect(()=>{title.current?.focus();},[]);
+  const choices=age===0?2:age===1?3:4;
+  const rounds=kind==="garden"?4:age===0?2:3;
+  const solved=step>=rounds;
+  const cue=solved?"win":gameCue(kind,step,choices);
+  const targetColor=PALETTE[step%choices];
+  const shapeChoices=SHAPES.slice(0,Math.min(3,choices));
+  const targetShape=shapeChoices[step%shapeChoices.length];
+  const countGoal=Math.min(2+step+age,7);
+  const feelings=FEELINGS[step%FEELINGS.length];
+  const pattern=step%2===0?["🔴","🔵","🔴","🔵"]:["⭐","🌿","🌿","⭐","🌿","🌿"];
+  const expected=step%2===0?"🔴":"⭐";
+  const example=gameExamples[kind];
+  const reset=()=>{setStep(0);setDemo(v=>v+1);setMessage("");play(gameCue(kind,0,choices));};
+  const tryChoice=(right:boolean)=>{
+    if(!right){
+      setMessage("Δες το παράδειγμα και δοκίμασε άλλη επιλογή.");
+      setDemo(v=>v+1);
+      play(cue);
+      return;
+    }
+    const next=step+1;
+    setStep(next);
+    setMessage("Μπράβο!");
+    setDemo(0);
+    play(next>=rounds?"win":gameCue(kind,next,choices));
+  };
+  return <div className="ps-game-stage" data-game-demo={demo>0}>
+    <div className="ps-game-meta"><h3 ref={title} tabIndex={-1}>{gameTitles[kind]}</h3><button onClick={reset}><RotateCcw size={17}/> Από την αρχή</button></div>
+    {solved ? <div className="ps-win" role="status"><span aria-hidden="true">🌟 🐻 🌟</span><h4>Τα κατάφερες!</h4><button className="ps-primary" onClick={reset}><RotateCcw/> Παίζω ξανά</button></div> : <>
+      <GameDirections text={guideText[cue]} listen={()=>play(cue)} show={()=>{setDemo(v=>v+1);play(cue);}}/>
+      {demo>0&&<div className="ps-game-example" key={demo} aria-label={example.label}>
+        {example.pieces.map((piece,i)=><span key={i} aria-hidden="true">{piece}</span>)}
+        <span className="ps-demo-target" aria-hidden="true">{example.action}</span>
+        <span className="ps-demo-motion" aria-hidden="true">👆</span>
+      </div>}
+      {kind==="colors"&&<div className="ps-choices">{PALETTE.slice(0,choices).map(c=><button key={c.name} className="ps-color-choice" aria-label={c.name} onClick={()=>tryChoice(c.name===targetColor.name)} style={{background:c.color}}><span aria-hidden="true">{c.emoji}</span><b>{c.name}</b></button>)}</div>}
+      {kind==="shapes"&&<div className="ps-choices">{shapeChoices.map(c=><button key={c.name} className="ps-shape-choice" onClick={()=>tryChoice(c.name===targetShape.name)}><span aria-hidden="true">{c.icon}</span><b>{c.name}</b></button>)}</div>}
+      {kind==="pattern"&&<><div className="ps-pattern-line" aria-label="Μοτίβο">{pattern.map((v,i)=><span key={i}>{v}</span>)}<span className="ps-questionmark">?</span></div><div className="ps-choices">{(age<3?["🔴","🔵","⭐"]:["⭐","🔴","🌿"]).map(v=><button key={v} className="ps-choice-square" onClick={()=>tryChoice(v===expected)}>{v}</button>)}</div></>}
+      {kind==="count"&&<><div className="ps-apples" aria-label={`${countGoal} μήλα`}>{Array.from({length:countGoal},(_,i)=><span key={i}>🍎</span>)}</div><div className="ps-choices">{[countGoal-1,countGoal,countGoal+1].map(n=><button key={n} className="ps-choice-square" onClick={()=>tryChoice(n===countGoal)}>{n}</button>)}</div></>}
+      {kind==="feelings"&&<div className="ps-choices">{FEELINGS.map((f,i)=><button key={f.name} className="ps-emotion-choice" onClick={()=>tryChoice(i===feelings.correct)}><span aria-hidden="true">{f.face}</span><b>{f.name}</b></button>)}</div>}
+      {kind==="garden"&&<div className="ps-garden-game"><div className="ps-garden-visual" aria-label={["Άδειο γλαστράκι","Ο σπόρος μέσα στο χώμα","Υγρό χώμα","Ο ήλιος ζεσταίνει το σπόρο"][step]}><span className="ps-sun" aria-hidden="true">☀️</span><span className="ps-garden-top" aria-hidden="true">{["🪴","🌰","💧","🌱"][step]}</span><div className="ps-pot" aria-hidden="true">🪴</div></div><div className="ps-garden-actions"><button aria-current="step" onClick={()=>tryChoice(true)}><span aria-hidden="true">{gardenMoves[step].icon}</span>{gardenMoves[step].label}</button></div></div>}
+      <p className="ps-gentle-feedback" role="status">{message}</p>
+      <div className="ps-progress-dots" aria-label={`${step} από ${rounds} βήματα`}>{Array.from({length:rounds},(_,i)=><span key={i} className={i<step?"finished":""}/>)}</div>
+    </>}
+  </div>;
 }
 function CraftStudio({age}:{age:PreschoolAge}){
  const [craftId,setCraftId]=useState<CraftId|null>(null);
@@ -194,3 +256,4 @@ export function PreschoolWonder(){
   {caregiver&&<div className="ps-modal-scrim" onMouseDown={e=>{if(e.target===e.currentTarget)setCaregiver(false);}}><section role="dialog" aria-modal="true" aria-labelledby="ps-adult-heading" className="ps-grownup-dialog"><button className="ps-close" onClick={()=>setCaregiver(false)} aria-label="Κλείσιμο"><X/></button><span className="ps-eyebrow">ΓΟΝΕΙΣ ΚΑΙ ΠΑΙΔΑΓΩΓΟΙ</span><h2 id="ps-adult-heading">Εμπειρίες με νόημα, όχι περισσότερη οθόνη.</h2><p>Επιλέξτε ηλικία σύμφωνα με τις δυνατότητες και τα ενδιαφέροντα του παιδιού. Οι χρόνοι είναι ενδεικτικοί. Τα μικρότερα παιδιά χρειάζονται συνεχή συν-παρουσία ενηλίκου.</p><div className="ps-adult-facts"><p><b>NAEYC:</b> παιχνίδι, ανάπτυξη με βάση τις δυνατότητες του κάθε παιδιού.</p><p><b>HighScope:</b> σχεδιάζω, δημιουργώ, συζητώ τι έγινε.</p><p><b>Montessori / Reggio Emilia:</b> αυτενέργεια, επιλογές, υλικά και διερευνητική δημιουργία.</p></div><p><b>Ασφάλεια:</b> Τα πατρόν και η κοπή απαιτούν επίβλεψη. Δεν αποθηκεύουμε ονόματα, βαθμούς ή φωτογραφίες παιδιών σε εξυπηρετητή.</p><button className="ps-primary" onClick={()=>setCaregiver(false)}><Heart/> Κατάλαβα</button></section></div>}
  </div>;
 }
+

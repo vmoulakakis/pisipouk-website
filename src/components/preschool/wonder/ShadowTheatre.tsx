@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type PointerEvent } from "react";
 import { ArrowRight, Brush, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { GameDirections, guideText, useGuideAudio, type GuideCue } from "../GameDirections";
 import { ShadowAtelier } from "./ShadowAtelier";
 import { challenges, owlOutline, sequences, shadowScale, storageKey, validSavedArt, type Light, type Step } from "./shadow-lesson";
 import type { PreschoolAge } from "./curriculum";
@@ -14,6 +15,17 @@ const motifs = {
   finish: [392, 494, 587, 784],
 } as const;
 
+function LanternIcon() {
+  return (
+    <svg viewBox="0 0 64 83" aria-hidden="true">
+    <path d="M22 19V12a10 10 0 0 1 20 0v7" fill="none" stroke="#ffdc8e" strokeWidth="6" />
+    <path d="M12 20H52L46 31H18Z M10 69H54V78H10Z" fill="#794739" stroke="#f1b560" strokeWidth="3" />
+    <path d="M18 32H46L50 69H14Z" fill="#ffe797" stroke="#e39a4f" strokeWidth="3" />
+    <path d="M32 62Q20 58 33 39Q45 57 32 62Z" fill="#ffaa55" />
+    </svg>
+  );
+}
+
 export function ShadowTheatre({ age }: { age: PreschoolAge }) {
   const [step, setStep] = useState<Step>("intro");
   const [location, setLocation] = useState<Light>(age === 0 || age === 2 ? "far" : "near");
@@ -22,6 +34,7 @@ export function ShadowTheatre({ age }: { age: PreschoolAge }) {
   const [message, setMessage] = useState("");
   const [reaction, setReaction] = useState(0);
   const [dragX, setDragX] = useState<number>();
+  const [demo, setDemo] = useState(0);
   const [muted, setMuted] = useState(false);
   const [art, setArt] = useState<string | null>(null);
   const [visitedAtelier, setVisitedAtelier] = useState(false);
@@ -31,8 +44,18 @@ export function ShadowTheatre({ age }: { age: PreschoolAge }) {
   const drag = useRef<{ pointerId: number; start: number; moved: boolean } | null>(null);
   const context = useRef<AudioContext | null>(null);
   const audioGate = useRef<GainNode | null>(null);
+  const { play, stop } = useGuideAudio();
   const ageSequence = sequences[age];
   const complete = turn >= ageSequence.length;
+  const nextTarget = ageSequence[turn];
+  const cue: GuideCue = step === "intro" ? "shadow-start"
+    : step === "predict" ? "shadow-predict"
+    : complete ? "shadow-done"
+    : nextTarget === "near" ? "shadow-near" : "shadow-far";
+
+  function speakCue(next: GuideCue) {
+    if (!muted) play(next);
+  }
 
   useEffect(() => {
     try {
@@ -84,6 +107,7 @@ export function ShadowTheatre({ age }: { age: PreschoolAge }) {
     if (audioGate.current && context.current) {
       audioGate.current.gain.setValueAtTime(muted ? 1 : 0, context.current.currentTime);
     }
+    if (!muted) stop();
     setMuted(!muted);
   }
 
@@ -98,7 +122,8 @@ export function ShadowTheatre({ age }: { age: PreschoolAge }) {
     const expected = ageSequence[turn];
     if (next !== expected) {
       setMessage("Κοίτα τη σκιά. Τι γίνεται αν δοκιμάσεις την άλλη θέση;");
-      sound(next);
+      setDemo((value) => value + 1);
+      speakCue(cue);
       return;
     }
     const done = turn + 1 === ageSequence.length;
@@ -108,11 +133,14 @@ export function ShadowTheatre({ age }: { age: PreschoolAge }) {
         ? "Η σκιά μεγάλωσε! Τώρα είδες τι κάνει το φως όταν πλησιάζει."
         : "Η Λήδα βρήκε τη σκιά της!"
       : next === "near" ? "Να η μεγάλη σκιά! Δοκίμασε τώρα την άλλη θέση." : "Να η μικρή σκιά! Χρειαζόμαστε τώρα μεγάλη.");
-    sound(done ? "finish" : next);
+    if (done) sound("finish");
+    setDemo((value) => done ? 0 : value + 1);
+    speakCue(done ? "shadow-done" : ageSequence[turn + 1] === "near" ? "shadow-near" : "shadow-far");
   }
 
   function startDrag(event: PointerEvent<HTMLButtonElement>) {
     if (step !== "play" || event.button !== 0 || !event.isPrimary) return;
+    setDemo(0);
     drag.current = { pointerId: event.pointerId, start: event.clientX, moved: false };
     event.currentTarget.setPointerCapture(event.pointerId);
   }
@@ -145,9 +173,11 @@ export function ShadowTheatre({ age }: { age: PreschoolAge }) {
   function toAtelier() {
     setVisitedAtelier(true);
     setStep("atelier");
+    speakCue("marker");
   }
 
   function saveArt(image: string) {
+    stop();
     setArt(image);
     try {
       if (validSavedArt(image)) localStorage.setItem(storageKey, image);
@@ -162,6 +192,8 @@ export function ShadowTheatre({ age }: { age: PreschoolAge }) {
     setMessage("");
     setLocation(age === 0 || age === 2 ? "far" : "near");
     setStep("intro");
+    setDemo(0);
+    stop();
   }
 
   const lightX = dragX ?? positions[location];
@@ -182,6 +214,11 @@ export function ShadowTheatre({ age }: { age: PreschoolAge }) {
       </div>
 
       <div hidden={!showingScene}>
+        {step !== "finale" && <GameDirections
+          text={guideText[cue]}
+          listen={() => speakCue(cue)}
+          show={step === "play" && !complete ? () => { setDemo((value) => value + 1); speakCue(cue); } : undefined}
+        />}
         <div ref={stageRef} className={"ps-shadow-stage" + (step === "finale" ? " ps-shadow-stage-finale" : "")}
           data-step={step}>
           <img className="ps-shadow-backdrop" src={asset + "/theatre.webp"} alt="" fetchPriority="high" />
@@ -193,6 +230,13 @@ export function ShadowTheatre({ age }: { age: PreschoolAge }) {
                 className="ps-shadow-silhouette" data-size={location} style={{ transform: "scale(" + scale + ")" }} />
               {step === "play" && (
                 <>
+                  {!complete && demo > 0 && dragX === undefined && (
+                    <div className="ps-shadow-demo" aria-hidden="true" key={demo}
+                      style={{ left: positions[location] + "%", width: Math.abs(positions.near - positions.far) + "%" }}
+                      data-toward={nextTarget} data-shift={nextTarget !== location}>
+                      <span>{nextTarget !== location && <LanternIcon />}{nextTarget === location ? "👇" : nextTarget === "near" ? "👉" : "👈"}</span>
+                    </div>
+                  )}
                   <button type="button" className="ps-shadow-floor ps-shadow-floor-far" onClick={() => moveLight("far")}
                     aria-label="Φέρε το φως μακριά από τη Λήδα" data-cue={!complete && ageSequence[turn] === "far"}><span aria-hidden="true">○</span></button>
                   <button type="button" className="ps-shadow-floor ps-shadow-floor-near" onClick={() => moveLight("near")}
@@ -204,12 +248,7 @@ export function ShadowTheatre({ age }: { age: PreschoolAge }) {
                     onClick={(event) => {
                       if (event.detail === 0) moveLight(location === "near" ? "far" : "near");
                     }}>
-                    <svg viewBox="0 0 64 83" aria-hidden="true">
-                      <path d="M22 19V12a10 10 0 0 1 20 0v7" fill="none" stroke="#ffdc8e" strokeWidth="6" />
-                      <path d="M12 20H52L46 31H18Z M10 69H54V78H10Z" fill="#794739" stroke="#f1b560" strokeWidth="3" />
-                      <path d="M18 32H46L50 69H14Z" fill="#ffe797" stroke="#e39a4f" strokeWidth="3" />
-                      <path d="M32 62Q20 58 33 39Q45 57 32 62Z" fill="#ffaa55" />
-                    </svg>
+                    <LanternIcon />
                   </button>
                 </>
               )}
@@ -222,16 +261,17 @@ export function ShadowTheatre({ age }: { age: PreschoolAge }) {
           {step === "intro" && <button type="button" className="ps-shadow-start" onClick={() => {
             sound("begin");
             setStep(age === 2 ? "predict" : "play");
+            setDemo(age === 2 ? 0 : 1);
+            speakCue(age === 2 ? "shadow-predict" : ageSequence[0] === "near" ? "shadow-near" : "shadow-far");
           }}><Play fill="currentColor" aria-hidden="true" /> Ξεκινάμε!</button>}
         </div>
 
         <div ref={actionRef} className="ps-shadow-action">
           {step === "intro" && <p>Η Λήδα βγήκε για πρόβα. Μπορείς να τη βοηθήσεις να βρει τη σκιά της;</p>}
           {step === "predict" && <>
-            <p>{challenges[age]}</p>
             <div className="ps-shadow-toolrow">
               {(["far", "near"] as const).map((position) => (
-                <button key={position} type="button" onClick={() => { setPrediction(position); setStep("play"); sound("begin"); }}>
+                <button key={position} type="button" onClick={() => { setPrediction(position); setStep("play"); setDemo(1); speakCue("shadow-near"); }}>
                   <svg className="ps-shadow-guess" viewBox="0 0 160 192" aria-hidden="true"><path transform={position === "far" ? "translate(39 43) scale(.52)" : undefined} d={owlOutline} /></svg>
                   {position === "far" ? "Μικρή σκιά" : "Μεγάλη σκιά"}
                 </button>
@@ -239,7 +279,7 @@ export function ShadowTheatre({ age }: { age: PreschoolAge }) {
             </div>
           </>}
           {step === "play" && <>
-            <p role="status">{message || (age === 2 ? "Φέρε το φως κοντά και δες τι συμβαίνει." : challenges[age])}</p>
+            <p role="status">{message || (age === 2 ? "" : challenges[age])}</p>
             {complete ? <button className="ps-shadow-primary" type="button" onClick={toAtelier}>
               <Brush aria-hidden="true" /> Ζωγράφισε τη Λήδα
             </button> : <div className="ps-shadow-progress" aria-label={turn + " από " + ageSequence.length + " κινήσεις"}>
@@ -257,7 +297,8 @@ export function ShadowTheatre({ age }: { age: PreschoolAge }) {
       </div>
 
       {visitedAtelier && <div ref={atelierRef} hidden={step !== "atelier"}>
-        <ShadowAtelier onFinish={saveArt} onBack={() => setStep(art ? "finale" : "play")} />
+        <ShadowAtelier onFinish={saveArt} onBack={() => { stop(); setStep(art ? "finale" : "play"); }}
+          playGuide={() => speakCue("marker")} />
       </div>}
       <details className="ps-shadow-parent">
         <summary>Για γονείς και παιδαγωγούς</summary>

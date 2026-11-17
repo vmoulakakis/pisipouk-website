@@ -13,6 +13,7 @@ import {
   Volume2,
 } from "lucide-react";
 import type { Task } from "./content";
+import { GameDirections, guideText, useGuideAudio, type GuideCue } from "../GameDirections";
 export function speak(text: string, onUnavailable?: (s: string) => void) {
   if (!("speechSynthesis" in window)) {
     onUnavailable?.(
@@ -52,6 +53,22 @@ export function Symbol({ name }: { name: string }) {
                 : Triangle;
   return <Icon aria-hidden="true" size={38} />;
 }
+const mechanicGuides: Record<Task["mechanic"], GuideCue> = {
+  choice: "match",
+  count: "number",
+  pattern: "pattern",
+  sequence: "sequence",
+  memory: "memory",
+  rhythm: "rhythm",
+};
+const mechanicExamples: Record<Task["mechanic"], string[]> = {
+  choice: ["🖼", "→", "👆"],
+  count: ["🍃", "🍃", "→", "2", "👆"],
+  pattern: ["⭐", "🌿", "⭐", "→", "🌿", "👆"],
+  sequence: ["1", "→", "2", "→", "3", "👆"],
+  memory: ["▧", "▧", "→", "⭐", "⭐", "👆"],
+  rhythm: ["♫", "→", "♪", "♪", "👆"],
+};
 export function Game({
   task,
   onComplete,
@@ -64,6 +81,9 @@ export function Game({
     [order, setOrder] = useState<string[]>([]),
     [open, setOpen] = useState<number[]>([]),
     [matched, setMatched] = useState<string[]>([]);
+  const { play: playGuide, stop: stopGuide } = useGuideAudio();
+  const [demo, setDemo] = useState(1);
+  const cue = mechanicGuides[task.mechanic];
   const audio = useRef<AudioContext | null>(null);
   const busy = useRef(false);
   const playback = useRef(0);
@@ -73,7 +93,7 @@ export function Game({
       playback.current++;
       if (memoryTimer.current) clearTimeout(memoryTimer.current);
       void audio.current?.close().catch(() => {});
-      speechSynthesis?.cancel();
+      window.speechSynthesis?.cancel();
     },
     [],
   );
@@ -88,6 +108,8 @@ export function Game({
     if (memoryTimer.current) clearTimeout(memoryTimer.current);
     busy.current = false;
     setDone(false);
+    setDemo((value) => value + 1);
+    playGuide(cue);
     setMessage("Μια νέα προσπάθεια, χωρίς βιασύνη.");
     setOrder([]);
     setOpen([]);
@@ -135,6 +157,7 @@ export function Game({
   const flip = (i: number) => {
     if (busy.current || open.includes(i) || matched.includes(deck[i].v) || done)
       return;
+    setDemo(0);
     const n = [...open, i];
     setOpen(n);
     if (n.length === 2) {
@@ -167,6 +190,13 @@ export function Game({
           <Volume2 />
         </button>
       </div>
+      {!done && <GameDirections text={guideText[cue]} listen={() => playGuide(cue)}
+        show={() => { setDemo((value) => value + 1); playGuide(cue); }} />}
+      {!done && demo > 0 && <div className="ps-game-example" key={demo} aria-hidden="true">
+        {mechanicExamples[task.mechanic].map((symbol, index) => (
+          <span key={index} className={symbol === "👆" ? "ps-demo-motion" : undefined}>{symbol}</span>
+        ))}
+      </div>}
       <p className="pw-prompt">{task.prompt}</p>
       {task.mechanic === "count" && (
         <div className="pw-count">
@@ -211,6 +241,8 @@ export function Game({
               onClick={async () => {
                 if (busy.current) return;
                 busy.current = true;
+                stopGuide();
+                setDemo(0);
                 const token = ++playback.current;
                 setOrder([]);
                 for (const v of seq) {
@@ -239,6 +271,7 @@ export function Game({
                   done || (task.mechanic === "sequence" && order.includes(v))
                 }
                 onClick={() => {
+                  setDemo(0);
                   if (
                     task.mechanic === "sequence" ||
                     task.mechanic === "rhythm"
@@ -276,3 +309,4 @@ export function Game({
     </div>
   );
 }
+
